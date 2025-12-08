@@ -33,6 +33,7 @@ import {
 
 import { http } from "@/lib/http";
 import { Link } from "react-router-dom";
+import { getProducts } from "../services/getProducts";
 
 
 interface ProductTableProps {
@@ -40,43 +41,56 @@ interface ProductTableProps {
 }
 
 
-const ProductTable = ({ products }: ProductTableProps) => {
-
+const ProductTable = () => {
+  const [products, setProducts] = useState<any[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentItems, setCurrentItems] = useState([]);
   const [productStatus, setProductStatus] = useState({});
-  const itemsPerPage = 7;
+  const pageSize = 7;
 
+  const fetchProducts = async () => {
+    const res = await getProducts(currentPage, pageSize);
 
-  const [productStock, setProductStock] = useState({});
-
-  useEffect(() => {
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    setCurrentItems(products.slice(indexOfFirstItem, indexOfLastItem));
-  }, [currentPage, products]);
-
-  const totalPages = Math.ceil(products.length / itemsPerPage) || 1;
-
-
-  const handleStockChange = (id, newValue) => {
-    const parsedValue = Number(newValue);
-
-    if (!isNaN(parsedValue) && parsedValue >= 0) {
-      setProductStock((prevStock) => ({
-        ...prevStock,
-        [id]: parsedValue,
-      }));
+    if (res) {
+      setProducts(res.productStock);
+      setTotalPages(res.totalPages);
     }
   };
 
-  const handleStatusChange = (id, newValue) => {
-    setProductStatus((prevStatus) => ({
-      ...prevStatus,
-      [id]: newValue.charAt(0).toUpperCase() + newValue.slice(1),
-    }));
+  const [productStock, setProductStock] = useState({});
+
+
+  useEffect(() => {
+    fetchProducts(); 
+  }, [currentPage]);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
   };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+  };
+
+  // const handleStockChange = (id, newValue) => {
+  //   const parsedValue = Number(newValue);
+
+  //   if (!isNaN(parsedValue) && parsedValue >= 0) {
+  //     setProductStock((prevStock) => ({
+  //       ...prevStock,
+  //       [id]: parsedValue,
+  //     }));
+  //   }
+  // };
+
+  function handleStatusChange(id, newStatus) {
+    setProductStatus(prev => ({
+      ...prev,
+      [id]: newStatus
+    }));
+  }
 
 
   const handleIncrease = (id) => {
@@ -118,18 +132,6 @@ const ProductTable = ({ products }: ProductTableProps) => {
   }
 
 
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  };
-
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
-
 
   return (
     <Card className="mt-4 overflow-hidden">
@@ -147,7 +149,7 @@ const ProductTable = ({ products }: ProductTableProps) => {
           </TableHeader>
 
           <TableBody>
-            {currentItems.map((items, index) => (
+            {products.map((items, index) => (
               <TableRow key={items._id || `row-${index}`}>
                 <TableCell className="p-3 px-5">
                   <img
@@ -156,48 +158,51 @@ const ProductTable = ({ products }: ProductTableProps) => {
                     className="w-[55px] h-[55px] object-contain rounded-md"
                   />
                 </TableCell>
-                <TableCell className="text-normal font-medium">{cutText(items.name, maxLength())}</TableCell>
+                <TableCell className="text-normal font-semibold">{cutText(items.name, maxLength())}</TableCell>
                 <TableCell>
-                  {items.status}
-                  <Select
-                    value={productStatus[items.id] || items.status}
-                    onValueChange={(val) => handleStatusChange(items.id, val)}
-                  >
-                    <SelectTrigger
-                      className={`mx-5 !h-[25px] px-3 border-0 rounded-xl ${(productStatus[items.id] || items.status) === "unavailable"
-                        ? "!bg-[#627c87]"
-                        : "!bg-green-600"
-                        }`}
-                    >
-                      <div className="text-white text-sm">
-                        {productStatus[items.id] || items.status}
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value="available">available</SelectItem>
-                        <SelectItem value="unavailable">unavailable</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  {(() => {
+                    const currentStatus = productStatus[items.id] || items.status;
+                    const isUnavailable = currentStatus === "unavailable";
+
+                    return (
+                      <Select
+                        value={currentStatus}
+                        onValueChange={(val) => handleStatusChange(items.id, val)}
+                      >
+                        <SelectTrigger
+                          className={`!h-[25px] border-0 -mx-2 rounded-xl
+            ${isUnavailable ? "!bg-[#627c87]" : "!bg-green-400"}
+            !text-white`}
+                        >
+                          <span className="text-white text-sm">{currentStatus}</span>
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="available">available</SelectItem>
+                            <SelectItem value="unavailable">unavailable</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    );
+                  })()}
                 </TableCell>
-                <TableCell className="text-md text-normal font-medium">
-                  ฿{items.price}
+                <TableCell className="text-md text-normal font-semibold">
+                  ฿ {items.price?.toLocaleString()}
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-center items-center gap-1">
-                    <div className="border w-[60px] h-[25px] flex items-center justify-center rounded-sm">
-                        {items.stock}
-                    </div>
-                    {/* <button onClick={() => handleDecrease(items.id)}>
+                    <button onClick={() => handleDecrease(items.id)}>
                       <CircleMinus className="w-4.5 cursor-pointer text-mini" />
                     </button>
-                    <div className="border w-[60px] h-[25px] flex items-center justify-center rounded-sm">
-               
+                    <div className="border px-4 py-0.5 flex items-center justify-center rounded-sm">
+                      <p>
+                        {items.stock}
+                      </p>
                     </div>
                     <button onClick={() => handleIncrease(items.id)}>
                       <CirclePlus className="w-4.5 cursor-pointer text-mini" />
-                    </button> */}
+                    </button>
                   </div>
                 </TableCell>
                 <TableCell className="text-center">
@@ -236,8 +241,8 @@ const ProductTable = ({ products }: ProductTableProps) => {
 
           <Button
             variant="ghost"
-            onClick={nextPage}
-            disabled={currentPage === totalPages}
+          onClick={nextPage}
+          disabled={currentPage === totalPages}
           >
             <ChevronRight className="!w-10 !h-5" />
           </Button>

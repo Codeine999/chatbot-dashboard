@@ -208,76 +208,6 @@ export const orderList = [
     status: "Cancel",
     time: "12:16"
   },
-  {
-    orderID: "KmakO-07",
-    name: "Codeine7",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Paid",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-08",
-    name: "Codeine8",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Paid",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-09",
-    name: "Codei14",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Cancel",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-10",
-    name: "Codeine1",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Paid",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-11",
-    name: "Codeine1",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Paid",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-12",
-    name: "Codeine12",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Cancel",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-13",
-    name: "Codeine13",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Pending",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-14",
-    name: "Codeine14",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Pending",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-15",
-    name: "Codeine15",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Pending",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-16",
-    name: "Codeine16",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Paid",
-    time: "12:16"
-  },
   
 ]
 
@@ -303,22 +233,4 @@ export const orderdetail = [
     quantity: "2",
     price: "12000"
   },
-  { 
-    img: Rick6, 
-    name: "Rick OWENS RAMONS DRKSHDW",
-    quantity: "2",
-    price: "800"
-  },
-  { 
-    img: Rick6, 
-    name: "Rick OWENS RAMONS DRKSHDW",
-    quantity: "2",
-    price: "800"
-  },
-  { 
-    img: Rick6, 
-    name: "Rick OWENS RAMONS DRKSHDW",
-    quantity: "2",
-    price: "800"
-  }
 ];

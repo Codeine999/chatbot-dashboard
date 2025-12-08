@@ -33,12 +33,12 @@ const User = () => {
   return (
     <div className="mt-10 2xl:px-28 max-w-8xl mx-auto mb-12">
       <div className="flex justify-between items-center">
-        <div className="px-4">
-          <div className="flex gap-4 items-center">
+        <div className="px-">
+          {/* <div className="flex items-center">
             <Button variant="ghost">All</Button>
             <span className="text-normal text-sm">|</span>
             <Button variant="ghost">Admin</Button>
-          </div>
+          </div> */}
         </div>
         <div>
           <ButtonAdd onClick={''} title="Add User +" />
@@ -91,29 +91,12 @@ const User = () => {
                 Excel
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <img
-                  src="/icon/excel.png"
-                  className="w-5 h-5"
-                />
-                Excel
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <img
-                  src="/icon/excel.png"
-                  className="w-5 h-5"
-                />
-                Excel
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-              </DropdownMenuItem>
 
             </DropdownMenuGroup>
           </DropdownMenuContent>
 
         </DropdownMenu>
-
-
+        
       </div>
 
       <UserTable />

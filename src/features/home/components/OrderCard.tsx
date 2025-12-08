@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { getOrder } from "@/features/home/services/getOrder";
 import { Link } from 'react-router-dom';
-
+import Profile from '@/assets/profile2.jpg'
 
 
 const OrderCard = () => {
@@ -36,17 +36,17 @@ const OrderCard = () => {
 
 
 const Order = () => {
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState<any[]>([]);
 
     useEffect(() => {
         async function fetchOrders() {
-            const orders = await getOrder();
-            setOrders(orders);
-            console.log(orders)
+            const res = await getOrder();
+            console.log(res)
+            setOrders(res.data ?? []);
         }
         fetchOrders();
     }, []);
-
+    
     return (
         <Card className="p-6 overflow-auto h-[384px]">
 
@@ -56,7 +56,7 @@ const Order = () => {
                     <CardDescription>You made 265 sales this month.</CardDescription>
                 </div>
                 <Button variant="ghost">
-                    <Ellipsis className="!w-5 !h-5 text-normal"  />
+                    <Ellipsis className="!w-5 !h-5 text-normal" />
                 </Button>
             </div>
 
@@ -72,32 +72,40 @@ const Order = () => {
                 </TableHeader>
 
                 <TableBody>
-                    {orders.map((items) => (
-                        <TableRow key={items._id} className="text-xs">
-                            <TableCell className="w-[50px]">
-                                <div className="lg:w-10 lg:h-10 w-8 h-8 rounded-full bg-gray-500">
+                    {orders.length > 0 ? (
+                        orders.map(order => (
+                            <TableRow key={order._id} className="text-xs">
+                                <TableCell className="w-[50px]">
 
-                                </div>
+                                    <img src={Profile} className="lg:w-10 lg:h-10 w-8 h-8 rounded-full bg-gray-500" />
 
-                            </TableCell>
-                            <TableCell className="w-[60px]">
-                                {items.customer.username}
-                            </TableCell>
-                            <TableCell className="w-[60px]">
-                                {items.status}
-                            </TableCell>
-                            <TableCell className="w-[60px] text-green-600">
-                                {items.total}
-                            </TableCell>
-                            <TableCell className="w-[40px]">
-                                <Link to={`/order/confirm/${items._id}`}>
-                                    <Button variant="ghost" className="text-yellow-500 p-0">
-                                        <SquarePen className="!w-5 !h-5" />
-                                    </Button>
-                                </Link>
+                                </TableCell>
+                                <TableCell className="w-[60px]">
+                                    {order.userId?.username || "user_x"}
+                                </TableCell>
+                                <TableCell className="w-[60px]">
+                                    {order.status || "name"}
+                                </TableCell>
+                                <TableCell className="w-[60px] text-green-600">
+                                    {order.total || "name"}
+                                </TableCell>
+                                <TableCell className="w-[40px]">
+                                    <Link to={`/order/confirm/${order._id}`}>
+                                        <Button variant="ghost" className="text-yellow-500 p-0">
+                                            <SquarePen className="!w-5 !h-5" />
+                                        </Button>
+                                    </Link>
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={5} className="text-center py-4 text-gray-800 opacity-55">
+                                No Order now
                             </TableCell>
                         </TableRow>
-                    ))}
+                    )}
+
                 </TableBody>
             </Table>
 

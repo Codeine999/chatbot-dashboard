@@ -29,7 +29,7 @@ const OverviewCard = () => {
                         <div className="flex justify-between">
                             <div>
                                 <CardTitle>{item.title}</CardTitle>
-                                <p className="mt-1 text-xl font-medium">{item.total}</p>
+                                <p className="mt-1 text-xl font-medium">{item.total.toLocaleString()}</p>
                                 <CardDescription className="mt-1">
                                     <span className="text-green-600 mr-1">
                                         +20.1%

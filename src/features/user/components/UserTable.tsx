@@ -99,8 +99,8 @@ const UserTable = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
-                <TableCell className="w-[120px] text-center text-normal">
-                  VIP
+                <TableCell className="w-[120px] text-center text-yellow-500 font-semibold">
+                  null
                 </TableCell>
                 <TableCell className="w-[110px]">
                   <div className="flex justify-center items-center">

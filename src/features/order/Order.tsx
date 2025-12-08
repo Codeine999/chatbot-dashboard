@@ -43,12 +43,14 @@ import {
   SquareMousePointer,
 } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
+import { getOrder } from "../home/services/getOrder";
 
 const order = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [rawOrder, setRawOrder] = useState(orderList);
   const [currentPage, setCurrentPage] = useState(1);
   const [position, setPosition] = React.useState("All")
+  const [orders, setOrders] = useState<any[]>([]);
   const itemsPerPage = 10;
 
   const filteredOrder = position === "All"
@@ -67,6 +69,16 @@ const order = () => {
   useEffect(() => {
     setRawOrder(orderList);
   }, [orderList]);
+
+  
+  useEffect(() => {
+    async function fetchOrders() {
+      const res = await getOrder();
+      console.log(res)
+      setOrders(res.data ?? []);
+    }
+    fetchOrders();
+  }, []);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -112,8 +124,8 @@ const order = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost">
-                    <span className="flex items-center text-lg gap-1 text-color">
-                      <SquareMousePointer className="!w-5 !h-5" />
+                    <span className="flex items-center text-lg gap-1 text-gray-500">
+                      <SquareMousePointer className="!w-5 !h-5 " />
                       <ChevronDown className="!w-5 !h-5" />
                     </span>
                   </Button>
@@ -158,9 +170,6 @@ const order = () => {
             </div>
           </div>
 
-
-
-
         </div>
 
         {/* Divider */}
@@ -168,15 +177,15 @@ const order = () => {
 
         {/* Scrollable Order List */}
         <div className="flex-1 overflow-y-auto">
-          {currentItems.map((allOrder) => (
-            <Link key={allOrder.orderID} to={`/order/confirm/${allOrder.orderID}`}>
+          {orderList.map(item => (
+            <Link key={item.orderID} to={`/order/confirm/${item.orderID}`}>
               <div className="flex justify-center items-center gap-2 p-4 -my-[1.2px] hover:bg-[#f1f3f9]">
                 <div className="mr-auto flex md:gap-6 gap-2 items-center">
                   <div className="xl:w-[140px] lg:w-[140px] w-[130px]">
                     <div className="flex gap-6 items-center">
                       <Checkbox id="terms" />
                       <p className="text-md text-normal">
-                        {cutText(allOrder.name, maxLength())}
+                      {cutText(item.name ?? "", maxLength())}
                       </p>
                     </div>
                   </div>
@@ -184,22 +193,22 @@ const order = () => {
 
                 <div className="flex gap-5 whitespace-nowrap 2xl:w-[900px] mx-a xl:w-[700px] lg:w-[600px] w-[450px]">
                   <p className="text-sm text-normal">
-                    {cutText(allOrder.detail, maxLength())}
+                    {cutText(item.detail ?? "", maxLength())}
                   </p>
                   <Button
                     className={cn(
                       "px-3 h-[20px] rounded-3xl text-xs text-white",
-                      allOrder.status === "Paid" && "bg-gray-400",
-                      allOrder.status === "Pending" && "bg-[#6d88f3]",
-                      allOrder.status === "Cancel" && "bg-[#fe8080]"
+                      item.status === "Paid" && "bg-gray-300 text-gray-500 font-normal",
+                      item.status === "Pending" && "bg-blue-100 text-blue-500 font-normal",
+                      item.status === "Cancel" && "bg-red-100 text-red-600 font-normal"
                     )}
                   >
-                    {allOrder.status}
+                    {item.status}
                   </Button>
                 </div>
 
                 <div className="ml-auto">
-                  <p className="text-sm text-normal">{allOrder.time}</p>
+                  <p className="text-sm text-normal">{item.time}</p>
                 </div>
               </div>
               <div className="w-full border-b" />

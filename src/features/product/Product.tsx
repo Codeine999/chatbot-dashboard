@@ -41,8 +41,10 @@ import {
   Download,
   ChevronRight,
   ChevronLeft,
-  Search,
-  Plus
+  MessageSquareWarning,
+  Plus,
+  ShoppingBag,
+  Layers
 } from "lucide-react";
 
 import { ButtonAdd } from "@/components/Components";
@@ -55,10 +57,10 @@ import ProductTable from "./components/ProductTable";
 import SearchBar from "@/components/SearchBar";
 
 const icons = [
-  <ShoppingCart className="text-[30px] mt-1.5 text-[#603de1]" />,
-  <ShoppingCart className="text-[30px] mt-1.5 text-[#603de1]" />,
-  <ShoppingCart className="text-[30px] mt-1.5 text-[#603de1]" />,
-  <ShoppingCart className="text-[30px] mt-1.5 text-[#603de1]" />,
+  <ShoppingCart className="text-[30px] mt-1.5 text-[#603de1] opacity-80" />,
+  <Layers className="text-[30px] mt-1.5 text-blue-500 opacity-90" />,
+  <ShoppingBag className="text-[30px] mt-1.5 text-green-500 opacity-90" />,
+  <MessageSquareWarning className="text-[30px] mt-1.5 text-red-600 opacity-80" />
 ];
 
 
@@ -68,21 +70,13 @@ const Product = () => {
 
 
   useEffect(() => {
-    console.log("HTTP:", http);
     async function fetchProducts() {
       const product = await getProducts();
       setProducts(product);
-      console.log(product)
     }
 
     fetchProducts();
   }, []);
-
-  const totalStock = products.reduce((total, products) => {
-    const stockOfProduct = products.orderItems.reduce((sum, item) => sum + item.quantity, 0);
-    return total + stockOfProduct;
-  }, 0);
-
 
 
   const handleAddProduct = () => {
@@ -105,36 +99,81 @@ const Product = () => {
 
       {/* STOCK OVERVIEW */}
       <div className="mt-5 grid md:grid-cols-4 grid-cols-1 md:gap-4 gap-2">
-        {Stock.map((item, index) => (
-          <Card
-            key={index}
-            className="h-[125px]"
-          >
-            <div className="px-4 mt-3">
-              <div
-                className={`pt-0.5 w-[55px] h-[45px] rounded-md flex justify-center
-                  border`
-                }
-              >
-                {icons[index]}
-              </div>
-              <div className="mt-2 px-4">
-                <p className="text-[20px]">
-                  {totalStock}
-                </p>
-                <CardDescription className="-mx-2">
-                  {Object.keys(item)[0].replace(/([A-Z])/g, " $1").trim()}
-                </CardDescription>
+        <Card className="h-[125px]">
+          <div className="px-4 mt-3">
+            <div className="bg-purple-50 w-12 h-10 rounded-md">
+              <div className='flex justify-center pt-1'>
+                {icons[0]}
               </div>
             </div>
-          </Card>
-        ))}
+            <div className="mt-4 px-4">
+              <CardDescription className="-mx-2">
+                Total Product
+              </CardDescription>
+              <p className="text-[20px]">
+                {products.totalProducts}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="h-[125px]">
+          <div className="px-4 mt-3">
+            <div className="bg-blue-50 w-12 h-10 rounded-md">
+              <div className='flex justify-center pt-1'>
+                {icons[1]}
+              </div>
+            </div>
+            <div className="mt-4 px-4">
+              <CardDescription className="-mx-2">
+                Total Stock
+              </CardDescription>
+              <p className="text-[20px]">
+                {products.allStock}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="h-[125px]">
+          <div className="px-4 mt-3">
+            <div className="bg-green-50 w-12 h-10 rounded-md">
+              <div className='flex justify-center pt-1'>
+                {icons[2]}
+              </div>
+            </div>
+            <div className="mt-4 px-4">
+              <CardDescription className="-mx-2">
+               Avilable Product
+              </CardDescription>
+              <p className="text-[20px]">
+                {products.allStock}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="h-[125px]">
+          <div className="px-4 mt-3">
+            <div className="bg-red-50 w-12 h-10 rounded-md">
+              <div className='flex justify-center pt-1'>
+                {icons[3]}
+              </div>
+            </div>
+            <div className="mt-4 px-4">
+              <CardDescription className="-mx-2">
+                Unavilable Product
+              </CardDescription>
+              <p className="text-[20px]">
+                0
+              </p>
+            </div>
+          </div>
+        </Card>
       </div>
 
       <div className="mt-10 grid md:grid-cols-2 grid-cols-[70%_30%] md:gap-10">
         <SearchBar />
-
-
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -149,10 +188,10 @@ const Product = () => {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <img
-                  src="/icon/excel.png"
+                  src="/icon/pdf.png"
                   className="w-5 h-5"
                 />
-                Excel
+                PDF
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem>
@@ -160,15 +199,7 @@ const Product = () => {
                   src="/icon/excel.png"
                   className="w-5 h-5"
                 />
-                Excel
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <img
-                  src="/icon/excel.png"
-                  className="w-5 h-5"
-                />
-                Excel
+                EXCE
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -177,7 +208,7 @@ const Product = () => {
       </div>
 
       {/* PRODUCT TABLE */}
-      <ProductTable products={products} />
+      <ProductTable />
 
     </div>
   );
