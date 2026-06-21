@@ -24,6 +24,13 @@ const toArray = <T,>(payload: ListResponse<T>): T[] => {
   return [];
 };
 
+type GetConversationMessagesParams = {
+  conversationId: string;
+  before?: string;
+  after?: string;
+  limit?: number;
+};
+
 export const lineChatApi = {
   getConversations: async (): Promise<LineConversation[]> => {
     const res = await api.get<ListResponse<LineConversation>>("/line/conversations");
@@ -33,20 +40,18 @@ export const lineChatApi = {
   getConversationMessages: async ({
     conversationId,
     before,
+    after,
     limit = 30,
-  }: {
-    conversationId: string;
-    before?: string;
-    limit?: number;
-  }): Promise<LineChatHistory[]> => {
+  }: GetConversationMessagesParams): Promise<LineChatHistory[]> => {
+    const params = new URLSearchParams();
+
+    if (before) params.set("before", before);
+    if (after) params.set("after", after);
+    if (limit) params.set("limit", String(limit));
+
+    const query = params.toString();
     const res = await api.get<ListResponse<LineChatHistory>>(
-      `/line/conversations/${conversationId}/messages`,
-      {
-        params: {
-          before,
-          limit,
-        },
-      }
+      `/line/conversations/${conversationId}/messages${query ? `?${query}` : ""}`
     );
 
     return toArray(res.data);
@@ -60,7 +65,7 @@ export const lineChatApi = {
     text: string;
   }): Promise<LineChatHistory> => {
     const res = await api.post<LineChatHistory>(
-      `/conversations/${conversationId}/messages`,
+      `/line/conversations/${conversationId}/messages`,
       { text }
     );
 
