@@ -1,11 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,18 +11,38 @@ import { Button } from "@/components/ui/button";
 import { ButtonAdd } from "@/components/Components";
 
 import {
-  MessageSquareText,
-  SquarePen,
   Search,
   Download,
-  Trash2,
-  ChevronDown
-}
-  from "lucide-react";
+} from "lucide-react";
 
 import UserTable from "./components/UserTable";
+import { useUsers } from "./hooks/useUsers";
 
 const User = () => {
+  const [search, setSearch] = useState("");
+  const { data: users = [], isLoading, isError } = useUsers();
+
+  const keyword = search.trim().toLowerCase();
+  const filteredUsers = keyword
+    ? users.filter((user) =>
+        [
+          user.username,
+          user.firstName,
+          user.firstname,
+          user.first_name,
+          user.lastName,
+          user.lastname,
+          user.email,
+          user.phone,
+          user.bankname,
+          user.banknumber,
+          user.uuid,
+        ]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(keyword))
+      )
+    : users;
+
   return (
     <div className="mt-10 2xl:px-28 max-w-8xl mx-auto mb-12">
       <div className="flex justify-between items-center">
@@ -41,7 +54,7 @@ const User = () => {
           </div> */}
         </div>
         <div>
-          <ButtonAdd onClick={''} title="Add User +" />
+          <ButtonAdd onClick={() => {}} title="Add User +" />
         </div>
       </div>
 
@@ -56,8 +69,9 @@ const User = () => {
               <input
                 type="text"
                 placeholder="Search..."
+                value={search}
                 className="bg-transparent outline-none w-full"
-              // onChange={handleSearchChange}
+                onChange={(event) => setSearch(event.target.value)}
               />
               <div
                 className="ml-auto w-[32px] h-[22px]  border
@@ -99,7 +113,11 @@ const User = () => {
         
       </div>
 
-      <UserTable />
+      {isError && (
+        <p className="mt-3 text-sm text-red-500">Failed to load users</p>
+      )}
+
+      <UserTable users={filteredUsers} isLoading={isLoading} />
 
     </div>
   );

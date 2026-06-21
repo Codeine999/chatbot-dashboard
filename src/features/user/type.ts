@@ -1,0 +1,26 @@
+export type UserItem = {
+  id?: string | number;
+  _id?: string | number;
+  uuid?: string;
+  username?: string;
+  firstName?: string;
+  firstname?: string;
+  first_name?: string;
+  lastName?: string;
+  lastname?: string;
+  last_name?: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  adress?: string;
+  bankname?: string;
+  banknumber?: string;
+  image?: string;
+  avatar?: string;
+  profileImage?: string;
+  role?: string;
+  status?: string | null;
+  statusaccount?: string | null;
+  statusAccount?: string | null;
+};

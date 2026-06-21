@@ -62,15 +62,30 @@ const items = [
     url: "/users",
     icon: UsersRound,
   },
+    {
+    title: "Line Chat",
+    url: "/chat/line",
+    icon: MessagesSquare,
+  },
+  {
+    title: "Answer",
+    url: "/ai-answer",
+    icon: Search,
+  },
   {
     title: "Overview",
     url: "../",
-    icon: Search,
+    icon: Search, 
   },
   {
     title: "Ai Chatbot",
     url: "/ai-chat",
     icon: MessagesSquare,
+  },
+    {
+    title: "Usage",
+    url: "/usage",
+    icon: Search,
   },
 
 ];
@@ -112,7 +127,7 @@ const sidebar = () => {
                   {!isCollapsed && (
                     <div className="flex items-center gap-6">
                       <div className="flex flex-col">
-                        <CardTitle className="text-sm">Sasom.com</CardTitle>
+                        <CardTitle className="text-sm">Dashboard</CardTitle>
                         <CardDescription className="text-[10px]">Admin Managent</CardDescription>
                       </div>
 

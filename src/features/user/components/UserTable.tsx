@@ -6,51 +6,56 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
-import { ButtonAdd } from "@/components/Components";
 
 import {
   MessageSquareText,
   SquarePen,
-  Search,
-  Download,
   Trash2,
-  ChevronDown
-}
-  from "lucide-react";
+} from "lucide-react";
 
-import { users } from "@/data/users.data";
 import { Card } from "@/components/ui/card";
+import type { UserItem } from "../type";
 
-const UserTable = () => {
+type UserTableProps = {
+  users: UserItem[];
+  isLoading?: boolean;
+};
+
+const getUserId = (user: UserItem, index: number) => user.uuid ?? user.id ?? user._id ?? index;
+const getFirstName = (user: UserItem) => user.firstName ?? user.firstname ?? user.first_name ?? user.name ?? "-";
+const getLastName = (user: UserItem) => user.lastName ?? user.lastname ?? user.last_name ?? "-";
+const getImage = (user: UserItem) => user.image ?? user.avatar ?? user.profileImage;
+const getInitial = (user: UserItem) => (user.username ?? getFirstName(user)).charAt(0).toUpperCase() || "?";
+const getStatus = (user: UserItem) => user.statusaccount ?? user.statusAccount ?? user.status ?? "-";
+
+const UserTable = ({ users, isLoading = false }: UserTableProps) => {
   return (
     <Card className="mt-3 overflow-hidden">
 
-      <Table className="min-w-[900px] table-fixed">
+      <Table className="min-w-[1100px] table-fixed">
         <TableHeader className="h-[55px]">
           <TableRow>
-            <TableHead className="w-[100px] px-6 text-mini font-medium">
+            <TableHead className="w-[90px] px-6 text-mini font-medium">
               Picture
             </TableHead>
-            <TableHead className="w-[150px] px-4 text-mini font-medium">
+            <TableHead className="w-[140px] px-4 text-mini font-medium">
               Username
             </TableHead>
-            <TableHead className="w-[150px] px-6 text-mini font-medium">
+            <TableHead className="w-[140px] px-6 text-mini font-medium">
               First Name
             </TableHead>
-            <TableHead className="w-[180px] px-[6px] text-mini font-medium">
-              Email
+            <TableHead className="w-[140px] px-[6px] text-mini font-medium">
+              Last Name
             </TableHead>
-            <TableHead className="w-[120px] text-center text-mini font-medium">
-              Role
+            <TableHead className="w-[130px] text-center text-mini font-medium">
+              Phone
+            </TableHead>
+            <TableHead className="w-[150px] text-center text-mini font-medium">
+              Bank
+            </TableHead>
+            <TableHead className="w-[150px] text-center text-mini font-medium">
+              Bank No.
             </TableHead>
             <TableHead className="w-[120px] text-center text-mini font-medium">
               Status
@@ -65,42 +70,57 @@ const UserTable = () => {
       <div className="lg:h-[600px] h-[550px] overflow-auto">
         <Table className="table-fixed">
           <TableBody>
-            {users.map((items, index) => (
-              <TableRow key={index}>
-                <TableCell className="w-[100px] px-6 py-2.5">
-                  <img
-                    src={items.image}
-                    alt="img"
-                    className="w-[34px] h-[34px] object-cover rounded-full"
-                  />
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={9} className="h-24 text-center text-sm text-mini">
+                  Loading users...
                 </TableCell>
-                <TableCell className="w-[150px] text-sm px-4 font-normal text-normal">
-                  {items.username}
+              </TableRow>
+            )}
+
+            {!isLoading && users.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={9} className="h-24 text-center text-sm text-mini">
+                  No users found
                 </TableCell>
-                <TableCell className="w-[150px] text-sm px-6 font-normal text-normal">
-                  {items.firstName}
+              </TableRow>
+            )}
+
+            {!isLoading && users.map((items, index) => (
+              <TableRow key={getUserId(items, index)}>
+                <TableCell className="w-[90px] px-6 py-2.5">
+                  {getImage(items) ? (
+                    <img
+                      src={getImage(items)}
+                      alt={items.username ?? "user"}
+                      className="w-[34px] h-[34px] object-cover rounded-full"
+                    />
+                  ) : (
+                    <div className="w-[34px] h-[34px] rounded-full bg-muted flex items-center justify-center text-xs font-medium text-mini">
+                      {getInitial(items)}
+                    </div>
+                  )}
                 </TableCell>
-                <TableCell className="w-[180px] text-sm text-left font-normal text-normal">
-                  {items.email}
+                <TableCell className="w-[140px] text-sm px-4 font-normal text-normal">
+                  {items.username ?? "-"}
+                </TableCell>
+                <TableCell className="w-[140px] text-sm px-6 font-normal text-normal">
+                  {getFirstName(items)}
+                </TableCell>
+                <TableCell className="w-[140px] text-sm text-left font-normal text-normal">
+                  {getLastName(items)}
                 </TableCell>
                 <TableCell className="w-[130px] text-center font-normal text-normal">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <div className="flex item-center gap-1 cursor-pointer">
-                        User
-
-                        <ChevronDown className="mt-1 w-4 h-4" />
-                      </div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>User</DropdownMenuItem>
-                      <DropdownMenuItem>Moderator</DropdownMenuItem>
-                      <DropdownMenuItem>Admin</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {items.phone ?? "-"}
                 </TableCell>
-                <TableCell className="w-[120px] text-center text-yellow-500 font-semibold">
-                  null
+                <TableCell className="w-[150px] text-center font-normal text-normal">
+                  {items.bankname ?? "-"}
+                </TableCell>
+                <TableCell className="w-[150px] text-center font-normal text-normal">
+                  {items.banknumber ?? "-"}
+                </TableCell>
+                <TableCell className="w-[120px] text-center text-yellow-500 font-semibold capitalize">
+                  {getStatus(items)}
                 </TableCell>
                 <TableCell className="w-[110px]">
                   <div className="flex justify-center items-center">
@@ -128,4 +148,4 @@ const UserTable = () => {
   )
 }
 
-export default UserTable
+export default UserTable;

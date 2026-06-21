@@ -10,6 +10,11 @@ import ResetPassword from "@/features/auth/ResetPassword";
 import OrderConfirm from '@/features/order/OrderConfirm';
 import User from "@/features/user/User";
 import Chatbot from "./features/chatbot/Chatbot";
+import { AiAnswer } from "./features/aiAnswer/AiAnswer";
+import { Usage } from "./features/usage/Usage";
+import { ChartLine } from "lucide-react";
+import { LineChat } from "./features/LineChat/LineChat";
+
 
 function App() {
 
@@ -27,7 +32,13 @@ function App() {
 
         <Route path="/users" element={<User />} />
 
+        <Route path="/chat/line" element={<LineChat />} />
+
+        <Route path="/ai-answer" element={<AiAnswer />} />
+
          <Route path="/ai-chat" element={<Chatbot />} />
+
+         <Route path="/usage" element={<Usage />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />

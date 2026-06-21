@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar"
+import { AdminToolChat } from "@/components/AdminToolChat";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Outlet } from "react-router-dom";
 
@@ -13,6 +14,7 @@ const mainLayout = () => {
           <div className="xl:px-10 md:px-6 px-4">
             <Outlet /> 
           </div>
+          <AdminToolChat />
         </main>
       </SidebarProvider>
     </div>
