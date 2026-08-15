@@ -15,21 +15,31 @@ import { motion } from "framer-motion";
 
 import { Mail, LockKeyhole } from "lucide-react";
 import Spinner from "@/assets/spin.svg";
+import { useLogin } from "./hooks/useAuth";
+import type { LoginPayload } from "./types/auth.type";
+
+const loginSchema = z.object({
+  username: z.string().min(1, "Username is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+// tsconfig ยังไม่เปิด strictNullChecks -> z.infer จะมองทุก field เป็น optional
+// จึงปล่อยให้ react-hook-form infer type จาก schema แล้ว map เป็น LoginPayload ตอน submit
+type LoginForm = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [isForgotPassword, setForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
 
+  const { mutate: login, isPending, errorMessage } = useLogin();
+
   const handleForgotPassword = () => {
     setForgotPassword(true);
   };
 
-  const handleBackToLogin = () => {
-    setForgotPassword(false);
-  };
-
   const form = useForm({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
       password: "",
@@ -42,27 +52,13 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (data: any) => {
-    if (!data.username) {
-      form.setError("username", { message: "Username is required" });
-    }
+  const onSubmit = (data: LoginForm) => {
+    const payload: LoginPayload = {
+      username: data.username,
+      password: data.password,
+    };
 
-    if (!data.password) {
-      form.setError("password", { message: "Password is required" });
-    }
-
-    if (!data.username && !data.password) {
-      form.setError("username", {
-        message: "Username and password are required",
-      });
-      form.setError("password", {
-        message: "Username and password are required",
-      });
-    }
-
-    if (data.username && data.password) {
-      console.log("click", data.username, data.password);
-    }
+    login(payload);
   };
 
   const ResetPassword = async (data: any) => {
@@ -192,7 +188,8 @@ const Login = () => {
                                     <Mail className="text-gray-400 w-5" />
                                   </div>
                                   <Input
-                                    type="username"
+                                    type="text"
+                                    autoComplete="username"
                                     placeholder="Username"
                                     {...field}
                                     className="bg-gray-100 w-[280px] h-[45px] border-0 shadow-sm focus-visible:ring-ring/0 
@@ -217,6 +214,7 @@ const Login = () => {
                                   </div>
                                   <Input
                                     type="password"
+                                    autoComplete="current-password"
                                     placeholder="Password"
                                     {...field}
                                     className="bg-gray-100 w-[280px] h-[45px] border-0 shadow-sm focus-visible:ring-ring/0 
@@ -238,11 +236,26 @@ const Login = () => {
                           </p>
                         </div>
 
+                        {errorMessage && (
+                          <p className="-mt-4 text-[12px] text-red-600 px-2">
+                            {errorMessage}
+                          </p>
+                        )}
+
                         <Button
                           type="submit"
+                          disabled={isPending}
                           className="mt-25 w-[280px] h-[45px] rounded-2xl"
                         >
-                          Continue
+                          {isPending ? (
+                            <img
+                              src={Spinner}
+                              alt="Loading..."
+                              className="w-6 h-6"
+                            />
+                          ) : (
+                            "Continue"
+                          )}
                         </Button>
                       </form>
                     </Form>

@@ -13,7 +13,9 @@ import { Input } from "@/components/ui/input"
 import { LogOut, Moon, Sun, Settings, User, Bell, MailWarning } from "lucide-react";
 import { useTheme } from "@/components/context/themeProvider";
 import { SidebarTrigger } from "./ui/sidebar";
-import Profile from "@/assets/profile.jpeg";
+import { useAuthUser } from "@/features/auth/store/auth.store";
+import { useLogout } from "@/features/auth/hooks/useAuth";
+import { resolveImageUrl } from "@/lib/url";
 
 const notifications = [
   { id: 1, user: 'Service', action: 'You got some new order now', time: '5 mins ago', image: 'https://randomuser.me/api/portraits/women/1.jpg' },
@@ -23,8 +25,15 @@ const notifications = [
   { id: 5, user: 'Anna Lee', action: 'You got some new order now', time: '1 day ago', image: 'https://randomuser.me/api/portraits/men/4.jpg' },
 ];
 
+const getInitials = (firstname = "", lastname = "", username = "") => {
+  const initials = `${firstname.charAt(0)}${lastname.charAt(0)}`.trim();
+  return (initials || username.slice(0, 2)).toUpperCase();
+};
+
 const navbar = () => {
   const { theme, setTheme } = useTheme();
+  const user = useAuthUser();
+  const logout = useLogout();
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -100,12 +109,17 @@ const navbar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Avatar className="w-9 h-9">
-                  <AvatarImage src={Profile} />
-                  <AvatarFallback>CN</AvatarFallback>
+                  <AvatarImage
+                    src={resolveImageUrl(user?.image)}
+                    alt={user?.username ?? ""}
+                  />
+                  <AvatarFallback>
+                    {getInitials(user?.firstname, user?.lastname, user?.username)}
+                  </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="rounded-2xl mx-4 p-2">
-                <DropdownMenuLabel >My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{user?.username ?? ""}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <User className="!w-5 !h-5 mr-2" />
@@ -115,7 +129,7 @@ const navbar = () => {
                   <Settings className="!w-5 !h-5 mr-2" />
                   Setting
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>
                   <LogOut className="!w-5 !h-5 mr-2" />
                   Logout
                 </DropdownMenuItem>

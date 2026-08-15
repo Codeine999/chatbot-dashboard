@@ -10,8 +10,12 @@ import Chatbot from "./home/Chat";
 
 import OverviewCard from "./home/components/OverviewCard";
 import MoneyCard from "./home/components/MoneyCard";
-import Order from "./home/components/OrderCard";
-import ViewCard from "./home/components/ViewCard";
+import AccountOverviewCard from "./home/components/AccountOverviewCard";
+import RecentActivityCard from "./home/components/RecentActivityCard";
+
+// เก็บไว้ก่อน ยังไม่ลบ เผื่อกลับมาใช้
+// import Order from "./home/components/OrderCard";
+// import ViewCard from "./home/components/ViewCard";
 
 const home = () => {
 
@@ -35,16 +39,18 @@ const home = () => {
           <OverviewCard />
         </div>
 
-        {/* Chart and Recent order */}
-        <div className="grid md:grid-cols-[60%_39%] gap-4">
+        {/* Account overview and Chart — 40 / 60 */}
+        <div className="grid md:grid-cols-[2fr_3fr] gap-4">
+          <AccountOverviewCard />
           <MoneyCard />
-          <Order />
+          {/* <Order /> */}
         </div>
 
-        {/* Chatbot and View */}
-        <div className="grid md:grid-cols-[49%_50%] gap-4">
+        {/* Chatbot and Recent activity */}
+        <div className="grid md:grid-cols-2 gap-4">
           <Chatbot />
-          <ViewCard />
+          <RecentActivityCard />
+          {/* <ViewCard /> */}
         </div>
 
       </div>
