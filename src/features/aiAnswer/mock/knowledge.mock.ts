@@ -1,6 +1,6 @@
 import type { KnowledgeItem } from "../type/knowledge.type";
 
-export const knowledgeMock: KnowledgeItem[] = [
+const rawKnowledge: Omit<KnowledgeItem, "updatedAt">[] = [
   {
     id: "kb-001",
     title: "สมัครสมาชิก",
@@ -146,3 +146,15 @@ export const knowledgeMock: KnowledgeItem[] = [
     active: false,
   },
 ];
+
+const MINUTE = 60 * 1000;
+
+/** ระยะเวลาที่แก้ไขล่าสุดของแต่ละ entry (นาทีก่อนหน้าตอนนี้) */
+const updatedMinutesAgo = [2, 15, 32, 60, 120, 180, 190, 240, 300, 360, 1440, 2880];
+
+export const knowledgeMock: KnowledgeItem[] = rawKnowledge.map((item, index) => ({
+  ...item,
+  updatedAt: new Date(
+    Date.now() - (updatedMinutesAgo[index] ?? (index + 1) * 30) * MINUTE
+  ).toISOString(),
+}));

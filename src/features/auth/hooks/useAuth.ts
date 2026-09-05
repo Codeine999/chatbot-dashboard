@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getApiErrorMessage } from "@/api/api";
 import { authApi } from "../services/auth.service";
 import { useAuthStore } from "../store/auth.store";
-import type { LoginPayload } from "../types/auth.type";
+import type { FromLocationState, LoginPayload } from "../types/auth.type";
 
 export const authKeys = {
   all: ["auth"] as const,
@@ -12,6 +12,7 @@ export const authKeys = {
 
 export function useLogin() {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const setAuth = useAuthStore((state) => state.setAuth);
 
@@ -22,7 +23,9 @@ export function useLogin() {
       setAuth(data);
       // ล้าง cache ของ user เดิม กันข้อมูลข้ามบัญชี
       queryClient.clear();
-      navigate("/", { replace: true });
+      // กลับไปหน้าที่ ProtectedRoute กันไว้ก่อนหน้านี้ ถ้าไม่มีก็ไปหน้าแรก
+      const from = (location.state as FromLocationState | null)?.from;
+      navigate(from ?? "/", { replace: true });
     },
   });
 

@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -12,9 +13,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import {
+  Bot,
+  ChevronLeft,
+  Eye,
+  EyeOff,
+  LockKeyhole,
+  Mail,
+  ShieldCheck,
+} from "lucide-react";
 
-import { Mail, LockKeyhole } from "lucide-react";
 import Spinner from "@/assets/spin.svg";
+import { Background } from "@/components/BackGround";
 import { useLogin } from "./hooks/useAuth";
 import type { LoginPayload } from "./types/auth.type";
 
@@ -27,41 +37,31 @@ const loginSchema = z.object({
 // จึงปล่อยให้ react-hook-form infer type จาก schema แล้ว map เป็น LoginPayload ตอน submit
 type LoginForm = z.infer<typeof loginSchema>;
 
+const fieldClassName =
+  "h-13 rounded-2xl border-white/80 bg-white/70 pl-11 pr-4 text-[15px] text-slate-800 shadow-[0_8px_22px_rgba(88,70,148,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] placeholder:text-slate-400 focus-visible:border-violet-300 focus-visible:bg-white/90 focus-visible:ring-4 focus-visible:ring-violet-400/15 dark:!bg-white/70";
+
 const Login = () => {
   const [isForgotPassword, setForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isSent, setIsSent] = useState(false);
 
   const { mutate: login, isPending, errorMessage } = useLogin();
 
-  const handleForgotPassword = () => {
-    setForgotPassword(true);
-  };
-
   const form = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-    },
+    defaultValues: { username: "", password: "" },
   });
 
-  const formReset = useForm({
-    defaultValues: {
-      email: "",
-    },
-  });
+  const formReset = useForm({ defaultValues: { email: "" } });
 
   const onSubmit = (data: LoginForm) => {
-    const payload: LoginPayload = {
-      username: data.username,
-      password: data.password,
-    };
-
+    const payload: LoginPayload = { username: data.username, password: data.password };
     login(payload);
   };
 
-  const ResetPassword = async (data: any) => {
+  const resetPassword = async (data: { email?: string }) => {
     if (!data.email) {
       formReset.setError("email", { message: "Email is required" });
       return;
@@ -70,203 +70,139 @@ const Login = () => {
     setLoading(true);
     setIsSent(false);
 
-    if (data.email) {
-      console.log(data.email);
-    }
+    // Keep the existing reset-password placeholder flow until its API is connected.
     try {
       await new Promise((resolve) => setTimeout(resolve, 200));
-
-      setTimeout(() => {
-        setIsSent(true);
-      }, 3200)
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 3000);
+      setTimeout(() => setLoading(false), 3000);
+      setTimeout(() => setIsSent(true), 3200);
     } catch (error) {
       console.error("Failed to send email:", error);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="bg-[#e1e2e0] w-full h-screen">
-      <div className="flex justify-center items-center h-screen">
-        <div className="bg-white w-[340px] h-[600px] rounded-4xl">
-          <div className="flex justify-center mt-25">
-            <motion.div
-              key={isForgotPassword ? "forgot" : "login"}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 5 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              {isForgotPassword ? (
-                <div className="text-center">
-                  <h1 className="text-[20px] font-bold">Reset Password</h1>
-                  <p className="mt-2 text-gray-400 text-[14px] w-[280px]">
-                    Please enter your email we will send email to reset your
-                    password
-                  </p>
-                  <div className="mt-15">
-                    <Form {...formReset}>
-                      <form
-                        onSubmit={formReset.handleSubmit(ResetPassword)}
-                        className="space-y-8 relative"
-                      >
-                        <FormField
-                          control={formReset.control}
-                          name="email"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <div className="relative">
-                                  <div className="absolute px-3 py-2.5">
-                                    <Mail className="text-gray-400 w-5" />
-                                  </div>
-                                  <Input
-                                    type="email"
-                                    placeholder="Email"
-                                    {...field}
-                                    className="bg-gray-100 w-[280px] h-[45px] border-0 shadow-sm focus-visible:ring-ring/0 
-                                    pl-11 placeholder:text-[14px] text-[14px] text-gray-800
-                                  "
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage className="absolute bottom-30  text-xs px-2" />
-                              <div className="mt-2 text-start px-2">
-                                <p className="text-black text-[12px]">
-                                  Don't forgot to check the e-mail in trash
-                                </p>
-                              </div>
-                              <div className="mt-10 flex justify-center relative">
-                                {loading && (
-                                    <img
-                                      src={Spinner}
-                                      alt="Loading..."
-                                      className="w-20 h-20 mt-0 absolute"
-                                    />
-                                )}
-                              {isSent && (
-                                <p className="absolute text-green-700 text-[14px]">
-                                  We already send link to your email
-                                </p>
-                              )}
-                              </div>
-                                
-                           
-                            </FormItem>
-                          )}
-                        />
-                        <Button className="mt-22 w-[280px] h-[45px] rounded-2xl">
-                          Send
-                        </Button>
-                      </form>
-                    </Form>
-                  </div>
+    <main className="relative isolate flex min-h-svh items-center justify-center overflow-hidden bg-[#fcf8f7] px-4 py-8 text-slate-900 sm:px-6">
+      <Background />
+
+      <section className="relative w-full max-w-[36rem] overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/65
+       px-6 py-8 shadow-[0_28px_70px_rgba(90,90,135,0.16),inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-[0px] sm:px-25 sm:py-13">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/95" />
+
+        <motion.div
+          key={isForgotPassword ? "forgot" : "login"}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, ease: "easeOut" }}
+          className="mx-auto w-full max-w-[35rem] pt-14"
+        >
+          {isForgotPassword ? (
+            <div>
+              <button type="button" onClick={() => setForgotPassword(false)} className="mb-7 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-violet-700">
+                <ChevronLeft className="size-4" /> Back to sign in
+              </button>
+              <div className="text-center">
+                <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-white/80 bg-white/70 px-4 py-2 text-sm font-semibold text-violet-700 shadow-sm">
+                  <Mail className="size-4" /> Reset access
                 </div>
-              ) : (
-                <div className="text-center">
-                  <h1 className="text-[20px] font-bold">Sing Up</h1>
-                  <p className="mt-2 text-gray-400 text-[14px]">
-                    Please enter your email and password
-                  </p>
-                  <div className="mt-15">
-                    <Form {...form}>
-                      <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className="space-y-8 relative"
-                      >
-                        <FormField
-                          control={form.control}
-                          name="username"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <div className="relative">
-                                  <div className="absolute px-3 py-2.5">
-                                    <Mail className="text-gray-400 w-5" />
-                                  </div>
-                                  <Input
-                                    type="text"
-                                    autoComplete="username"
-                                    placeholder="Username"
-                                    {...field}
-                                    className="bg-gray-100 w-[280px] h-[45px] border-0 shadow-sm focus-visible:ring-ring/0 
-                                                  pl-11 placeholder:text-[14px] text-[14px] text-gray-800
-                                              "
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage className="absolute bottom-30  text-xs px-2" />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="password"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <div className="relative -mt-4">
-                                  <div className="absolute px-3 py-2.5">
-                                    <LockKeyhole className="text-gray-400 w-5 " />
-                                  </div>
-                                  <Input
-                                    type="password"
-                                    autoComplete="current-password"
-                                    placeholder="Password"
-                                    {...field}
-                                    className="bg-gray-100 w-[280px] h-[45px] border-0 shadow-sm focus-visible:ring-ring/0 
-                                                  pl-11 placeholder:text-[14px]
-                                              "
-                                  />
-                                </div>
-                              </FormControl>
-                              <FormMessage className="absolute bottom-30  text-xs px-2" />
-                            </FormItem>
-                          )}
-                        />
-                        <div
-                          className="-mt-5 flex justify-end px-2"
-                          onClick={handleForgotPassword}
-                        >
-                          <p className="text-[12px] text-gray-500 hover:text-blue-800 cursor-pointer">
-                            forgot password
-                          </p>
+                <h1 className="mt-6 text-3xl font-bold tracking-[-0.04em] text-slate-900 sm:text-4xl">Reset password</h1>
+                <p className="mx-auto mt-3 max-w-sm text-[15px] leading-6 text-slate-500">Enter your email and we&apos;ll send a link to reset your password.</p>
+              </div>
+
+              <Form {...formReset}>
+                <form onSubmit={formReset.handleSubmit(resetPassword)} className="mx-auto mt-10 max-w-[31rem] space-y-5">
+                  <FormField control={formReset.control} name="email" render={({ field }) => (
+                    <FormItem>
+                      <label className="mb-2 block text-sm font-semibold text-slate-700">Email</label>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+                          <Input type="email" autoComplete="email" placeholder="you@company.com" {...field} className={fieldClassName} />
                         </div>
-
-                        {errorMessage && (
-                          <p className="-mt-4 text-[12px] text-red-600 px-2">
-                            {errorMessage}
-                          </p>
-                        )}
-
-                        <Button
-                          type="submit"
-                          disabled={isPending}
-                          className="mt-25 w-[280px] h-[45px] rounded-2xl"
-                        >
-                          {isPending ? (
-                            <img
-                              src={Spinner}
-                              alt="Loading..."
-                              className="w-6 h-6"
-                            />
-                          ) : (
-                            "Continue"
-                          )}
-                        </Button>
-                      </form>
-                    </Form>
+                      </FormControl>
+                      <FormMessage className="px-1 text-xs" />
+                    </FormItem>
+                  )} />
+                  {isSent && <p className="rounded-xl bg-emerald-50 px-4 py-3 text-center text-sm text-emerald-700">We sent a reset link to your email.</p>}
+                  <Button type="submit" disabled={loading} className="h-13 w-full rounded-2xl bg-gradient-to-r from-violet-700 via-violet-600 to-fuchsia-500 text-[15px] font-semibold text-white shadow-[0_12px_24px_rgba(116,66,235,0.32),inset_0_1px_1px_rgba(255,255,255,0.45)] transition hover:brightness-105">
+                    {loading ? <img src={Spinner} alt="Loading" className="size-5" /> : "Send reset link"}
+                  </Button>
+                  <p className="text-center text-xs text-slate-400">Don&apos;t forget to check your spam folder.</p>
+                </form>
+              </Form>
+            </div>
+          ) : (
+            <div>
+              <div className="text-center mb-14">
+                <div className="-mt-12 flex justify-center">
+                  <div className="flex items-center gap-3 rounded-full border border-white/90 bg-white/75 py-1 pl-3 pr-5 text-[22px] font-bold tracking-[-0.04em] text-violet-600 shadow-[0_7px_22px_rgba(123,92,229,0.18),inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-md">
+                    <span className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 via-violet-600 to-fuchsia-500 text-white shadow-[0_4px_12px_rgba(132,83,235,0.38)]">
+                      <Bot className="size-5" strokeWidth={2} />
+                    </span>
+                      <p className="text-[17px]">KeeLa AI</p>
                   </div>
                 </div>
-              )}
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    </div>
+                <h1 className="mt-6 text-3xl font-bold tracking-[-0.045em] text-slate-900 sm:text-4xl">Welcome back</h1>
+                <p className="mt-3 text-[15px] text-slate-500">Sign in to manage your workspace</p>
+              </div>
+
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto mt-10 max-w-[31rem] space-y-5">
+                  <FormField control={form.control} name="username" render={({ field }) => (
+                    <FormItem>
+                      <label className="mb-2 block text-sm font-semibold text-slate-700">Username</label>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+                          <Input type="text" autoComplete="username" placeholder="Enter your username" {...field} className={fieldClassName} />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="px-1 text-xs" />
+                    </FormItem>
+                  )} />
+                  <FormField control={form.control} name="password" render={({ field }) => (
+                    <FormItem>
+                      <label className="mb-2 block text-sm font-semibold text-slate-700">Password</label>
+                      <FormControl>
+                        <div className="relative">
+                          <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+                          <Input type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder="Enter your password" {...field} className={`${fieldClassName} pr-12`} />
+                          <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-violet-50 hover:text-violet-700" aria-label={showPassword ? "Hide password" : "Show password"}>
+                            {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage className="px-1 text-xs" />
+                    </FormItem>
+                  )} />
+
+                  <div className="flex items-center justify-between gap-4 pt-0.5">
+                    <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-slate-600">
+                      <Checkbox checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked === true)} className="size-5 rounded-md border-slate-300 bg-white/75 data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 dark:!bg-white/75 dark:data-[state=checked]:!bg-violet-600" />
+                      Remember me
+                    </label>
+                    <button type="button" onClick={() => setForgotPassword(true)} className="text-sm font-semibold text-violet-600 transition hover:text-violet-800">Forgot password?</button>
+                  </div>
+
+                  {errorMessage && <p className="rounded-xl bg-red-50 px-4 py-3 text-center text-sm text-red-600">{errorMessage}</p>}
+
+                  <Button 
+                    type="submit" 
+                    disabled={isPending} 
+                    className="h-13 w-full mt-12">
+                    {isPending ? <img src={Spinner} alt="Loading" className="size-5" /> : "Sign in"}
+                  </Button>
+                </form>
+              </Form>
+            </div>
+          )}
+        </motion.div>
+
+        {/* <div className="mx-auto mt-8 flex max-w-[31rem] items-center justify-center gap-2 border-t border-slate-200/70 pt-6 text-sm text-slate-400">
+          <ShieldCheck className="size-4" /> Secure admin access
+        </div> */}
+      </section>
+    </main>
   );
 };
 

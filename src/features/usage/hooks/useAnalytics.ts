@@ -1,0 +1,21 @@
+import { useQuery } from "@tanstack/react-query";
+import { analyticsApi } from "../services/analytics.service";
+import type { AnalyticsMetric, Granularity } from "../type/analytics.type";
+
+/** ช่วงที่ละเอียดกว่าขยับบ่อยกว่า จึงรีเฟรชถี่กว่า */
+const REFETCH_MS: Record<Granularity, number> = {
+  hour: 60_000,
+  day: 5 * 60_000,
+  month: 15 * 60_000,
+  year: 30 * 60_000,
+};
+
+export function useAnalytics(metric: AnalyticsMetric, granularity: Granularity) {
+  return useQuery({
+    queryKey: ["analytics", metric, granularity],
+    queryFn: () => analyticsApi.getSeries(metric, granularity),
+    staleTime: REFETCH_MS[granularity],
+    refetchInterval: REFETCH_MS[granularity],
+    placeholderData: (previous) => previous,
+  });
+}

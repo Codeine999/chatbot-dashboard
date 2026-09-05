@@ -1,10 +1,10 @@
 import {
   Bot,
   CheckCircle2,
-  MessageCircle,
+  Send,
+  ShieldCheck,
   Sparkles,
-  Users,
-  WalletCards,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Avatar,
@@ -17,61 +17,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useLineOaCredits } from "./hooks/useLineOaCredits";
-import type { CreditUsageItem } from "./services/usage.service";
+import { getApiErrorMessage } from "@/api/api";
+import { useAdminUsage } from "./hooks/useAdminUsage";
+import { useLinePushMessageUsage } from "./hooks/useLinePushMessageUsage";
+import { useUsageAccounts } from "./hooks/useUsageAccounts";
+import type { UsageAccountItem } from "./services/usage.service";
 
-type UsageAccount = {
-  id: string;
-  name: string;
-  status: "active" | "trial" | "inactive";
-  chatCreditUsed: number;
-  chatCreditLimit: number;
-  aiCreditUsed: number;
-  aiCreditLimit: number;
-};
-
-const baseUsageAccounts: UsageAccount[] = [
-  {
-    id: "line-oa",
-    name: "Line OA Account",
-    status: "active",
-    chatCreditUsed: 225,
-    chatCreditLimit: 3000,
-    aiCreditUsed: 332,
-    aiCreditLimit: 1000,
-  },
-  {
-    id: "my-account",
-    name: "My Account",
-    status: "trial",
-    chatCreditUsed: 0,
-    chatCreditLimit: 3000,
-    aiCreditUsed: 0,
-    aiCreditLimit: 1000,
-  },
-];
-
-const formatNumber = (value: number) => value.toLocaleString();
+const formatNumber = (value: number) =>
+  value.toLocaleString(undefined, { maximumFractionDigits: 2 });
 
 const getPercent = (used: number, limit: number) =>
-  limit > 0 ? Math.min(Math.round((used / limit) * 100), 100) : 0;
+  limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
 
-const statusStyle: Record<UsageAccount["status"], string> = {
-  active: "bg-green-50 text-green-700 ring-green-200",
-  trial: "bg-amber-50 text-amber-700 ring-amber-200",
-  inactive: "bg-slate-100 text-slate-500 ring-slate-200",
+/** keep small usages visible instead of rounding them down to 0% */
+const formatPercent = (percent: number) =>
+  percent > 0 && percent < 1 ? percent.toFixed(2) : Math.round(percent).toString();
+
+const statusStyle: Record<UsageAccountItem["status"], string> = {
+  active:
+    "bg-green-50 text-green-700 ring-green-200 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20",
+  trial:
+    "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20",
+  inactive: "bg-muted text-mini ring-border",
 };
 
-const statusLabel: Record<UsageAccount["status"], string> = {
+const statusLabel: Record<UsageAccountItem["status"], string> = {
   active: "Active",
   trial: "Trial",
   inactive: "Inactive",
 };
 
-const findCreditByType = (credits: CreditUsageItem[], type: string) =>
-  credits.find((item) => item.type.toUpperCase().startsWith(type));
-
-function StatusBadge({ status }: { status: UsageAccount["status"] }) {
+function StatusBadge({ status }: { status: UsageAccountItem["status"] }) {
   return (
     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[status]}`}>
       {statusLabel[status]}
@@ -87,11 +63,79 @@ function ProgressBar({
   color: string;
 }) {
   return (
-    <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+    <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
       <div
         className={`h-full rounded-full transition-all duration-500 ${color}`}
         style={{ width: `${value}%` }}
       />
+    </div>
+  );
+}
+
+function UsageOverviewRow({
+  title,
+  description,
+  used,
+  limit,
+  icon: Icon,
+  iconClassName,
+  progressClassName,
+}: {
+  title: string;
+  description: string;
+  used: number;
+  limit: number;
+  icon: LucideIcon;
+  iconClassName: string;
+  progressClassName: string;
+}) {
+  const percent = getPercent(used, limit);
+  const remaining = Math.max(limit - used, 0);
+
+  return (
+    <div className="group px-5 py-6 sm:px-7 sm:py-7">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex items-center gap-3.5">
+          <div
+            className={`flex size-12 shrink-0 items-center justify-center rounded-2xl ring-1 ring-inset transition-transform duration-300 group-hover:scale-105 ${iconClassName}`}
+          >
+            <Icon className="size-5" strokeWidth={2.2} />
+          </div>
+          <div>
+            <p className="text-base font-semibold tracking-tight text-normal">{title}</p>
+            <p className="mt-1 text-sm text-mini">{description}</p>
+          </div>
+        </div>
+
+        <div className="pl-[3.75rem] sm:pl-0 sm:text-right">
+          <p className="text-3xl font-semibold tracking-[-0.04em] text-normal">
+            {formatNumber(remaining)}
+          </p>
+          <p className="mt-1 text-xs font-medium text-mini">
+            remaining of {formatNumber(limit)}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <div className="h-2.5 overflow-hidden rounded-full bg-muted/80 ring-1 ring-inset ring-black/[0.03] dark:ring-white/[0.04]">
+          <div
+            className={`h-full rounded-full bg-gradient-to-r shadow-[0_0_16px_rgba(124,58,237,0.28)] transition-[width] duration-700 ease-out ${progressClassName}`}
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <p className="font-semibold text-normal">
+            {formatNumber(used)} used <span className="mx-1 text-mini">·</span>{" "}
+            {formatPercent(percent)}%
+          </p>
+          <p className="flex items-center gap-1.5 font-medium text-mini">
+            <CheckCircle2 className="size-3.5 text-emerald-500" />
+            Within monthly allowance
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -113,13 +157,13 @@ function CreditUsageRow({
     <div className="space-y-2.5">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-slate-700">{label}</p>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="text-sm font-medium text-normal">{label}</p>
+          <p className="mt-0.5 text-xs text-mini">
             {formatNumber(used)} / {formatNumber(limit)} credits
           </p>
         </div>
-        <span className="rounded-full bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
-          {percent}%
+        <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-normal">
+          {formatPercent(percent)}%
         </span>
       </div>
       <ProgressBar value={percent} color={color} />
@@ -127,27 +171,28 @@ function CreditUsageRow({
   );
 }
 
-function AccountUsageCard({ account }: { account: UsageAccount }) {
-  const initials = account.name
+function AccountUsageCard({ account }: { account: UsageAccountItem }) {
+  const initials = account.username
     .split(" ")
     .map((word) => word[0])
     .join("")
-    .slice(0, 2);
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <Card className="group border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <Card className="group transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <CardHeader className="px-5 pt-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Avatar className="size-12 border border-slate-200 bg-gradient-to-br from-green-50 to-blue-50">
-              <AvatarFallback className="bg-transparent text-sm font-semibold text-slate-700">
+            <Avatar className="size-12 border bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-500/10 dark:to-blue-500/10">
+              <AvatarFallback className="bg-transparent text-sm font-semibold text-normal">
                 {initials}
               </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle className="text-base text-slate-900">{account.name}</CardTitle>
+              <CardTitle className="text-base text-normal">{account.username}</CardTitle>
               <CardDescription className="mt-1 whitespace-normal text-xs">
-                LINE OA usage and AI response credits
+                {account.role}
               </CardDescription>
             </div>
           </div>
@@ -155,23 +200,25 @@ function AccountUsageCard({ account }: { account: UsageAccount }) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-5 px-5 pb-5">
-        <CreditUsageRow
-          label="Chat credit usage"
-          used={account.chatCreditUsed}
-          limit={account.chatCreditLimit}
-          color="bg-blue-500"
-        />
+      <CardContent className="space-y-5 px-5 pb-5 pt-2.5">
         <CreditUsageRow
           label="AI credit usage"
-          used={account.aiCreditUsed}
-          limit={account.aiCreditLimit}
+          used={account.aiUsed}
+          limit={account.aiLimit ?? 0}
           color="bg-orange-500"
         />
+        {account.chatUsed !== null && (
+          <CreditUsageRow
+            label="Chat credit usage"
+            used={account.chatUsed}
+            limit={account.chatLimit ?? 0}
+            color="bg-blue-500"
+          />
+        )}
 
-        <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5 text-xs text-slate-500">
+        <div className="flex items-center justify-between rounded-xl border bg-muted px-3 py-2.5 text-xs text-mini">
           <span>Account health</span>
-          <span className="flex items-center gap-1.5 font-semibold text-green-600">
+          <span className="flex items-center gap-1.5 font-semibold text-green-600 dark:text-green-400">
             <CheckCircle2 className="h-3.5 w-3.5" />
             Operational
           </span>
@@ -182,97 +229,109 @@ function AccountUsageCard({ account }: { account: UsageAccount }) {
 }
 
 export const Usage = () => {
-  const { data: lineOaCredits = [], isLoading, isError } = useLineOaCredits();
-  const lineMessageCredit = findCreditByType(lineOaCredits, "LINE_MESSAG");
+  const {
+    data: adminUsage,
+    isLoading: isAdminUsageLoading,
+    isError: isAdminUsageError,
+  } = useAdminUsage();
+  const {
+    data: usageAccounts = [],
+    isLoading: isAccountsLoading,
+    isError: isAccountsError,
+    error: accountsError,
+  } = useUsageAccounts();
+  const {
+    data: linePushUsage,
+    isLoading: isLinePushLoading,
+    isError: isLinePushError,
+  } = useLinePushMessageUsage();
 
-  const usageAccounts = baseUsageAccounts.map((account) => {
-    if (account.id !== "line-oa" || !lineMessageCredit) return account;
-
-    return {
-      ...account,
-      chatCreditUsed: lineMessageCredit.usedTotal,
-      chatCreditLimit: lineMessageCredit.balance,
-    };
-  });
-
-  const totalChatUsed = lineMessageCredit?.usedTotal ?? usageAccounts[0].chatCreditUsed;
-  const totalAiUsed = usageAccounts.reduce((total, item) => total + item.aiCreditUsed, 0);
-  const totalAiLimit = usageAccounts.reduce((total, item) => total + item.aiCreditLimit, 0);
+  const totalChatUsed = linePushUsage?.used ?? 0;
+  const totalChatLimit = linePushUsage?.limit ?? 0;
+  const aiChatUsed = adminUsage?.company.used ?? 0;
+  const aiChatLimit = adminUsage?.company.balance ?? 0;
+  const adminUsed = adminUsage?.admin.used ?? 0;
+  // admin wallet has no balance of its own, fall back to the company balance when uncapped
+  const adminLimit = adminUsage?.admin.limit ?? adminUsage?.company.balance ?? 0;
   const activeAccounts = usageAccounts.filter((item) => item.status === "active").length;
-  const remainingAiCredits = totalAiLimit - totalAiUsed;
-
-  const summaryCards = [
-    {
-      title: "Total Chat Credits Used",
-      value: isLoading ? "Loading..." : formatNumber(totalChatUsed),
-      helper: lineMessageCredit
-        ? `LINE_MESSAGE balance ${formatNumber(lineMessageCredit.balance)}`
-        : "Across all connected accounts",
-      icon: MessageCircle,
-      accent: "bg-blue-50 text-blue-600",
-    },
-    {
-      title: "Total AI Credits Used",
-      value: formatNumber(totalAiUsed),
-      helper: "AI responses generated",
-      icon: Bot,
-      accent: "bg-orange-50 text-orange-600",
-    },
-    {
-      title: "Active Accounts",
-      value: String(activeAccounts),
-      helper: `${usageAccounts.length} accounts configured`,
-      icon: Users,
-      accent: "bg-green-50 text-green-600",
-    },
-    {
-      title: "Remaining AI Credits",
-      value: formatNumber(remainingAiCredits),
-      helper: `From ${formatNumber(totalAiLimit)} total credits`,
-      icon: WalletCards,
-      accent: "bg-slate-100 text-slate-600",
-    },
-  ];
 
   return (
-    <div className="mt-10 2xl:px-28 max-w-8xl mx-auto mb-12">
+    <div className="mt-10 mb-12">
       <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-950">Usage</h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold text-normal">Usage</h1>
+          <p className="mt-2 text-sm text-mini">
             Monitor your LINE OA account, chat credit, and AI credit usage.
           </p>
         </div>
-        <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 shadow-sm">
+        <div className="flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium text-mini shadow-sm">
           <Sparkles className="h-4 w-4 text-orange-500" />
-          {isLoading ? "Syncing credits..." : isError ? "Using fallback data" : "Updated just now"}
+          {isAdminUsageLoading || isLinePushLoading
+            ? "Syncing credits..."
+            : isAdminUsageError || isLinePushError
+              ? "Using fallback data"
+              : "Updated just now"}
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {summaryCards.map((item) => (
-          <Card key={item.title} className="border-slate-200 bg-white shadow-sm">
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-medium text-slate-500">{item.title}</p>
-                  <p className="mt-3 text-2xl font-semibold text-slate-950">{item.value}</p>
-                  <p className="mt-1 text-xs text-slate-500">{item.helper}</p>
-                </div>
-                <div className={`rounded-xl p-2.5 ${item.accent}`}>
-                  <item.icon className="h-5 w-5" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card className="mt-6">
+        <div className="flex flex-col gap-3 border-b border-white/50 px-5 py-5 dark:border-border sm:flex-row sm:items-center sm:justify-between sm:px-7">
+          <div>
+            <p className="text-base font-semibold tracking-tight text-normal">Token overview</p>
+            <p className="mt-1 text-xs text-mini">Monthly token usage across your connected workspace</p>
+          </div>
+          <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-200/70 bg-emerald-50/70 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+            <span className="size-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.12)]" />
+            {activeAccounts} active · {usageAccounts.length} connected
+          </div>
+        </div>
 
-      <div className="mt-6 grid gap-5 xl:grid-cols-2">
-        {usageAccounts.map((account) => (
-          <AccountUsageCard key={account.id} account={account} />
-        ))}
-      </div>
+        <div className="grid divide-y divide-white/50 dark:divide-border xl:grid-cols-3 xl:divide-x xl:divide-y-0">
+          <UsageOverviewRow
+            title="AI Chat Token"
+            description="AI conversations and generated replies"
+            used={aiChatUsed}
+            limit={aiChatLimit}
+            icon={Bot}
+            iconClassName="bg-indigo-50/80 text-indigo-600 ring-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:ring-indigo-500/20"
+            progressClassName="from-indigo-600 via-violet-500 to-fuchsia-500"
+          />
+          <UsageOverviewRow
+            title="LINE Send Token"
+            description="Messages sent to customers on LINE"
+            used={totalChatUsed}
+            limit={totalChatLimit}
+            icon={Send}
+            iconClassName="bg-emerald-50/80 text-emerald-600 ring-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20"
+            progressClassName="from-emerald-500 via-teal-400 to-cyan-400"
+          />
+          <UsageOverviewRow
+            title="Admin Token"
+            description="Credits used by admin tools"
+            used={adminUsed}
+            limit={adminLimit}
+            icon={ShieldCheck}
+            iconClassName="bg-orange-50/80 text-orange-600 ring-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/20"
+            progressClassName="from-orange-500 via-amber-400 to-yellow-400"
+          />
+        </div>
+      </Card>
+
+      {isAccountsLoading ? (
+        <Card className="mt-6 px-5 py-8 text-sm text-mini">Loading accounts...</Card>
+      ) : isAccountsError ? (
+        <Card className="mt-6 px-5 py-8 text-sm text-mini">
+          Could not load accounts: {getApiErrorMessage(accountsError)}
+        </Card>
+      ) : usageAccounts.length === 0 ? (
+        <Card className="mt-6 px-5 py-8 text-sm text-mini">No accounts to show.</Card>
+      ) : (
+        <div className="mt-6 grid gap-5 xl:grid-cols-2">
+          {usageAccounts.map((account) => (
+            <AccountUsageCard key={account.id} account={account} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

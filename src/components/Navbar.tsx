@@ -8,32 +8,43 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input"
 
-import { LogOut, Moon, Sun, Settings, User, Bell, MailWarning } from "lucide-react";
+import { LogOut, Moon, Sun, Settings, User, Bell } from "lucide-react";
 import { useTheme } from "@/components/context/themeProvider";
 import { SidebarTrigger } from "./ui/sidebar";
 import { useAuthUser } from "@/features/auth/store/auth.store";
 import { useLogout } from "@/features/auth/hooks/useAuth";
 import { resolveImageUrl } from "@/lib/url";
-
-const notifications = [
-  { id: 1, user: 'Service', action: 'You got some new order now', time: '5 mins ago', image: 'https://randomuser.me/api/portraits/women/1.jpg' },
-  { id: 2, user: 'Service', action: 'You got some new order now', time: '21 mins ago', image: 'https://randomuser.me/api/portraits/men/2.jpg' },
-  { id: 3, user: 'Dave Wood', action: 'You got some new order now ', time: '2hrs ago', image: 'https://randomuser.me/api/portraits/men/3.jpg' },
-  { id: 4, user: 'Kate Young', action: 'Liked your photo: Daily UI Challenge 049', time: '3hrs ago', image: 'https://randomuser.me/api/portraits/women/1.jpg' },
-  { id: 5, user: 'Anna Lee', action: 'You got some new order now', time: '1 day ago', image: 'https://randomuser.me/api/portraits/men/4.jpg' },
-];
+import { useSidebarLocked } from "@/lib/sidebarLock";
+import { formatRelativeTime } from "@/lib/time";
+import { useNavigate } from "react-router-dom";
+import {
+  useMarkNotificationAsRead,
+  useNotificationSocket,
+  useNotifications,
+  useUnreadNotificationCount,
+} from "@/features/notifications/hooks/useNotifications";
+import type { AdminNotification } from "@/features/notifications/types/notification.type";
 
 const getInitials = (firstname = "", lastname = "", username = "") => {
   const initials = `${firstname.charAt(0)}${lastname.charAt(0)}`.trim();
   return (initials || username.slice(0, 2)).toUpperCase();
 };
 
-const navbar = () => {
+const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const user = useAuthUser();
   const logout = useLogout();
+  const navigate = useNavigate();
+  const sidebarLocked = useSidebarLocked();
+
+  useNotificationSocket();
+  const notificationsQuery = useNotifications();
+  const unreadCountQuery = useUnreadNotificationCount();
+  const markAsRead = useMarkNotificationAsRead();
+
+  const notifications = notificationsQuery.data ?? [];
+  const unreadCount = unreadCountQuery.data ?? 0;
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -43,11 +54,20 @@ const navbar = () => {
     document.body.classList.add(newTheme);
   };
 
+  const handleNotificationClick = (notification: AdminNotification) => {
+    if (!notification.isRead) markAsRead.mutate(notification.id);
+    const conversationId = notification.metadata?.conversationId;
+    if (conversationId) {
+      navigate(`/chat/line?conversationId=${conversationId}`);
+    }
+  };
+
   return (
     <nav className="p-2 pt-3 flex items-center justify-between">
 
       <div className="flex gap-2">
-        <SidebarTrigger />
+        {/* หน้าที่ล็อก sidebar ไว้ (เช่น chatbot) ซ่อนปุ่มขยายไปเลย */}
+        {!sidebarLocked && <SidebarTrigger />}
       </div>
 
       <div className="flex items-center">
@@ -55,16 +75,18 @@ const navbar = () => {
           <DropdownMenu>
 
             <DropdownMenuTrigger asChild>
-              <Button variant="nav">
-                <div className="flex gap-1">
-                  <Bell className="w-10 h-5" />
-                  <p className="text-xs">+0</p>
-                </div>
+              <Button variant="nav" className="relative">
+                <Bell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-4 text-white">
+                    {unreadCount}
+                  </span>
+                )}
               </Button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent
-              className="w-74 h-[320px] bg-background rounded-lg shadow-lg flex 
+              className="w-74 h-[320px] bg-background rounded-lg shadow-lg flex
                 flex-col overflow-hidden"
             >
 
@@ -73,33 +95,53 @@ const navbar = () => {
               </div>
 
               <div className="overflow-y-auto px-1">
-                {notifications.map((notification) => (
-                  <div key={notification.id} className="flex items-center space-x-3 py-1">
-                    <DropdownMenuItem className="w-full">
-                      <div
-                        // src={notification.image}
-                        // alt={notification.user}
-                        className="-mt-2 w-8 h-8 bg-gray-300 rounded-full"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-md text-mini font-medium">{notification.user}</span>
-                        <span className="text-xs text-normal">{notification.action}</span>
-                        <span className="text-xs text-gray-400">{notification.time}</span>
-                      </div>
+                {notifications.length === 0 && (
+                  <p className="px-3 py-4 text-xs text-mini">No notifications yet</p>
+                )}
 
-                    </DropdownMenuItem>
-                  </div>
-                ))}
+                {notifications.map((notification) => {
+                  const meta = notification.metadata;
+                  const title = meta?.displayName ?? notification.title;
+                  const preview = meta?.lastMessage ?? notification.message ?? "";
+
+                  return (
+                    <div key={notification.id} className="flex items-center space-x-3 py-1">
+                      <DropdownMenuItem
+                        className={`w-full cursor-pointer ${
+                          notification.isRead ? "opacity-50" : "bg-accent/60"
+                        }`}
+                        onClick={() => handleNotificationClick(notification)}
+                      >
+                        {meta?.pictureUrl ? (
+                          <img
+                            src={meta.pictureUrl}
+                            alt={title}
+                            className="-mt-2 w-8 h-8 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="-mt-2 w-8 h-8 bg-gray-300 rounded-full" />
+                        )}
+                        <div className="flex flex-col">
+                          <span className="text-md text-mini font-medium">{title}</span>
+                          <span className="text-xs text-normal">{preview}</span>
+                          <span className="text-xs text-gray-400">
+                            {formatRelativeTime(notification.createdAt)}
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                    </div>
+                  );
+                })}
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
 
           <Button variant="nav" size="icon" onClick={toggleTheme}>
-            <Sun className={`!w-10 !h-5 transition-all duration-300 
+            <Sun className={`!w-10 !h-5 transition-all duration-300
               ${theme === "dark" ? "rotate-0 scale-0" : "rotate-0 scale-100"}`}
             />
             <Moon
-              className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300 
+              className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300
                 ${theme === "light" ? "rotate-90 scale-0" : "rotate-0 scale-100"}`}
             />
             <span className="sr-only">Toggle theme</span>
@@ -143,4 +185,4 @@ const navbar = () => {
   );
 };
 
-export default navbar;
+export default Navbar;

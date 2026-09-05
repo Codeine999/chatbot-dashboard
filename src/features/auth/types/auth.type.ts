@@ -37,3 +37,8 @@ export type AuthUser = {
   /** "" เมื่อไม่มีรูป เพื่อให้ component ใช้ได้เลยโดยไม่ต้องเช็ค null */
   image: string;
 };
+
+/** state ที่แนบไปกับ /login เพื่อให้ login เสร็จแล้วเด้งกลับหน้าที่ผู้ใช้ตั้งใจจะเข้า */
+export type FromLocationState = {
+  from?: string;
+};

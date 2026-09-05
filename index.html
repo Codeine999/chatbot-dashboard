@@ -3,8 +3,36 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <link href="/src/styles.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- โหลดฟอนต์ขนานกับ CSS ของแอป ถ้าใช้ @import ใน index.css เบราว์เซอร์จะต้อง
+         โหลด css เสร็จก่อนถึงจะเห็นว่าต้องโหลดฟอนต์ต่อ ทำให้ตัวหนังสือสลับฟอนต์ทีหลัง = เลย์เอาต์ขยับ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- ขอทั้งสองฟอนต์ใน request เดียว (Inter = ละติน, Noto Sans Thai = ไทย) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+Thai:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ใส่ theme class ก่อน React render กันพื้นหลังกระพริบจากสีอ่อนไปสีเข้มตอน refresh
+         (ThemeProvider ใส่ class ใน useEffect ซึ่งทำงานหลังวาดหน้าจอรอบแรกไปแล้ว) -->
+    <script>
+      (function () {
+        try {
+          var theme = localStorage.getItem("vite-ui-theme") || "light";
+          if (theme === "system") {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+          }
+          document.documentElement.classList.add(theme);
+        } catch (error) {
+          document.documentElement.classList.add("light");
+        }
+      })();
+    </script>
+
     <title>Dashboard</title>
   </head>
   <body>

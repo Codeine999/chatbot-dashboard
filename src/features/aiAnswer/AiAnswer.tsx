@@ -1,168 +1,370 @@
-import { useState } from "react";
-import { Search, SquarePen } from "lucide-react";
+import { useMemo, useState } from "react";
+import {
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Search,
+  Upload,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { knowledgeMock } from "./mock/knowledge.mock";
-import type { KnowledgeItem } from "./type/knowledge.type";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import KnowledgeStatsCards from "./components/KnowledgeStats";
+import KnowledgeTable from "./components/KnowledgeTable";
+import KnowledgeEditPanel from "./components/KnowledgeEditPanel";
+import {
+  useDeleteKnowledge,
+  useKnowledgeCategories,
+  useKnowledgeList,
+  useKnowledgeStats,
+  useSaveKnowledge,
+} from "./hooks/useKnowledge";
+import type { KnowledgeDraft, KnowledgeItem } from "./type/knowledge.type";
 
-const truncate = (text: string, maxLength = 90) =>
-  text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+const TABS = ["Knowledge Entries", "Retrieval Test", "Import / Sync", "Settings"];
 
-const wrapText = (text: string, maxLength = 30) =>
-  text.match(new RegExp(`.{1,${maxLength}}`, "g")) ?? [text];
-
-const matchesSearch = (item: KnowledgeItem, keyword: string) => {
-  if (!keyword) return true;
-
-  return [
-    item.title,
-    item.category,
-    item.intentKey,
-    ...item.keywords,
-  ].some((value) => value.toLowerCase().includes(keyword));
+const PRIORITY_RANGES: Record<string, [number, number]> = {
+  high: [90, 100],
+  medium: [70, 89],
+  low: [0, 69],
 };
 
 export const AiAnswer = () => {
+  const { data, isLoading, isError, refetch } = useKnowledgeList();
+  const {
+    data: categoryList,
+    isLoading: isCategoriesLoading,
+    isError: isCategoriesError,
+  } = useKnowledgeCategories();
+  const categoryOptions = categoryList?.data ?? [];
+  const stats = useKnowledgeStats();
+  const saveKnowledge = useSaveKnowledge();
+  const deleteKnowledge = useDeleteKnowledge();
+
+  const [tab, setTab] = useState(TABS[0]);
   const [search, setSearch] = useState("");
-  const keyword = search.trim().toLowerCase();
-  const knowledgeItems = knowledgeMock.filter((item) => matchesSearch(item, keyword));
+  const [category, setCategory] = useState("all");
+  const [status, setStatus] = useState("all");
+  const [priority, setPriority] = useState("all");
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [editing, setEditing] = useState<KnowledgeItem | undefined>();
+  const [panelOpen, setPanelOpen] = useState(false);
+
+  const items = useMemo(() => data ?? [], [data]);
+
+  const filtered = useMemo(() => {
+    const keyword = search.trim().toLowerCase();
+
+    return items.filter((item) => {
+      if (category !== "all" && item.category !== category) return false;
+      if (status === "active" && !item.active) return false;
+      if (status === "inactive" && item.active) return false;
+
+      if (priority !== "all") {
+        const [min, max] = PRIORITY_RANGES[priority];
+        if (item.priority < min || item.priority > max) return false;
+      }
+
+      if (!keyword) return true;
+
+      return [item.title, item.category, item.intentKey, ...item.keywords].some(
+        (value) => value.toLowerCase().includes(keyword)
+      );
+    });
+  }, [items, search, category, status, priority]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = filtered.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const openEditor = (item?: KnowledgeItem) => {
+    setEditing(item);
+    setPanelOpen(true);
+  };
+
+  const handlePublish = (draft: KnowledgeDraft) => {
+    saveKnowledge.mutate(
+      editing?.id
+        ? { id: editing.id, original: editing, draft }
+        : { draft },
+      { onSuccess: () => setPanelOpen(false) }
+    );
+  };
+
+  const toggleSelect = (id: string) =>
+    setSelectedIds((current) =>
+      current.includes(id)
+        ? current.filter((value) => value !== id)
+        : [...current, id]
+    );
+
+  const toggleSelectAll = () =>
+    setSelectedIds((current) =>
+      current.length === pageItems.length ? [] : pageItems.map((item) => item.id)
+    );
 
   return (
-    <div className="mt-10 2xl:px-8 max-w-8xl mx-auto mb-12">
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-normal">AI Answer Knowledge Base</h1>
-          <p className="mt-1 text-sm text-mini">
-            Manage chatbot FAQ and LINE OA intent responses.
-          </p>
+    <div className="mt-6 mb-12">
+      {/* Header */}
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-50 text-icons dark:bg-purple-500/10">
+            <BookOpen className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-xl font-semibold text-normal">AI Knowledge Base</h1>
+            <p className="text-sm text-mini">
+              Manage the knowledge your AI uses to answer customer questions.
+            </p>
+          </div>
         </div>
 
-        <div
-          className="w-full md:w-[360px] h-[40px] bg-background border rounded-lg
-          focus-within:ring-1 focus-within:ring-[#9369db] transition"
-        >
-          <div className="flex px-3 items-center h-full">
-            <Search className="mr-2 h-4 w-4 text-mini" />
-            <Input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search title, category, intent, keyword..."
-              className="h-full border-0 px-0 shadow-none focus-visible:ring-0"
-            />
-          </div>
+        <div className="flex flex-wrap items-center gap-2">
+
+          <Button variant="ghost" className="border gap-1.5" onClick={() => setTab(TABS[2])}>
+            <Upload className="h-4 w-4 text-icons" />
+            Bulk Import
+          </Button>
+
+          <Button className="gap-1.5" onClick={() => openEditor(undefined)}>
+            <Plus className="h-4 w-4" />
+            Add Knowledge
+          </Button>
         </div>
       </div>
 
-      <Card className="mt-5 overflow-hidden pb-8">
-        <div className="overflow-auto">
-          <Table className="min-w-[1350px] table-fixed">
-            <TableHeader className="h-[60px] border-b">
-              <TableRow>
-                <TableHead className="w-[170px] px-5 text-[#879da7] font-semibold">Title</TableHead>
-                <TableHead className="w-[190px] text-[#879da7] font-semibold">Description</TableHead>
-                <TableHead className="w-[110px] text-[#879da7] font-semibold">Category</TableHead>
-                <TableHead className="w-[180px] text-[#879da7] font-semibold">Intent Key</TableHead>
-                <TableHead className="w-[210px] text-[#879da7] font-semibold">Keywords</TableHead>
-                <TableHead className="w-[240px] text-[#879da7] font-semibold">Question Examples</TableHead>
-                <TableHead className="w-[260px] text-[#879da7] font-semibold">Answer</TableHead>
-                <TableHead className="w-[80px] text-center text-[#879da7] font-semibold">Priority</TableHead>
-                <TableHead className="w-[90px] text-center text-[#879da7] font-semibold">Active</TableHead>
-                <TableHead className="w-[90px] text-center text-[#879da7] font-semibold">Action</TableHead>
-              </TableRow>
-            </TableHeader>
+      {(() => {
+        const tabsBar = (
+          <div className="flex gap-6 border-b mt-4">
+            {TABS.map((name) => (
+              <button
+                key={name}
+                type="button"
+                onClick={() => setTab(name)}
+                className={`-mb-px border-b-2 pb-2 text-sm transition ${
+                  tab === name
+                    ? "border-icons font-medium text-icons"
+                    : "border-transparent text-mini hover:text-normal"
+                }`}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        );
 
-            <TableBody>
-              {knowledgeItems.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="px-5 font-semibold text-normal">
-                    {item.title}
-                  </TableCell>
-                  <TableCell className="text-sm text-normal">
-                    {wrapText(item.description, 30).map((line, index) => (
-                      <span key={`${item.id}-description-${index}`} className="block">
-                        {line}
+        if (tab !== TABS[0]) {
+          return (
+            <>
+              <div className="mt-5">
+                <KnowledgeStatsCards stats={stats} />
+              </div>
+              <div className="mt-6">{tabsBar}</div>
+              <Card className="mt-4 p-10 text-center">
+                <p className="text-sm text-normal">{tab}</p>
+                <p className="mt-1 text-xs text-mini">
+                  ยังไม่ได้ทำแท็บนี้ — ใช้ช่อง Retrieval Preview ในการ์ดขวาทดสอบได้ก่อน
+                </p>
+              </Card>
+            </>
+          );
+        }
+
+        return (
+          <div className="mt-5 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
+            <div className="flex min-w-0 flex-col gap-4">
+              <KnowledgeStatsCards stats={stats} />
+              {tabsBar}
+
+              <Card className="flex min-w-0 flex-col p-4">
+                {/* Filters */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative min-w-45 flex-1">
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-mini" />
+                    <Input
+                      value={search}
+                      onChange={(event) => {
+                        setSearch(event.target.value);
+                        setPage(1);
+                      }}
+                      placeholder="Search entries..."
+                      className="pl-9"
+                    />
+                  </div>
+
+                  <Select
+                    value={category}
+                    disabled={isCategoriesLoading}
+                    onValueChange={(value) => {
+                      setCategory(value);
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {categoryOptions.map((categoryOption) => (
+                        <SelectItem
+                          key={categoryOption.id}
+                          value={categoryOption.name}
+                        >
+                          {categoryOption.name}
+                        </SelectItem>
+                      ))}
+                      {isCategoriesError && (
+                        <SelectItem value="categories-error" disabled>
+                          โหลดหมวดหมู่ไม่สำเร็จ
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={status} onValueChange={setStatus}>
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="All Statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Statuses</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={priority} onValueChange={setPriority}>
+                    <SelectTrigger className="w-36">
+                      <SelectValue placeholder="Priority: All" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Priority: All</SelectItem>
+                      <SelectItem value="high">High (90-100)</SelectItem>
+                      <SelectItem value="medium">Medium (70-89)</SelectItem>
+                      <SelectItem value="low">Low (0-69)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="mt-3">
+                  <KnowledgeTable
+                    items={pageItems}
+                    compact={panelOpen}
+                    selectedIds={selectedIds}
+                    activeId={panelOpen ? editing?.id : undefined}
+                    isLoading={isLoading}
+                    isError={isError}
+                    onRetry={() => refetch()}
+                    onToggleSelect={toggleSelect}
+                    onToggleSelectAll={toggleSelectAll}
+                    onEdit={openEditor}
+                    onDelete={(id) => deleteKnowledge.mutate(id)}
+                  />
+                </div>
+
+                {/* Pagination */}
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t pt-3">
+                  <p className="text-xs text-mini">
+                    Showing {filtered.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1} to{" "}
+                    {Math.min(currentPage * rowsPerPage, filtered.length)} of {filtered.length}{" "}
+                    entries
+                  </p>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-mini">Rows per page</span>
+                      <Select
+                        value={String(rowsPerPage)}
+                        onValueChange={(value) => {
+                          setRowsPerPage(Number(value));
+                          setPage(1);
+                        }}
+                      >
+                        <SelectTrigger className="w-18">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[10, 20, 50].map((size) => (
+                            <SelectItem key={size} value={String(size)}>
+                              {size}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={currentPage === 1}
+                        onClick={() => setPage(currentPage - 1)}
+                        aria-label="Previous page"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+
+                      <span className="px-2 text-xs text-normal">
+                        {currentPage} / {totalPages}
                       </span>
-                    ))}
-                  </TableCell>
-                  <TableCell>
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
-                      {item.category}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-sm font-medium text-normal">
-                    {item.intentKey}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {item.keywords.slice(0, 4).map((keyword) => (
-                        <span
-                          key={keyword}
-                          className="rounded-full bg-purple-50 px-2 py-0.5 text-xs text-[#603de1]"
-                        >
-                          {keyword}
-                        </span>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {item.questionExamples.slice(0, 2).map((question) => (
-                        <span
-                          key={question}
-                          className="rounded-md bg-blue-50 px-2 py-0.5 text-xs text-blue-600"
-                        >
-                          {truncate(question, 30)}
-                        </span>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm text-normal whitespace-normal">
-                    <div className="line-clamp-3">
-                      {item.answer}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-center font-semibold text-normal">
-                    {item.priority}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
-                        item.active
-                          ? "bg-green-100 text-green-700"
-                          : "bg-slate-100 text-slate-500"
-                      }`}
-                    >
-                      {item.active ? "Active" : "Inactive"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Button variant="ghost" className="text-yellow-500">
-                      <SquarePen className="!w-4.5 !h-4.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
 
-              {knowledgeItems.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={10} className="h-24 text-center text-sm text-mini">
-                    No knowledge records found
-                  </TableCell>
-                </TableRow>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setPage(currentPage + 1)}
+                        aria-label="Next page"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            <div
+              className={`relative min-h-0 xl:self-stretch ${
+                panelOpen ? "h-[calc(100svh-2rem)] xl:h-auto" : "hidden xl:block"
+              }`}
+            >
+              {panelOpen ? (
+                <KnowledgeEditPanel
+                  item={editing}
+                  categories={categoryOptions}
+                  isSaving={saveKnowledge.isPending}
+                  onClose={() => setPanelOpen(false)}
+                  onPublish={handlePublish}
+                />
+              ) : (
+                <Card className="absolute inset-0 flex items-center justify-center p-10 text-center">
+                  <div>
+                    <BookOpen className="mx-auto h-8 w-8 text-mini" />
+                    <p className="mt-3 text-sm text-normal">เลือก entry เพื่อดูรายละเอียด</p>
+                    <p className="mt-1 text-xs text-mini">
+                      คลิกแถวในตาราง หรือกด Add Knowledge เพื่อสร้างใหม่
+                    </p>
+                  </div>
+                </Card>
               )}
-            </TableBody>
-          </Table>
-        </div>
-      </Card>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
+
+export default AiAnswer;

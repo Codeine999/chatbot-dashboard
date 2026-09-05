@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { Toaster } from "sonner";
 import "./index.css";
 import App from "./App";
 import { ThemeProvider } from "@/components/context/themeProvider";
@@ -14,7 +15,9 @@ root.render(
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <App />
+      <Toaster richColors position="top-right" />
     </ThemeProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
   </BrowserRouter>
 );

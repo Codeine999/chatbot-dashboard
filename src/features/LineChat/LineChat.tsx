@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Bot,
+  ChevronDown,
   ImageIcon,
   Menu,
-  MessageCircle,
   Search,
   Send,
+  SlidersHorizontal,
   Smile,
   UserRound,
 } from "lucide-react";
@@ -17,6 +19,10 @@ import {
   usePollConversationMessages,
   useSendLineMessage,
 } from "./hooks/useLineChat";
+import {
+  useMarkConversationNotificationsAsRead,
+  useNotifications,
+} from "@/features/notifications/hooks/useNotifications";
 import type {
   LineChatHistory,
   LineChatMessageType,
@@ -63,7 +69,7 @@ function Avatar({
       {src ? (
         <img src={src} alt={name} className="h-full w-full object-cover" />
       ) : (
-        <div className="flex h-full w-full items-center justify-center font-semibold text-slate-700">
+        <div className="flex h-full w-full items-center justify-center font-semibold text-slate-700 dark:text-slate-900">
           {name.slice(0, 2)}
         </div>
       )}
@@ -100,7 +106,7 @@ function MessageContent({ message }: { message: LineChatHistory }) {
 
   if (type === "POSTBACK") {
     return (
-      <div className="rounded-xl bg-slate-100 px-3 py-2 text-xs font-medium text-slate-600">
+      <div className="rounded-xl bg-background/60 px-3 py-2 text-xs font-medium text-mini">
         {message.postbackData ?? "Postback event"}
       </div>
     );
@@ -109,31 +115,164 @@ function MessageContent({ message }: { message: LineChatHistory }) {
   return <p className="whitespace-pre-wrap leading-relaxed">{message.text ?? "-"}</p>;
 }
 
+const INITIAL_VISIBLE_CONVERSATIONS = 12;
+const LOAD_MORE_CONVERSATIONS = 10;
+
+type ChannelId = "all" | "line" | "messenger" | "tiktok";
+type QuickFilterId = "all" | "unread";
+
+const CHANNELS: { id: ChannelId; label: string; soon?: boolean }[] = [
+  { id: "all", label: "All" },
+  { id: "line", label: "LINE" },
+  { id: "messenger", label: "Messenger", soon: true },
+  { id: "tiktok", label: "TikTok", soon: true },
+];
+
+const QUICK_FILTERS: { id: QuickFilterId; label: string; soon?: boolean }[] = [
+  { id: "all", label: "All" },
+  { id: "unread", label: "Unread" },
+];
+
+function SoonBadge() {
+  return (
+    <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-mini">
+      Soon
+    </span>
+  );
+}
+
+function ChannelTabs({
+  value,
+  onChange,
+}: {
+  value: ChannelId;
+  onChange: (id: ChannelId) => void;
+}) {
+  return (
+    <div className="flex items-center gap-1 overflow-x-auto">
+      {CHANNELS.map((item) => {
+        const isActive = item.id === value;
+
+        return (
+          <button
+            key={item.id}
+            type="button"
+            disabled={item.soon}
+            onClick={() => onChange(item.id)}
+            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all duration-200 ${
+              isActive
+                ? "bg-primary/10 text-primary"
+                : item.soon
+                  ? "cursor-not-allowed text-mini/70"
+                  : "text-mini hover:bg-hover hover:text-normal"
+            }`}
+          >
+            {item.label}
+            {item.soon && <SoonBadge />}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function QuickFilterChips({
+  value,
+  onChange,
+}: {
+  value: QuickFilterId;
+  onChange: (id: QuickFilterId) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2 text-xs">
+      {QUICK_FILTERS.map((item, index) => (
+        <div key={item.id} className="flex items-center gap-2">
+          {index > 0 && <span className="text-mini/40">|</span>}
+          <button
+            type="button"
+            disabled={item.soon}
+            onClick={() => onChange(item.id)}
+            className={`transition-colors duration-200 ${
+              item.id === value
+                ? "font-semibold text-normal"
+                : item.soon
+                  ? "cursor-not-allowed text-mini/70"
+                  : "text-mini hover:text-normal"
+            }`}
+          >
+            {item.label}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export const LineChat = () => {
+  const [searchParams] = useSearchParams();
   const [selectedId, setSelectedId] = useState("");
   const [reply, setReply] = useState("");
   const [isInboxOpen, setIsInboxOpen] = useState(true);
   const [search, setSearch] = useState("");
+  const [channel, setChannel] = useState<ChannelId>("line");
+  const [quickFilter, setQuickFilter] = useState<QuickFilterId>("all");
+  const [isNewestFirst, setIsNewestFirst] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_CONVERSATIONS);
   const messageListRef = useRef<HTMLDivElement>(null);
   const preservingScrollRef = useRef(false);
 
   const conversationsQuery = useConversations();
   const conversations = conversationsQuery.data ?? [];
 
-  const sortedConversations = useMemo(
-    () =>
-      [...conversations].sort(
-        (a, b) =>
-          new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
-      ),
-    [conversations]
-  );
+  const notificationsQuery = useNotifications();
+  const markConversationNotificationsAsRead =
+    useMarkConversationNotificationsAsRead();
+
+  const unreadNotificationConversationIds = useMemo(() => {
+    const ids = new Set<string>();
+    (notificationsQuery.data ?? []).forEach((notification) => {
+      const conversationId = notification.metadata?.conversationId;
+      if (!notification.isRead && conversationId) {
+        ids.add(conversationId);
+      }
+    });
+    return ids;
+  }, [notificationsQuery.data]);
+
+  const readNotificationConversationIds = useMemo(() => {
+    const ids = new Set<string>();
+    (notificationsQuery.data ?? []).forEach((notification) => {
+      const conversationId = notification.metadata?.conversationId;
+      if (notification.isRead && conversationId) {
+        ids.add(conversationId);
+      }
+    });
+    return ids;
+  }, [notificationsQuery.data]);
+
+  const sortedConversations = useMemo(() => {
+    const direction = isNewestFirst ? 1 : -1;
+
+    return [...conversations].sort(
+      (a, b) =>
+        direction *
+        (new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime())
+    );
+  }, [conversations, isNewestFirst]);
 
   const filteredConversations = useMemo(() => {
-    const keyword = search.trim().toLowerCase();
-    if (!keyword) return sortedConversations;
+    // only LINE is connected today, so "all" and "line" resolve to the same list
+    const byChannel =
+      channel === "all" || channel === "line" ? sortedConversations : [];
+    const byQuickFilter =
+      quickFilter === "unread"
+        ? byChannel.filter((conversation) => conversation.unreadCount > 0)
+        : byChannel;
 
-    return sortedConversations.filter((conversation) =>
+    const keyword = search.trim().toLowerCase();
+    if (!keyword) return byQuickFilter;
+
+    return byQuickFilter.filter((conversation) =>
       [
         conversation.lineMember?.displayName,
         conversation.lineMember?.lineUserId,
@@ -142,17 +281,55 @@ export const LineChat = () => {
         .filter(Boolean)
         .some((value) => String(value).toLowerCase().includes(keyword))
     );
-  }, [search, sortedConversations]);
+  }, [channel, quickFilter, search, sortedConversations]);
+
+  const visibleConversations = filteredConversations.slice(0, visibleCount);
+  const hasMoreConversations = visibleCount < filteredConversations.length;
+
+  // a narrowed list should start from the top again
+  useEffect(() => {
+    setVisibleCount(INITIAL_VISIBLE_CONVERSATIONS);
+  }, [channel, quickFilter, search]);
+
+  // keep the open conversation reachable even when it sits past the cut-off
+  useEffect(() => {
+    if (!selectedId) return;
+
+    const index = filteredConversations.findIndex(
+      (conversation) => conversation.id === selectedId
+    );
+
+    if (index >= visibleCount) setVisibleCount(index + 1);
+  }, [filteredConversations, selectedId, visibleCount]);
 
   useEffect(() => {
-    if (!selectedId && sortedConversations[0]) {
+    if (selectedId) return;
+
+    const fromNotification = searchParams.get("conversationId");
+    if (fromNotification) {
+      setSelectedId(fromNotification);
+      return;
+    }
+
+    if (sortedConversations[0]) {
       setSelectedId(sortedConversations[0].id);
     }
-  }, [selectedId, sortedConversations]);
+  }, [selectedId, sortedConversations, searchParams]);
 
   const selectedConversation =
     conversations.find((conversation) => conversation.id === selectedId) ??
     sortedConversations[0];
+
+  // Opening a conversation clears any unread notification tied to it.
+  useEffect(() => {
+    if (
+      selectedConversation?.id &&
+      unreadNotificationConversationIds.has(selectedConversation.id)
+    ) {
+      markConversationNotificationsAsRead.mutate(selectedConversation.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedConversation?.id]);
 
   const messagesQuery = useConversationMessages(selectedConversation?.id);
   const sendMessageMutation = useSendLineMessage(selectedConversation?.id);
@@ -221,20 +398,20 @@ export const LineChat = () => {
   return (
     <div className="mx-[-20px] h-[calc(100vh-72px)] w-[calc(100%+1rem)] overflow-hidden md:w-[calc(100%+1.5rem)] xl:w-[calc(100%+2.5rem)]">
       <div
-        className={`grid h-full w-full grid-cols-1 overflow-hidden rounded-l-2xl bg-white ${
+        className={`grid h-full w-full grid-cols-1 overflow-hidden rounded-l-2xl bg-background ${
           isInboxOpen
             ? "xl:grid-cols-[310px_minmax(0,1fr)]"
             : "xl:grid-cols-[76px_minmax(0,1fr)]"
         }`}
       >
-        <aside className="min-h-0 border-b border-slate-200 bg-slate-50/60 xl:border-b-0 xl:border-r">
-          <div className="border-b border-slate-200 bg-white p-4">
-            <div className="flex items-center justify-between">
+        <aside className="flex min-h-0 flex-col border-b bg-background/75 backdrop-blur-xl xl:border-b-0 xl:border-r">
+          <div className="shrink-0 p-3.5">
+            <div className="flex items-center justify-between gap-2">
               {isInboxOpen && (
-                <div>
-                  <p className="font-semibold text-slate-950">Inbox</p>
-                  <p className="text-xs text-slate-500">Latest chats first</p>
-                </div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
+                  <span className="size-1.5 rounded-full bg-primary" />
+                  LINE OA
+                </span>
               )}
               <Button
                 variant="ghost"
@@ -245,208 +422,274 @@ export const LineChat = () => {
                 <Menu className="h-5 w-5" />
               </Button>
             </div>
+
             {isInboxOpen && (
               <>
-                <span className="mt-3 inline-flex rounded-full bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700">
-                  LINE OA
-                </span>
-                <div className="mt-3 flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3">
-                  <Search className="h-4 w-4 text-slate-400" />
-                  <input
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
-                    placeholder="Search conversation..."
-                  />
+                <div className="mt-3">
+                  <ChannelTabs value={channel} onChange={setChannel} />
+                </div>
+
+                <div className="mt-3 flex items-center gap-2">
+                  <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-xl bg-muted px-3">
+                    <Search className="h-4 w-4 shrink-0 text-mini" />
+                    <input
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                      className="w-full bg-transparent text-sm text-normal outline-none placeholder:text-mini"
+                      placeholder="Search conversations..."
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsNewestFirst((value) => !value)}
+                    title={isNewestFirst ? "Newest first" : "Oldest first"}
+                    aria-label={isNewestFirst ? "Newest first" : "Oldest first"}
+                    className={`flex size-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
+                      isNewestFirst
+                        ? "bg-muted text-mini hover:text-normal"
+                        : "bg-primary/10 text-primary"
+                    }`}
+                  >
+                    <SlidersHorizontal className="size-4" />
+                  </button>
+                </div>
+
+                <div className="mt-3">
+                  <QuickFilterChips value={quickFilter} onChange={setQuickFilter} />
                 </div>
               </>
             )}
           </div>
 
-          <div className={`h-[calc(100%-145px)] overflow-y-auto ${isInboxOpen ? "xl:h-[calc(100%-145px)]" : "xl:h-[calc(100%-73px)]"}`}>
+          {isInboxOpen && (
+            <div className="shrink-0 px-4 pb-2 pt-1">
+              <p className="text-xs font-semibold text-normal">Recent chats</p>
+            </div>
+          )}
+
+          <div className="min-h-0 flex-1 overflow-y-auto pb-2">
             {conversationsQuery.isLoading && (
-              <div className="p-4 text-sm text-slate-500">Loading conversations...</div>
+              <div className="px-4 py-3 text-xs text-mini">Loading conversations...</div>
             )}
 
             {conversationsQuery.isError && (
-              <div className="p-4 text-sm text-red-500">Failed to load conversations</div>
+              <div className="px-4 py-3 text-xs text-destructive">Failed to load conversations</div>
             )}
 
             {!conversationsQuery.isLoading && filteredConversations.length === 0 && (
-              <div className="p-4 text-sm text-slate-500">No conversations found</div>
+              <div className="px-4 py-3 text-xs text-mini">No conversations found</div>
             )}
 
-            {filteredConversations.map((conversation) => {
+            {visibleConversations.map((conversation) => {
               const isActive = conversation.id === selectedConversation?.id;
               const displayName = conversation.lineMember?.displayName ?? "LINE User";
               const preview = getMessagePreview(conversation.lastMessage, conversation.lastMessageType);
+              const hasUnreadNotification = unreadNotificationConversationIds.has(
+                conversation.id
+              );
+              const hasReadNotification = readNotificationConversationIds.has(
+                conversation.id
+              );
+              const notificationBg = isActive
+                ? "bg-primary/10 text-primary"
+                : hasUnreadNotification
+                  ? "bg-amber-50 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/15"
+                  : hasReadNotification
+                    ? "opacity-70 hover:bg-hover"
+                    : "hover:bg-hover";
 
               return (
-                <button
+                <div
                   key={conversation.id}
-                  type="button"
-                  onClick={() => handleSelectConversation(conversation.id)}
-                  className={`w-full border-b border-slate-200 text-left transition ${
-                    isActive ? "bg-white" : "hover:bg-white"
-                  } ${isInboxOpen ? "px-4 py-3" : "px-3 py-3"}`}
+                  className="border-b border-border/40 last:border-b-0"
                 >
-                  <div className={`flex items-start ${isInboxOpen ? "gap-3" : "justify-center"}`}>
-                    <div className="relative">
-                      <Avatar
-                        name={displayName}
-                        src={conversation.lineMember?.pictureUrl}
-                        size="md"
-                      />
-                      {!isInboxOpen && conversation.unreadCount > 0 && (
-                        <span className="absolute -right-1 -top-1 h-4 min-w-4 rounded-full bg-green-500 px-1 text-[10px] font-semibold leading-4 text-white">
-                          {conversation.unreadCount}
-                        </span>
-                      )}
-                    </div>
-                    {isInboxOpen && (
-                      <>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="truncate font-medium text-slate-900">
-                              {displayName}
-                            </p>
-                            <span className="text-xs text-slate-400">
-                              {formatTime(conversation.lastMessageAt)}
-                            </span>
-                          </div>
-                          <p className="mt-1 truncate text-sm text-slate-500">
-                            {preview}
-                          </p>
-                          <span className="mt-2 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
-                            {conversation.status}
-                          </span>
-                        </div>
-                        {conversation.unreadCount > 0 && (
-                          <span className="rounded-full bg-green-500 px-2 py-0.5 text-xs font-semibold text-white">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectConversation(conversation.id)}
+                    className={`w-full text-left transition-all duration-200 ${
+                      notificationBg
+                    } ${isInboxOpen ? "px-4 py-3.5" : "px-2 py-3.5"}`}
+                  >
+                    <div className={`flex items-center ${isInboxOpen ? "gap-3" : "justify-center"}`}>
+                      <div className="relative">
+                        <Avatar
+                          name={displayName}
+                          src={conversation.lineMember?.pictureUrl}
+                          size="md"
+                        />
+                        {!isInboxOpen && conversation.unreadCount > 0 && (
+                          <span className="absolute -right-1 -top-1 h-4 min-w-4 rounded-full bg-primary px-1 text-[10px] font-semibold leading-4 text-primary-foreground">
                             {conversation.unreadCount}
                           </span>
                         )}
-                      </>
-                    )}
-                  </div>
-                </button>
+                      </div>
+                      {isInboxOpen && (
+                        <>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <p
+                                className={`truncate text-[13px] font-medium ${
+                                  isActive ? "text-primary" : "text-normal"
+                                }`}
+                              >
+                                {displayName}
+                              </p>
+                              <span className="shrink-0 text-[11px] text-mini">
+                                {formatTime(conversation.lastMessageAt)}
+                              </span>
+                            </div>
+                            <p className="mt-1 truncate text-xs text-mini">{preview}</p>
+                          </div>
+                          {conversation.unreadCount > 0 && (
+                            <span className="rounded-full bg-primary px-1.5 text-[11px] font-semibold leading-5 text-primary-foreground">
+                              {conversation.unreadCount}
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </button>
+                </div>
               );
             })}
+
+            {hasMoreConversations && (
+              <button
+                type="button"
+                onClick={() =>
+                  setVisibleCount((count) => count + LOAD_MORE_CONVERSATIONS)
+                }
+                className="flex h-11 w-full items-center justify-center gap-1.5 text-xs font-medium text-mini transition hover:bg-hover hover:text-normal"
+              >
+                {isInboxOpen ? "Show more" : ""}
+                <ChevronDown className="size-3.5" />
+              </button>
+            )}
+
+            {isInboxOpen && !hasMoreConversations && filteredConversations.length > 0 && (
+              <p className="py-3 text-center text-[11px] text-mini/70">
+                {filteredConversations.length} conversations
+              </p>
+            )}
           </div>
         </aside>
 
-        <main className="flex min-h-0 min-w-0 w-full flex-col bg-white">
-          <header className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-            {selectedConversation ? (
-              <div className="flex min-w-0 items-center gap-3">
-                <Avatar
-                  name={selectedConversation.lineMember?.displayName ?? "LINE User"}
-                  src={selectedConversation.lineMember?.pictureUrl}
-                  size="lg"
-                />
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-slate-950">
-                    {selectedConversation.lineMember?.displayName ?? "LINE User"}
-                  </p>
-                  <p className="truncate text-xs text-slate-500">
-                    {selectedConversation.lineMember?.lineUserId ?? "-"}
-                  </p>
+        <main className="flex min-h-0 min-w-0 w-full flex-col bg-background">
+          <header className="border-b px-5 py-4">
+            <div className="mx-auto flex w-full max-w-7xl 2xl:max-w-[1500px] items-center justify-between">
+              {selectedConversation ? (
+                <div className="flex min-w-0 items-center gap-3">
+                  <Avatar
+                    name={selectedConversation.lineMember?.displayName ?? "LINE User"}
+                    src={selectedConversation.lineMember?.pictureUrl}
+                    size="lg"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-normal">
+                      {selectedConversation.lineMember?.displayName ?? "LINE User"}
+                    </p>
+                    <p className="truncate text-xs text-mini">
+                      {selectedConversation.lineMember?.lineUserId ?? "-"}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-mini">
+                    {selectedConversation.status}
+                  </span>
                 </div>
-                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
-                  {selectedConversation.status}
+              ) : (
+                <p className="font-semibold text-normal">Select a conversation</p>
+              )}
+              {selectedConversation?.lineMember?.lastActiveAt && (
+                <span className="text-xs text-mini">
+                  Last active {formatTime(selectedConversation.lineMember.lastActiveAt)}
                 </span>
-              </div>
-            ) : (
-              <p className="font-semibold text-slate-950">Select a conversation</p>
-            )}
-            {selectedConversation?.lineMember?.lastActiveAt && (
-              <span className="text-xs text-slate-500">
-                Last active {formatTime(selectedConversation.lineMember.lastActiveAt)}
-              </span>
-            )}
+              )}
+            </div>
           </header>
 
           <div
             ref={messageListRef}
             onScroll={handleMessagesScroll}
-            className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-slate-50/70 px-5 py-5"
+            className="min-h-0 flex-1 overflow-y-auto px-5 py-5"
           >
-            {messagesQuery.isFetchingNextPage && (
-              <div className="mx-auto w-fit rounded-full bg-white px-3 py-1 text-xs text-slate-500 shadow-sm">
-                Loading older messages...
-              </div>
-            )}
-
-            {messagesQuery.isLoading && selectedConversation && (
-              <div className="mx-auto w-fit rounded-full bg-white px-3 py-1 text-sm text-slate-500 shadow-sm">
-                Loading messages...
-              </div>
-            )}
-
-            {messagesQuery.isError && (
-              <div className="mx-auto w-fit rounded-full bg-white px-3 py-1 text-sm text-red-500 shadow-sm">
-                Failed to load messages
-              </div>
-            )}
-
-            {!messagesQuery.isLoading && selectedConversation && messages.length === 0 && (
-              <div className="mx-auto w-fit rounded-full bg-white px-3 py-1 text-sm text-slate-500 shadow-sm">
-                No messages yet
-              </div>
-            )}
-
-            {!selectedConversation && (
-              <div className="mx-auto w-fit rounded-full bg-white px-3 py-1 text-sm text-slate-500 shadow-sm">
-                Select a conversation from the inbox
-              </div>
-            )}
-
-            {messages.map((message) => {
-              const sender = normalizeSender(message.sender);
-              const isUser = sender === "USER";
-              const isAdmin = sender === "ADMIN";
-              const isAi = sender === "AI";
-
-              return (
-                <div
-                  key={message.id}
-                  className={`flex ${isUser ? "justify-start" : "justify-end"}`}
-                >
-                  <div className={`max-w-[78%] ${isUser ? "items-start" : "items-end"}`}>
-                    <div className={`flex items-end gap-2 ${isUser ? "" : "flex-row-reverse"}`}>
-                      <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                        isUser
-                          ? "bg-white text-slate-600 ring-1 ring-slate-200"
-                          : isAi
-                            ? "bg-orange-100 text-orange-700"
-                            : "bg-slate-900 text-white"
-                      }`}>
-                        {isUser ? <UserRound className="h-4 w-4" /> : isAi ? <Bot className="h-4 w-4" /> : "A"}
-                      </div>
-                      <div
-                        className={`rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
-                          isUser
-                            ? "rounded-bl-md bg-white text-slate-700 ring-1 ring-slate-200"
-                            : isAi
-                              ? "rounded-br-md bg-orange-50 text-slate-700 ring-1 ring-orange-100"
-                              : "rounded-br-md bg-slate-900 text-white"
-                        }`}
-                      >
-                        <MessageContent message={message} />
-                      </div>
-                    </div>
-                    <p className={`mt-1 text-xs text-slate-400 ${isUser ? "text-left" : "text-right"}`}>
-                      {formatTime(message.createdAt)}
-                      {isAdmin && message.sentStatus ? ` · ${message.sentStatus}` : ""}
-                    </p>
-                  </div>
+            <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1500px] space-y-4">
+              {messagesQuery.isFetchingNextPage && (
+                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-xs text-mini">
+                  Loading older messages...
                 </div>
-              );
-            })}
+              )}
+
+              {messagesQuery.isLoading && selectedConversation && (
+                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-mini">
+                  Loading messages...
+                </div>
+              )}
+
+              {messagesQuery.isError && (
+                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-destructive">
+                  Failed to load messages
+                </div>
+              )}
+
+              {!messagesQuery.isLoading && selectedConversation && messages.length === 0 && (
+                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-mini">
+                  No messages yet
+                </div>
+              )}
+
+              {!selectedConversation && (
+                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-mini">
+                  Select a conversation from the inbox
+                </div>
+              )}
+
+              {messages.map((message) => {
+                const sender = normalizeSender(message.sender);
+                const isUser = sender === "USER";
+                const isAdmin = sender === "ADMIN";
+                const isAi = sender === "AI";
+
+                return (
+                  <div
+                    key={message.id}
+                    className={`flex ${isUser ? "justify-start" : "justify-end"}`}
+                  >
+                    <div className={`max-w-[78%] ${isUser ? "items-start" : "items-end"}`}>
+                      <div className={`flex items-end gap-2 ${isUser ? "" : "flex-row-reverse"}`}>
+                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                          isUser
+                            ? "bg-muted text-mini"
+                            : isAi
+                              ? "bg-primary/10 text-primary"
+                              : "bg-primary text-primary-foreground"
+                        }`}>
+                          {isUser ? <UserRound className="h-4 w-4" /> : isAi ? <Bot className="h-4 w-4" /> : "A"}
+                        </div>
+                        <div
+                          className={`rounded-[1.25rem] px-4 py-2.5 text-[15px] leading-6 ${
+                            isUser
+                              ? "rounded-bl-md bg-muted text-normal"
+                              : isAi
+                                ? "rounded-br-md bg-primary/10 text-normal"
+                                : "rounded-br-md bg-muted text-normal"
+                          }`}
+                        >
+                          <MessageContent message={message} />
+                        </div>
+                      </div>
+                      <p className={`mt-1 text-[11px] text-mini ${isUser ? "text-left" : "text-right"}`}>
+                        {formatTime(message.createdAt)}
+                        {isAdmin && message.sentStatus ? ` · ${message.sentStatus}` : ""}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <footer className="border-t border-slate-200 bg-white p-4">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-2">
+          <footer className="border-t bg-background p-4">
+            <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1500px] rounded-2xl border bg-muted/50 p-2">
               <Textarea
                 value={reply}
                 onChange={(event) => setReply(event.target.value)}
@@ -456,18 +699,18 @@ export const LineChat = () => {
                 className="max-h-36 min-h-20 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
               />
               <div className="mt-2 flex items-center justify-between px-1">
-                <p className="text-xs text-slate-500">Connected to LINE conversation API</p>
+                <p className="text-xs text-mini">Connected to LINE conversation API</p>
                 <Button
                   onClick={sendReply}
                   disabled={!reply.trim() || !selectedConversation || sendMessageMutation.isPending}
-                  className="rounded-xl bg-green-500 text-white hover:bg-green-600"
+                  className="rounded-xl"
                 >
                   <Send className="h-4 w-4" />
                   {sendMessageMutation.isPending ? "Sending..." : "Send"}
                 </Button>
               </div>
               {sendMessageMutation.isError && (
-                <p className="px-1 pt-2 text-xs text-red-500">Failed to send message</p>
+                <p className="px-1 pt-2 text-xs text-destructive">Failed to send message</p>
               )}
             </div>
           </footer>

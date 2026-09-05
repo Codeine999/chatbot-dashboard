@@ -1,15 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400..900;1,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
+/* ฟอนต์ย้ายไปโหลดด้วย <link> ใน index.html แล้ว เพื่อไม่ให้ต่อคิวหลัง css ไฟล์นี้
+   (Noto Sans ที่เคย import ไว้ไม่ได้ถูกใช้ใน font-family เลย ตัดออกไป) */
 
 @import "tailwindcss";
+
+/* ให้ Tailwind `dark:` อ้างอิง class `dark` ที่ ThemeProvider ใส่บน <html> */
+@custom-variant dark (&:where(.dark, .dark *));
 
 
 
 
 html, body {
   overflow: auto;
-  font-family: "Inter", sans-serif;
+  /* เบราว์เซอร์ไล่หา glyph ทีละฟอนต์ ละตินจึงได้ Inter ส่วนไทยที่ Inter ไม่มี จะตกไปที่ Noto Sans Thai */
+  font-family: "Inter", "Noto Sans Thai", sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -86,6 +89,13 @@ html, body {
   --color-icons-hover: var(--icons-hover);
   --color-icons: var(--icons);
 
+  /* สีของ series บนกราฟ usage ผ่านการเช็ค contrast กับพื้นการ์ดทั้งสองธีมแล้ว */
+  --color-chart-accent: var(--chart-accent);
+  --color-token-ai: var(--token-ai);
+  --color-token-line: var(--token-line);
+  --color-token-admin: var(--token-admin);
+  --color-chart-surface: var(--chart-surface);
+
   --color-inside: var(--inside);
   --color-mini: var(--mini);
   --color-add-button: var(--add-button);
@@ -103,7 +113,8 @@ html, body {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(36.002% 0.00004 271.152);
+  /* indigo-600 */
+  --primary: oklch(51.1% 0.262 276.966);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(48.906% 0.00006 271.152);
   --secondary-foreground: oklch(0.205 0 0);
@@ -138,6 +149,15 @@ html, body {
 
   --mini: oklch(0.6822 0.0289 226.98);
   --normal: oklch(42.773% 0.00513 271.302);
+
+  /* ชุดสีกราฟโทนสว่าง อ่านออกทั้งตาปกติและตาบอดสี */
+  --token-ai: #4f46e5;
+  /* กราฟที่มีเส้นเดียวใช้สีเน้นสีนี้สีเดียว */
+  --chart-accent: var(--token-ai);
+  --token-line: #0d9488;
+  --token-admin: #ea580c;
+  /* สีพื้นที่ใช้เว้นร่อง 2px ระหว่างแท่งที่ซ้อนกัน */
+  --chart-surface: #ffffff;
 }
 
 .dark {
@@ -146,7 +166,8 @@ html, body {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
+  /* indigo-400 */
+  --primary: oklch(67.3% 0.182 276.935);
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(68.422% 0.02062 248.22);
   --secondary-foreground: oklch(0.985 0 0);
@@ -181,6 +202,13 @@ html, body {
   --add-button: oklch(26.862% 0.00003 271.152);
   --normal: oklch(83.392% 0.01276 276.034);
   --mini: oklch(72.933% 0.03278 228.491);
+
+  /* โทนมืดเลือกสเต็ปใหม่ ไม่ใช่การกลับสีจากธีมสว่าง */
+  --token-ai: #7379f2;
+  --chart-accent: var(--token-ai);
+  --token-line: #0d9488;
+  --token-admin: #ea580c;
+  --chart-surface: oklch(26.862% 0.00003 271.152);
 }
 
 @layer base {
@@ -191,5 +219,4 @@ html, body {
     @apply bg-background text-foreground;
   }
 }
-
 

@@ -67,7 +67,7 @@ const AccountOverviewCard = () => {
     : [];
 
   return (
-    <Card className="p-6 h-[384px] flex flex-col overflow-auto">
+    <Card className="flex h-[384px] flex-col overflow-auto p-6">
       <div className="flex items-center justify-between">
         <CardTitle>Account Overview</CardTitle>
         <Button

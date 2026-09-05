@@ -69,13 +69,14 @@ export function AdminToolChat() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const isHome = location.pathname === "/";
+  const isHiddenRoute =
+    location.pathname === "/" || location.pathname.startsWith("/ai-chat");
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isOpen]);
 
-  if (isHome) return null;
+  if (isHiddenRoute) return null;
 
   const sendMessage = (value = input) => {
     const text = value.trim();
@@ -111,7 +112,7 @@ export function AdminToolChat() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="pointer-events-none fixed bottom-6 right-6 z-50">
       <div
         aria-hidden={!isOpen}
         className={`mb-4 flex h-[560px] w-[380px] max-w-[calc(100vw-3rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl transition-all duration-300 ease-out ${
@@ -215,7 +216,7 @@ export function AdminToolChat() {
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}
-        className={`ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-950 text-white shadow-xl ring-1 ring-slate-800 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-slate-800 ${
+        className={`pointer-events-auto ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-950 text-white shadow-xl ring-1 ring-slate-800 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-slate-800 ${
           isOpen ? "rotate-90 scale-95" : "rotate-0 scale-100"
         }`}
         aria-label="Open admin AI tool"

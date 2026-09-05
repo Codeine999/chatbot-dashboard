@@ -20,41 +20,39 @@ import RecentActivityCard from "./home/components/RecentActivityCard";
 const home = () => {
 
   return (
-    <div className="2xl:px-28 max-w-8xl mx-auto mb-12">
+    <main className="min-h-svh py-2 text-slate-900">
+      <div className="mb-12">
+        <div className="mt-2 text-color">
+          <CardTitle className="text-2xl">
+            Welcome, Codeine
+          </CardTitle>
+          <CardDescription className="text-sm">
+            Overview dashboard
+          </CardDescription>
+        </div>
 
-      <div className="mt-2 text-color">
-        <CardTitle className="text-2xl">
-          Welcome, Codeine
-        </CardTitle>
-        <CardDescription className="text-sm">
-          Overview dashboard
-        </CardDescription>
+        <div className="mt-4 flex flex-col gap-4">
+          {/* Overview */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <OverviewCard />
+          </div>
+
+          {/* Account overview and Chart — 40 / 60 */}
+          <div className="grid gap-4 md:grid-cols-[2fr_3fr]">
+            <AccountOverviewCard />
+            <MoneyCard />
+            {/* <Order /> */}
+          </div>
+
+          {/* Chatbot and Recent activity */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <Chatbot />
+            <RecentActivityCard />
+            {/* <ViewCard /> */}
+          </div>
+        </div>
       </div>
-
-
-      <div className="mt-4 flex flex-col gap-4">
-
-        {/* Overview */}
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
-          <OverviewCard />
-        </div>
-
-        {/* Account overview and Chart — 40 / 60 */}
-        <div className="grid md:grid-cols-[2fr_3fr] gap-4">
-          <AccountOverviewCard />
-          <MoneyCard />
-          {/* <Order /> */}
-        </div>
-
-        {/* Chatbot and Recent activity */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <Chatbot />
-          <RecentActivityCard />
-          {/* <ViewCard /> */}
-        </div>
-
-      </div>
-    </div>
+    </main>
   );
 };
 

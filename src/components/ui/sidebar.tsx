@@ -52,6 +52,18 @@ function useSidebar() {
   return context
 }
 
+/** อ่านสถานะ sidebar ที่เก็บไว้ใน localStorage คืน null ถ้าไม่มีหรืออ่านไม่ได้ */
+function readStoredSidebarState(key: string): boolean | null {
+  if (typeof window === "undefined") return null
+
+  try {
+    const stored = window.localStorage.getItem(key)
+    return stored === null ? null : Boolean(JSON.parse(stored))
+  } catch {
+    return null
+  }
+}
+
 function SidebarProvider({
   defaultOpen = true,
   open: openProp,
@@ -66,11 +78,18 @@ function SidebarProvider({
   onOpenChange?: (open: boolean) => void
 }) {
   const isMobile = useIsMobile()
-  const [openMobile, setOpenMobile] = React.useState(false)
+  const [openMobile, setOpenMobile] = React.useState(
+    () => readStoredSidebarState('sidebarMobileOpen') ?? false
+  )
 
   // This is the internal state of the sidebar.
   // We use openProp and setOpenProp for control from outside the component.
-  const [_open, _setOpen] = React.useState(defaultOpen)
+  // อ่านค่าที่เคยเก็บไว้ตั้งแต่ตอน init (ไม่ใช่ใน useEffect หลัง mount)
+  // ไม่งั้น sidebar จะ render สถานะเปิดก่อน 1 เฟรมแล้วค่อยหุบ = กระพริบตอน refresh
+  // ส่วน defaultOpen=false คือหน้าที่ล็อก sidebar ไว้ ให้ปิดเสมอ ไม่ต้องสนค่าที่เก็บไว้
+  const [_open, _setOpen] = React.useState(() =>
+    defaultOpen ? readStoredSidebarState('sidebarOpen') ?? defaultOpen : false
+  )
   const open = openProp ?? _open
   const setOpen = React.useCallback(
     (value: boolean | ((value: boolean) => boolean)) => {
@@ -101,32 +120,11 @@ function SidebarProvider({
   }, [isMobile, open, openMobile, setOpen])
 
   
-  useEffect(() => {
-    if (isMobile) {
-      const storedMobileState = localStorage.getItem('sidebarMobileOpen');
-      if (storedMobileState !== null) {
-        setOpenMobile(JSON.parse(storedMobileState));
-      }
-    } else {
-      const storedState = localStorage.getItem('sidebarOpen');
-      if (storedState !== null) {
-        setOpen(JSON.parse(storedState));
-      }
-    }
-  }, [isMobile]);
-
-
+  // ค่าที่เก็บไว้ถูกอ่านตอน init state แล้ว จึงไม่ต้องมี effect คอย restore ซ้ำ
+  // (ของเดิมมี effect อ่าน localStorage ตอน mount ซึ่งเขียนทับ defaultOpen ทำให้ล็อกหน้าไม่อยู่)
   useEffect(() => {
     localStorage.setItem('sidebarMobileOpen', JSON.stringify(openMobile));
   }, [openMobile]);
-
-  useEffect(() => {
-    const storedState = localStorage.getItem('sidebarOpen');
-    if (storedState !== null) {
-      setOpen(JSON.parse(storedState));
-    }
-
-  }, []);
 
 
 

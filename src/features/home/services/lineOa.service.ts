@@ -26,18 +26,18 @@ export type LineMessageUsage = {
 
 export const lineOaApi = {
   getInfo: async (): Promise<LineBotInfo> => {
-    const res = await api.get<LineBotInfo>("/line/dashboard/info");
+    const res = await api.get<LineBotInfo>("/line/admin/info");
     return res.data;
   },
 
   getFollowers: async (): Promise<LineFollowerStats> => {
-    const res = await api.get<LineFollowerStats>("/line/dashboard/followers");
+    const res = await api.get<LineFollowerStats>("/line/admin/followers");
     return res.data;
   },
 
   getMessageUsage: async (): Promise<LineMessageUsage> => {
     const res = await api.get<LineMessageUsage>(
-      "/line/dashboard/message-usage"
+      "/line/admin/message-usage"
     );
     return res.data;
   },

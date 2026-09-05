@@ -41,8 +41,10 @@ function SelectTrigger({
       {...props}
     >
       {children}
+      {/* asChild ต้องมี element ลูกเสมอ ถ้าปล่อยว่างไว้ Radix จะ throw ตอน Select ถูก mount
+          (คลาสไม่ใส่ text-* เพื่อให้รับสีจาก [&_svg:not([class*='text-'])] ของ trigger) */}
       <SelectPrimitive.Icon asChild>
-        {/* <ChevronDownIcon className="size-4 mt-0.5 text-white ml-0.5" /> */}
+        <ChevronDownIcon className="size-4 opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
