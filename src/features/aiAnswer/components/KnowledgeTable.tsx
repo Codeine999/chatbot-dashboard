@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -65,6 +66,7 @@ const KnowledgeTable = ({
   onEdit,
   onDelete,
 }: Props) => {
+  const { t } = useTranslation("knowledge");
   const allSelected = items.length > 0 && selectedIds.length === items.length;
 
   return (
@@ -76,20 +78,20 @@ const KnowledgeTable = ({
               <Checkbox
                 checked={allSelected}
                 onCheckedChange={onToggleSelectAll}
-                aria-label="Select all"
+                aria-label={t("table.selectAll")}
               />
             </TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Intent Key</TableHead>
-            <TableHead>Keywords</TableHead>
+            <TableHead>{t("table.title")}</TableHead>
+            <TableHead>{t("table.category")}</TableHead>
+            <TableHead>{t("table.intentKey")}</TableHead>
+            <TableHead>{t("table.keywords")}</TableHead>
             {!compact && (
-              <TableHead className="text-center whitespace-nowrap">Examples</TableHead>
+              <TableHead className="text-center whitespace-nowrap">{t("table.examples")}</TableHead>
             )}
-            <TableHead className="text-center">Priority</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Updated At</TableHead>
-            <TableHead className="w-24 text-right">Actions</TableHead>
+            <TableHead className="text-center">{t("table.priority")}</TableHead>
+            <TableHead>{t("table.status")}</TableHead>
+            <TableHead>{t("table.updatedAt")}</TableHead>
+            <TableHead className="w-24 text-right">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -97,7 +99,7 @@ const KnowledgeTable = ({
           {isLoading && (
             <TableRow>
               <TableCell colSpan={compact ? 9 : 10} className="py-10 text-center text-sm text-mini">
-                Loading knowledge entries...
+                {t("table.loading")}
               </TableCell>
             </TableRow>
           )}
@@ -106,9 +108,9 @@ const KnowledgeTable = ({
             <TableRow>
               <TableCell colSpan={compact ? 9 : 10} className="py-10 text-center">
                 <div className="flex flex-col items-center gap-3">
-                  <p className="text-sm text-destructive">โหลด Answer Patterns ไม่สำเร็จ</p>
+                  <p className="text-sm text-destructive">{t("table.error")}</p>
                   <Button variant="outline" size="sm" onClick={onRetry}>
-                    ลองอีกครั้ง
+                    {t("common:actions.retry")}
                   </Button>
                 </div>
               </TableCell>
@@ -118,7 +120,7 @@ const KnowledgeTable = ({
           {!isLoading && !isError && items.length === 0 && (
             <TableRow>
               <TableCell colSpan={compact ? 9 : 10} className="py-10 text-center text-sm text-mini">
-                ไม่พบ entry ที่ตรงกับเงื่อนไข
+                {t("table.empty")}
               </TableCell>
             </TableRow>
           )}
@@ -192,7 +194,7 @@ const KnowledgeTable = ({
                       : "bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-300"
                   }`}
                 >
-                  {item.active ? "Active" : "Inactive"}
+                  {item.active ? t("table.active") : t("table.inactive")}
                 </span>
               </TableCell>
 
@@ -205,21 +207,21 @@ const KnowledgeTable = ({
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label="More actions">
+                      <Button variant="ghost" size="icon" aria-label={t("table.moreActions")}>
                         <MoreVertical className="h-4 w-4 text-mini" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => onEdit(item)}>
                         <Pencil className="mr-2 h-4 w-4" />
-                        Edit
+                        {t("table.edit")}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => onDelete(item.id)}
                         className="text-red-600"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
+                        {t("table.delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

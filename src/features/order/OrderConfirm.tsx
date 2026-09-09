@@ -36,10 +36,11 @@ import ConfirmOrderTable from "./components/ConfirmOrderTable";
 import ConfirmOrderShipping from "./components/ConfirmOrderShipping";
 import ConfirmOrderPayments from "./components/ConfirmOrderPayments";
 import ConfirmOrderCustomer from "./components/ConfirmOrderCustomer";
+import { useTranslation } from "react-i18next";
 
 
-const orderConfirm = () => {
-
+const OrderConfirm = () => {
+  const { t } = useTranslation("order");
   const { id } = useParams();
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -86,16 +87,16 @@ const orderConfirm = () => {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/order" className="text-xs">Order</BreadcrumbLink>
+            <BreadcrumbLink href="/order" className="text-xs">{t("breadcrumb.order")}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-xs">Confirm Order</BreadcrumbPage>
+            <BreadcrumbPage className="text-xs">{t("breadcrumb.confirm")}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
       <div className="mt-4">
-        <p className="text-md">Order Number {id}</p>
+        <p className="text-md">{t("confirm.orderNumber", { id })}</p>
       </div>
 
 
@@ -123,4 +124,4 @@ const orderConfirm = () => {
   )
 }
 
-export default orderConfirm
+export default OrderConfirm

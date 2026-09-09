@@ -11,14 +11,17 @@ import {
     MessageSquare,
     Copy,
 } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 const ConfirmOrderCustomer = () => {
+    const { t } = useTranslation("order");
+
     return (
         <Card className="lg:mt-4 mt-2 w-full h-[444px] border-t-4 border-t-[#8a9bfa]">
 
             <div className="p-4 border-b">
-                <CardTitle>Customer</CardTitle>
-                <CardDescription>Infomation Detail</CardDescription>
+                <CardTitle>{t("customer.title")}</CardTitle>
+                <CardDescription>{t("customer.description")}</CardDescription>
             </div>
 
             <div className="px-6 mt-4 border-b h-15">
@@ -43,7 +46,7 @@ const ConfirmOrderCustomer = () => {
 
                 <div className="h-22 border-b">
                     <div className="flex justify-between items-center">
-                        <CardTitle>Contact</CardTitle>
+                        <CardTitle>{t("customer.contact")}</CardTitle>
                         <Button variant="ghost" className="text-xs text-normal">
                             <Copy />
                         </Button>
@@ -60,7 +63,7 @@ const ConfirmOrderCustomer = () => {
 
                 <div className="pt-2 h-24 border-b">
                     <div className="flex justify-between items-center">
-                        <CardTitle>Shipping Adress</CardTitle>
+                        <CardTitle>{t("customer.shippingAddress")}</CardTitle>
                         <Button variant="ghost" className="text-xs text-normal">
                             <Copy />
                         </Button>
@@ -72,7 +75,7 @@ const ConfirmOrderCustomer = () => {
 
                 <div className="pt-4 h-22">
                     <div className="flex justify-between items-center">
-                        <CardTitle>Tracking Package</CardTitle>
+                        <CardTitle>{t("customer.trackingPackage")}</CardTitle>
                     </div>
 
                     <div className="mt-2 mx-2">

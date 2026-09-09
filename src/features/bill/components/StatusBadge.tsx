@@ -1,30 +1,32 @@
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { InvoiceStatus } from "../type";
+import { useTranslation } from "react-i18next";
 
 const statusConfig: Record<
   InvoiceStatus,
-  { label: string; icon: typeof CheckCircle2; className: string }
+  { labelKey: string; icon: typeof CheckCircle2; className: string }
 > = {
   paid: {
-    label: "Paid",
+    labelKey: "statusBadge.paid",
     icon: CheckCircle2,
     className: "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400",
   },
   pending: {
-    label: "Pending",
+    labelKey: "statusBadge.pending",
     icon: Clock,
     className: "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400",
   },
   failed: {
-    label: "Failed",
+    labelKey: "statusBadge.failed",
     icon: XCircle,
     className: "bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400",
   },
 };
 
 export const StatusBadge = ({ status }: { status: InvoiceStatus }) => {
-  const { label, icon: Icon, className } = statusConfig[status];
+  const { t } = useTranslation("bill");
+  const { labelKey, icon: Icon, className } = statusConfig[status];
 
   return (
     <span
@@ -34,7 +36,7 @@ export const StatusBadge = ({ status }: { status: InvoiceStatus }) => {
       )}
     >
       <Icon className="size-3.5" />
-      {label}
+      {t(labelKey)}
     </span>
   );
 };

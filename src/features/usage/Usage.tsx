@@ -22,9 +22,11 @@ import { useAdminUsage } from "./hooks/useAdminUsage";
 import { useLinePushMessageUsage } from "./hooks/useLinePushMessageUsage";
 import { useUsageAccounts } from "./hooks/useUsageAccounts";
 import type { UsageAccountItem } from "./services/usage.service";
+import { useTranslation } from "react-i18next";
+import { formatNumber as formatLocaleNumber } from "@/i18n/format";
 
 const formatNumber = (value: number) =>
-  value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  formatLocaleNumber(value, { maximumFractionDigits: 2 });
 
 const getPercent = (used: number, limit: number) =>
   limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
@@ -41,16 +43,12 @@ const statusStyle: Record<UsageAccountItem["status"], string> = {
   inactive: "bg-muted text-mini ring-border",
 };
 
-const statusLabel: Record<UsageAccountItem["status"], string> = {
-  active: "Active",
-  trial: "Trial",
-  inactive: "Inactive",
-};
-
 function StatusBadge({ status }: { status: UsageAccountItem["status"] }) {
+  const { t } = useTranslation("usage");
+
   return (
     <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[status]}`}>
-      {statusLabel[status]}
+      {t(`status.${status}`)}
     </span>
   );
 }
@@ -89,6 +87,7 @@ function UsageOverviewRow({
   iconClassName: string;
   progressClassName: string;
 }) {
+  const { t } = useTranslation("usage");
   const percent = getPercent(used, limit);
   const remaining = Math.max(limit - used, 0);
 
@@ -112,7 +111,7 @@ function UsageOverviewRow({
             {formatNumber(remaining)}
           </p>
           <p className="mt-1 text-xs font-medium text-mini">
-            remaining of {formatNumber(limit)}
+            {t("token.remainingOf", { limit: formatNumber(limit) })}
           </p>
         </div>
       </div>
@@ -127,12 +126,12 @@ function UsageOverviewRow({
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
           <p className="font-semibold text-normal">
-            {formatNumber(used)} used <span className="mx-1 text-mini">·</span>{" "}
-            {formatPercent(percent)}%
+            {t("token.used", { used: formatNumber(used) })}{" "}
+            <span className="mx-1 text-mini">·</span> {formatPercent(percent)}%
           </p>
           <p className="flex items-center gap-1.5 font-medium text-mini">
             <CheckCircle2 className="size-3.5 text-emerald-500" />
-            Within monthly allowance
+            {t("token.withinAllowance")}
           </p>
         </div>
       </div>
@@ -151,6 +150,7 @@ function CreditUsageRow({
   limit: number;
   color: string;
 }) {
+  const { t } = useTranslation("usage");
   const percent = getPercent(used, limit);
 
   return (
@@ -159,7 +159,10 @@ function CreditUsageRow({
         <div>
           <p className="text-sm font-medium text-normal">{label}</p>
           <p className="mt-0.5 text-xs text-mini">
-            {formatNumber(used)} / {formatNumber(limit)} credits
+            {t("account.credits", {
+              used: formatNumber(used),
+              limit: formatNumber(limit),
+            })}
           </p>
         </div>
         <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-normal">
@@ -172,6 +175,7 @@ function CreditUsageRow({
 }
 
 function AccountUsageCard({ account }: { account: UsageAccountItem }) {
+  const { t } = useTranslation("usage");
   const initials = account.username
     .split(" ")
     .map((word) => word[0])
@@ -202,14 +206,14 @@ function AccountUsageCard({ account }: { account: UsageAccountItem }) {
 
       <CardContent className="space-y-5 px-5 pb-5 pt-2.5">
         <CreditUsageRow
-          label="AI credit usage"
+          label={t("account.aiCredit")}
           used={account.aiUsed}
           limit={account.aiLimit ?? 0}
           color="bg-orange-500"
         />
         {account.chatUsed !== null && (
           <CreditUsageRow
-            label="Chat credit usage"
+            label={t("account.chatCredit")}
             used={account.chatUsed}
             limit={account.chatLimit ?? 0}
             color="bg-blue-500"
@@ -217,10 +221,10 @@ function AccountUsageCard({ account }: { account: UsageAccountItem }) {
         )}
 
         <div className="flex items-center justify-between rounded-xl border bg-muted px-3 py-2.5 text-xs text-mini">
-          <span>Account health</span>
+          <span>{t("account.health")}</span>
           <span className="flex items-center gap-1.5 font-semibold text-green-600 dark:text-green-400">
             <CheckCircle2 className="h-3.5 w-3.5" />
-            Operational
+            {t("account.operational")}
           </span>
         </div>
       </CardContent>
@@ -229,6 +233,7 @@ function AccountUsageCard({ account }: { account: UsageAccountItem }) {
 }
 
 export const Usage = () => {
+  const { t } = useTranslation("usage");
   const {
     data: adminUsage,
     isLoading: isAdminUsageLoading,
@@ -259,37 +264,35 @@ export const Usage = () => {
     <div className="mt-10 mb-12">
       <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-normal">Usage</h1>
-          <p className="mt-2 text-sm text-mini">
-            Monitor your LINE OA account, chat credit, and AI credit usage.
-          </p>
+          <h1 className="text-2xl font-semibold text-normal">{t("title")}</h1>
+          <p className="mt-2 text-sm text-mini">{t("subtitle")}</p>
         </div>
         <div className="flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium text-mini shadow-sm">
           <Sparkles className="h-4 w-4 text-orange-500" />
           {isAdminUsageLoading || isLinePushLoading
-            ? "Syncing credits..."
+            ? t("sync.syncing")
             : isAdminUsageError || isLinePushError
-              ? "Using fallback data"
-              : "Updated just now"}
+              ? t("sync.fallback")
+              : t("sync.updated")}
         </div>
       </div>
 
       <Card className="mt-6">
         <div className="flex flex-col gap-3 border-b border-white/50 px-5 py-5 dark:border-border sm:flex-row sm:items-center sm:justify-between sm:px-7">
           <div>
-            <p className="text-base font-semibold tracking-tight text-normal">Token overview</p>
-            <p className="mt-1 text-xs text-mini">Monthly token usage across your connected workspace</p>
+            <p className="text-base font-semibold tracking-tight text-normal">{t("token.title")}</p>
+            <p className="mt-1 text-xs text-mini">{t("token.subtitle")}</p>
           </div>
           <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-200/70 bg-emerald-50/70 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
             <span className="size-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.12)]" />
-            {activeAccounts} active · {usageAccounts.length} connected
+            {t("token.connected", { active: activeAccounts, total: usageAccounts.length })}
           </div>
         </div>
 
         <div className="grid divide-y divide-white/50 dark:divide-border xl:grid-cols-3 xl:divide-x xl:divide-y-0">
           <UsageOverviewRow
-            title="AI Chat Token"
-            description="AI conversations and generated replies"
+            title={t("token.aiChat")}
+            description={t("token.aiChatDesc")}
             used={aiChatUsed}
             limit={aiChatLimit}
             icon={Bot}
@@ -297,8 +300,8 @@ export const Usage = () => {
             progressClassName="from-indigo-600 via-violet-500 to-fuchsia-500"
           />
           <UsageOverviewRow
-            title="LINE Send Token"
-            description="Messages sent to customers on LINE"
+            title={t("token.lineSend")}
+            description={t("token.lineSendDesc")}
             used={totalChatUsed}
             limit={totalChatLimit}
             icon={Send}
@@ -306,8 +309,8 @@ export const Usage = () => {
             progressClassName="from-emerald-500 via-teal-400 to-cyan-400"
           />
           <UsageOverviewRow
-            title="Admin Token"
-            description="Credits used by admin tools"
+            title={t("token.admin")}
+            description={t("token.adminDesc")}
             used={adminUsed}
             limit={adminLimit}
             icon={ShieldCheck}
@@ -318,13 +321,13 @@ export const Usage = () => {
       </Card>
 
       {isAccountsLoading ? (
-        <Card className="mt-6 px-5 py-8 text-sm text-mini">Loading accounts...</Card>
+        <Card className="mt-6 px-5 py-8 text-sm text-mini">{t("account.loading")}</Card>
       ) : isAccountsError ? (
         <Card className="mt-6 px-5 py-8 text-sm text-mini">
-          Could not load accounts: {getApiErrorMessage(accountsError)}
+          {t("account.error", { message: getApiErrorMessage(accountsError) })}
         </Card>
       ) : usageAccounts.length === 0 ? (
-        <Card className="mt-6 px-5 py-8 text-sm text-mini">No accounts to show.</Card>
+        <Card className="mt-6 px-5 py-8 text-sm text-mini">{t("account.empty")}</Card>
       ) : (
         <div className="mt-6 grid gap-5 xl:grid-cols-2">
           {usageAccounts.map((account) => (

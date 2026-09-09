@@ -16,6 +16,7 @@ import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/u
 
 import { weekmoneyData } from '@/data/money.data'
 import { TrendingUp } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 
 const chartConfig = {
@@ -26,6 +27,7 @@ const chartConfig = {
 
 
 const MoneyChart = ({ selected }: { selected: string }) => {
+  const { t } = useTranslation("home");
   const [screenSize, setScreenSize] = useState<number>(0);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ const MoneyChart = ({ selected }: { selected: string }) => {
     <div className='lg:-mx-10 md:-mx-6 -mx-6 mt-1'>
       <CardHeader>
         <CardDescription className='lg:px-4 -mt-3 text-sm flex'>
-          Trending up by 5.2% this month
+          {t("money.trend")}
           <TrendingUp className="h-4 w-4 ml-1 text-green-300" />
         </CardDescription>
       </CardHeader>

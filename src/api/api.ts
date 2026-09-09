@@ -1,5 +1,6 @@
 import axios from "axios";
 import { clearAuth, getAuthToken } from "@/features/auth/store/auth.store";
+import i18n, { getCurrentLanguage } from "@/i18n";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -14,6 +15,10 @@ api.interceptors.request.use((config) => {
   const token = getAuthToken();
 
   if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  // ส่งภาษาปัจจุบันไปด้วยทุก request เผื่อ backend ตอบ error/เนื้อหาตามภาษาได้
+  // ตอนนี้ backend ยังไม่อ่าน header นี้ แต่ใส่ไว้ก่อนจะได้ไม่ต้องแก้ทีหลัง
+  config.headers["Accept-Language"] = getCurrentLanguage();
 
   return config;
 });
@@ -34,7 +39,8 @@ api.interceptors.response.use(
 /** ดึงข้อความ error จาก response ของ backend มาแสดงบน UI */
 export const getApiErrorMessage = (
   error: unknown,
-  fallback = "Something went wrong, please try again"
+  // อ่านค่า default ตอนเรียกฟังก์ชัน ไม่ใช่ตอน import ข้อความจึงตรงกับภาษาปัจจุบันเสมอ
+  fallback = i18n.t("state.error")
 ): string => {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as
@@ -50,8 +56,8 @@ export const getApiErrorMessage = (
     if (Array.isArray(data?.message)) return data.message[0] ?? fallback;
     if (data?.message) return data.message;
     if (data?.error) return data.error;
-    if (error.code === "ECONNABORTED") return "Request timeout";
-    if (!error.response) return "Cannot connect to server";
+    if (error.code === "ECONNABORTED") return i18n.t("state.timeout");
+    if (!error.response) return i18n.t("state.offline");
   }
 
   return fallback;

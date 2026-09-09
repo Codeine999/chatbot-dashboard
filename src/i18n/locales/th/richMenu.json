@@ -1,0 +1,122 @@
+{
+  "page": {
+    "title": "Rich Menu",
+    "subtitle": "ออกแบบเมนูลัดของ LINE Official Account แล้วเผยแพร่ได้จากที่เดียว",
+    "saveDraft": "บันทึกร่าง",
+    "publish": "เผยแพร่ไป LINE",
+    "publishing": "กำลังเผยแพร่",
+    "savedAt": "บันทึกร่างล่าสุด {{time}} น.",
+    "unsaved": "ยังไม่ได้บันทึกการแก้ไข"
+  },
+  "list": {
+    "title": "เมนูทั้งหมด",
+    "create": "สร้าง Rich Menu",
+    "searchPlaceholder": "ค้นหาเมนู",
+    "empty": "ไม่พบเมนูที่ตรงกับการค้นหา",
+    "newName": "Rich Menu ใหม่",
+    "copySuffix": "สำเนา",
+    "updated": "อัปเดต {{date}}",
+    "notPublished": "ยังไม่ส่งไป LINE",
+    "actions": "ตัวเลือกของเมนูนี้",
+    "duplicate": "ทำสำเนา",
+    "delete": "ลบเมนู"
+  },
+  "filter": {
+    "all": "ทั้งหมด",
+    "draft": "ร่าง",
+    "line": "LINE"
+  },
+  "status": {
+    "active": "ใช้งานอยู่",
+    "published": "อยู่บน LINE",
+    "draft": "ร่าง"
+  },
+  "builder": {
+    "namePlaceholder": "ตั้งชื่อเมนู",
+    "upload": "อัปโหลดภาพ",
+    "replace": "เปลี่ยนภาพ",
+    "remove": "ลบภาพ",
+    "imageSpec": "PNG หรือ JPEG · {{width}} × {{height}} px · ไม่เกิน {{size}} MB",
+    "layout": "เลย์เอาต์",
+    "ready": "พร้อมเผยแพร่",
+    "issues": "ต้องแก้ {{total}} จุด",
+    "hint": "แตะพื้นที่บนตัวอย่างเพื่อกำหนดการทำงาน",
+    "areaLabel": "พื้นที่ {{index}}"
+  },
+  "layout": {
+    "grid6": "6 ช่อง",
+    "grid3": "3 ช่อง",
+    "split2": "2 ช่อง",
+    "single": "เต็มพื้นที่"
+  },
+  "preview": {
+    "fallbackName": "LINE Official Account",
+    "subtitle": "พร้อมดูแลคุณเสมอ",
+    "greeting": "สวัสดีครับ ยินดีต้อนรับ วันนี้ให้เราช่วยเรื่องอะไรดีครับ",
+    "time": "10:00",
+    "today": "วันนี้",
+    "inputPlaceholder": "พิมพ์ข้อความ..."
+  },
+  "area": {
+    "title": "การทำงานของพื้นที่",
+    "empty": "เลือกพื้นที่บนตัวอย่างเพื่อกำหนดการทำงาน",
+    "namePlaceholder": "ชื่อพื้นที่",
+    "size": "{{width}} × {{height}} px",
+    "ratio": "อัตราส่วน {{ratio}}",
+    "actionType": "ประเภทการทำงาน",
+    "data": "ข้อมูลที่ส่งกลับ",
+    "dataPlaceholder": "action=contact_admin",
+    "message": "ข้อความที่ส่ง",
+    "messagePlaceholder": "ขอดูโปรโมชั่นล่าสุด",
+    "uri": "ลิงก์ปลายทาง",
+    "uriPlaceholder": "https://example.com",
+    "showInChat": "แสดงข้อความในแชท",
+    "showInChatHint": "ข้อความนี้จะขึ้นในห้องแชทเมื่อลูกค้ากดปุ่มนี้",
+    "displayText": "ข้อความที่แสดง",
+    "displayTextPlaceholder": "ต้องการติดต่อแอดมิน",
+    "bounds": "ตำแหน่งและขนาด",
+    "noneHint": "พื้นที่นี้จะกดไม่ได้ ใช้สำหรับส่วนที่เป็นภาพอย่างเดียว"
+  },
+  "action": {
+    "postback": "ส่งข้อมูลกลับระบบ",
+    "message": "ส่งข้อความแทนลูกค้า",
+    "uri": "เปิดลิงก์",
+    "none": "ไม่ทำอะไร"
+  },
+  "issue": {
+    "data": "ยังไม่ได้กรอกข้อมูลที่ส่งกลับ",
+    "text": "ยังไม่ได้กรอกข้อความที่ส่ง",
+    "uri": "ยังไม่ได้กรอกลิงก์ปลายทาง",
+    "uriFormat": "ลิงก์ต้องขึ้นต้นด้วย http:// หรือ https://"
+  },
+  "publish": {
+    "title": "การเผยแพร่",
+    "chatBarText": "ข้อความบนแถบแชท",
+    "chatBarPlaceholder": "เมนู",
+    "target": "เผยแพร่ให้ใคร",
+    "targetAll": "ทุกคน",
+    "targetTest": "ผู้ใช้ทดสอบ",
+    "testUserId": "User ID ที่ใช้ทดสอบ",
+    "testUserIdPlaceholder": "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "ready": "ทุกพื้นที่กรอกครบแล้ว พร้อมเผยแพร่",
+    "note": "เมนูนี้อยู่บน LINE แล้ว เมื่อเผยแพร่ซ้ำระบบจะสร้าง Rich Menu ID ใหม่ให้",
+    "step": {
+      "validate": "ตรวจสอบโครงสร้างเมนู",
+      "create": "สร้างเมนูบน LINE",
+      "upload": "อัปโหลดภาพ",
+      "default": "ตั้งเป็นเมนูหลัก"
+    }
+  },
+  "toast": {
+    "created": "สร้างเมนูใหม่แล้ว",
+    "duplicated": "ทำสำเนาเมนูแล้ว",
+    "deleted": "ลบเมนูแล้ว",
+    "deleteActive": "ลบไม่ได้ เพราะเมนูนี้กำลังใช้งานอยู่บน LINE",
+    "draftSaved": "บันทึกร่างแล้ว",
+    "published": "เผยแพร่ไป LINE เรียบร้อย",
+    "hasIssues": "ยังกรอกข้อมูลไม่ครบ แก้ให้ครบก่อนเผยแพร่",
+    "needTestUserId": "กรอก User ID ที่ใช้ทดสอบก่อน",
+    "imageType": "รองรับเฉพาะไฟล์ PNG และ JPEG",
+    "imageTooLarge": "ไฟล์ใหญ่เกิน {{size}} MB"
+  }
+}

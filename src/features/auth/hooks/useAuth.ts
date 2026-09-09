@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getApiErrorMessage } from "@/api/api";
+import i18n from "@/i18n";
 import { authApi } from "../services/auth.service";
 import { useAuthStore } from "../store/auth.store";
 import type { FromLocationState, LoginPayload } from "../types/auth.type";
@@ -32,7 +33,7 @@ export function useLogin() {
   return {
     ...mutation,
     errorMessage: mutation.error
-      ? getApiErrorMessage(mutation.error, "Username or password is incorrect")
+      ? getApiErrorMessage(mutation.error, i18n.t("toast.loginFailed"))
       : "",
   };
 }

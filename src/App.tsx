@@ -14,6 +14,7 @@ import { AiAnswer } from "./features/aiAnswer/AiAnswer";
 import { Usage } from "./features/usage/Usage";
 import { UsageGraph } from "./features/usage/UsageGraph";
 import { LineChat } from "./features/LineChat/LineChat";
+import { RichMenuSetting } from "./features/richMenu/RichMenuSetting";
 import { OwnerRegister } from "./features/auth/register/OwnerRegister";
 import { Bill } from "./features/bill/Bill";
 import { OverallSetting } from "./features/setting/overallSetting/OverAllSetting";
@@ -30,6 +31,8 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
+
+          <Route path="/rich-menu/setting" element={<RichMenuSetting />} />
 
           <Route path="/product" element={<Product />} />
           <Route path="/product/add-product" element={<AddProduct />} />

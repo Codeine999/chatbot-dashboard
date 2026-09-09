@@ -1,0 +1,116 @@
+{
+  "title": "Usage",
+  "subtitle": "Monitor your LINE OA account, chat credit, and AI credit usage.",
+  "sync": {
+    "syncing": "Syncing credits...",
+    "fallback": "Using fallback data",
+    "updated": "Updated just now"
+  },
+  "token": {
+    "title": "Token overview",
+    "subtitle": "Monthly token usage across your connected workspace",
+    "connected": "{{active}} active · {{total}} connected",
+    "aiChat": "AI Chat Token",
+    "aiChatDesc": "AI conversations and generated replies",
+    "lineSend": "LINE Send Token",
+    "lineSendDesc": "Messages sent to customers on LINE",
+    "admin": "Admin Token",
+    "adminDesc": "Credits used by admin tools",
+    "remainingOf": "remaining of {{limit}}",
+    "used": "{{used}} used",
+    "withinAllowance": "Within monthly allowance"
+  },
+  "account": {
+    "loading": "Loading accounts...",
+    "error": "Could not load accounts: {{message}}",
+    "empty": "No accounts to show.",
+    "aiCredit": "AI credit usage",
+    "chatCredit": "Chat credit usage",
+    "credits": "{{used}} / {{limit}} credits",
+    "health": "Account health",
+    "operational": "Operational"
+  },
+  "status": {
+    "active": "Active",
+    "trial": "Trial",
+    "inactive": "Inactive"
+  },
+  "graph": {
+    "title": "Analytics",
+    "subtitle": "Token spend, chat volume, followers, and revenue. Pick a range on any chart."
+  },
+  "metric": {
+    "chat": {
+      "title": "Chat volume",
+      "description": "LINE messages handled",
+      "unit": "messages",
+      "series": {
+        "messages": "Messages"
+      }
+    },
+    "creditUsage": {
+      "title": "Token spending",
+      "description": "Credits burned by type",
+      "unit": "tokens",
+      "series": {
+        "aiChat": "AI chat",
+        "lineSend": "LINE send",
+        "admin": "Admin tools"
+      }
+    },
+    "followers": {
+      "title": "LINE followers",
+      "description": "Follower level per bucket",
+      "unit": "followers",
+      "series": {
+        "followers": "Followers"
+      }
+    },
+    "revenue": {
+      "title": "Revenue",
+      "description": "Successful customer payments",
+      "unit": "paid",
+      "series": {
+        "revenue": "Revenue"
+      }
+    }
+  },
+  "granularity": {
+    "selectLabel": "Select time range",
+    "hour": "Hourly",
+    "day": "Daily",
+    "month": "Monthly",
+    "year": "Yearly",
+    "window": {
+      "hour": "Last 24 hours",
+      "day": "Last 30 days",
+      "month": "Last 12 months",
+      "year": "Last 5 years"
+    },
+    "unit": {
+      "hour": "hour",
+      "day": "day",
+      "month": "month",
+      "year": "year"
+    }
+  },
+  "chart": {
+    "vsPrev": "vs prev {{unit}}",
+    "noActivity": "No activity in this range",
+    "noActivityHint": "The API returned data for {{window}}, all of it zero.",
+    "showData": "View data",
+    "hideData": "Hide data",
+    "period": "Period",
+    "total": "Total"
+  },
+  "badge": {
+    "partial": "Partial mapping",
+    "partialHint": "Some numeric fields in the response did not match any series, so the totals shown are lower than the API reports",
+    "apiError": "API error",
+    "apiErrorHint": "Request failed",
+    "unmapped": "Unmapped fields",
+    "unmappedHint": "API returned {{count}} rows but none matched the expected fields",
+    "sample": "Sample",
+    "sampleHint": "API returned no rows for this range"
+  }
+}

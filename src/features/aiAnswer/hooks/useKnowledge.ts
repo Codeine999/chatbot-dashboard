@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import i18n from "@/i18n";
 import { getApiErrorMessage } from "@/api/api";
 import {
   buildAnswerPatternPatch,
@@ -54,10 +55,10 @@ export function useCreateKnowledgeCategory() {
           return { total: categories.length, data: categories };
         }
       );
-      toast.success("เพิ่มหมวดหมู่แล้ว");
+      toast.success(i18n.t("knowledge:toast.categoryAdded"));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "เพิ่มหมวดหมู่ไม่สำเร็จ"));
+      toast.error(getApiErrorMessage(error, i18n.t("knowledge:toast.categoryAddFailed")));
     },
   });
 }
@@ -69,10 +70,10 @@ export function useDeleteKnowledgeCategory() {
     mutationFn: knowledgeApi.removeCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: knowledgeKeys.categories() });
-      toast.success("ลบหมวดหมู่แล้ว");
+      toast.success(i18n.t("knowledge:toast.categoryDeleted"));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "ลบหมวดหมู่ไม่สำเร็จ"));
+      toast.error(getApiErrorMessage(error, i18n.t("knowledge:toast.categoryDeleteFailed")));
     },
   });
 }
@@ -113,10 +114,10 @@ export function useSaveKnowledge() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: knowledgeKeys.list() });
       queryClient.invalidateQueries({ queryKey: knowledgeKeys.count() });
-      toast.success(variables.id ? "อัปเดตรูปแบบคำตอบแล้ว" : "สร้างรูปแบบคำตอบแล้ว");
+      toast.success(variables.id ? i18n.t("knowledge:toast.updated") : i18n.t("knowledge:toast.created"));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "บันทึกรูปแบบคำตอบไม่สำเร็จ"));
+      toast.error(getApiErrorMessage(error, i18n.t("knowledge:toast.saveFailed")));
     },
   });
 }
@@ -129,10 +130,10 @@ export function useDeleteKnowledge() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: knowledgeKeys.list() });
       queryClient.invalidateQueries({ queryKey: knowledgeKeys.count() });
-      toast.success("ลบรูปแบบคำตอบแล้ว");
+      toast.success(i18n.t("knowledge:toast.deleted"));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "ลบรูปแบบคำตอบไม่สำเร็จ"));
+      toast.error(getApiErrorMessage(error, i18n.t("knowledge:toast.deleteFailed")));
     },
   });
 }

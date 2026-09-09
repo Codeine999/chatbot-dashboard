@@ -16,6 +16,7 @@ import {
 
 import { Card } from "@/components/ui/card";
 import type { UserItem } from "../type";
+import { useTranslation } from "react-i18next";
 
 type UserTableProps = {
   users: UserItem[];
@@ -30,6 +31,8 @@ const getInitial = (user: UserItem) => (user.username ?? getFirstName(user)).cha
 const getStatus = (user: UserItem) => user.statusaccount ?? user.statusAccount ?? user.status ?? "-";
 
 const UserTable = ({ users, isLoading = false }: UserTableProps) => {
+  const { t } = useTranslation("users");
+
   return (
     <Card className="mt-3 overflow-hidden">
 
@@ -37,31 +40,31 @@ const UserTable = ({ users, isLoading = false }: UserTableProps) => {
         <TableHeader className="h-[55px]">
           <TableRow>
             <TableHead className="w-[90px] px-6 text-mini font-medium">
-              Picture
+              {t("table.picture")}
             </TableHead>
             <TableHead className="w-[140px] px-4 text-mini font-medium">
-              Username
+              {t("table.username")}
             </TableHead>
             <TableHead className="w-[140px] px-6 text-mini font-medium">
-              First Name
+              {t("table.firstName")}
             </TableHead>
             <TableHead className="w-[140px] px-[6px] text-mini font-medium">
-              Last Name
+              {t("table.lastName")}
             </TableHead>
             <TableHead className="w-[130px] text-center text-mini font-medium">
-              Phone
+              {t("table.phone")}
             </TableHead>
             <TableHead className="w-[150px] text-center text-mini font-medium">
-              Bank
+              {t("table.bank")}
             </TableHead>
             <TableHead className="w-[150px] text-center text-mini font-medium">
-              Bank No.
+              {t("table.bankNo")}
             </TableHead>
             <TableHead className="w-[120px] text-center text-mini font-medium">
-              Status
+              {t("table.status")}
             </TableHead>
             <TableHead className="w-[120px] text-center text-mini font-medium">
-              Action
+              {t("table.action")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -73,7 +76,7 @@ const UserTable = ({ users, isLoading = false }: UserTableProps) => {
             {isLoading && (
               <TableRow>
                 <TableCell colSpan={9} className="h-24 text-center text-sm text-mini">
-                  Loading users...
+                  {t("loading")}
                 </TableCell>
               </TableRow>
             )}
@@ -81,7 +84,7 @@ const UserTable = ({ users, isLoading = false }: UserTableProps) => {
             {!isLoading && users.length === 0 && (
               <TableRow>
                 <TableCell colSpan={9} className="h-24 text-center text-sm text-mini">
-                  No users found
+                  {t("empty")}
                 </TableCell>
               </TableRow>
             )}
@@ -92,7 +95,7 @@ const UserTable = ({ users, isLoading = false }: UserTableProps) => {
                   {getImage(items) ? (
                     <img
                       src={getImage(items)}
-                      alt={items.username ?? "user"}
+                      alt={items.username ?? t("avatarAlt")}
                       className="w-[34px] h-[34px] object-cover rounded-full"
                     />
                   ) : (

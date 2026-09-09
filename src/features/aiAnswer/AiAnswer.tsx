@@ -28,8 +28,12 @@ import {
   useSaveKnowledge,
 } from "./hooks/useKnowledge";
 import type { KnowledgeDraft, KnowledgeItem } from "./type/knowledge.type";
+import { useTranslation } from "react-i18next";
 
-const TABS = ["Knowledge Entries", "Retrieval Test", "Import / Sync", "Settings"];
+// เก็บเป็น key ของแท็บ ไม่ใช่ข้อความ เพราะ state `tab` เอาไปเทียบกันด้วย
+const TABS = ["entries", "retrieval", "import", "settings"] as const;
+
+type Tab = (typeof TABS)[number];
 
 const PRIORITY_RANGES: Record<string, [number, number]> = {
   high: [90, 100],
@@ -38,6 +42,7 @@ const PRIORITY_RANGES: Record<string, [number, number]> = {
 };
 
 export const AiAnswer = () => {
+  const { t } = useTranslation("knowledge");
   const { data, isLoading, isError, refetch } = useKnowledgeList();
   const {
     data: categoryList,
@@ -49,7 +54,7 @@ export const AiAnswer = () => {
   const saveKnowledge = useSaveKnowledge();
   const deleteKnowledge = useDeleteKnowledge();
 
-  const [tab, setTab] = useState(TABS[0]);
+  const [tab, setTab] = useState<Tab>(TABS[0]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [status, setStatus] = useState("all");
@@ -125,10 +130,8 @@ export const AiAnswer = () => {
             <BookOpen className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-normal">AI Knowledge Base</h1>
-            <p className="text-sm text-mini">
-              Manage the knowledge your AI uses to answer customer questions.
-            </p>
+            <h1 className="text-xl font-semibold text-normal">{t("title")}</h1>
+            <p className="text-sm text-mini">{t("subtitle")}</p>
           </div>
         </div>
 
@@ -136,12 +139,12 @@ export const AiAnswer = () => {
 
           <Button variant="ghost" className="border gap-1.5" onClick={() => setTab(TABS[2])}>
             <Upload className="h-4 w-4 text-icons" />
-            Bulk Import
+            {t("bulkImport")}
           </Button>
 
           <Button className="gap-1.5" onClick={() => openEditor(undefined)}>
             <Plus className="h-4 w-4" />
-            Add Knowledge
+            {t("add")}
           </Button>
         </div>
       </div>
@@ -160,7 +163,7 @@ export const AiAnswer = () => {
                     : "border-transparent text-mini hover:text-normal"
                 }`}
               >
-                {name}
+                {t(`tab.${name}`)}
               </button>
             ))}
           </div>
@@ -174,10 +177,8 @@ export const AiAnswer = () => {
               </div>
               <div className="mt-6">{tabsBar}</div>
               <Card className="mt-4 p-10 text-center">
-                <p className="text-sm text-normal">{tab}</p>
-                <p className="mt-1 text-xs text-mini">
-                  ยังไม่ได้ทำแท็บนี้ — ใช้ช่อง Retrieval Preview ในการ์ดขวาทดสอบได้ก่อน
-                </p>
+                <p className="text-sm text-normal">{t(`tab.${tab}`)}</p>
+                <p className="mt-1 text-xs text-mini">{t("tabTodo")}</p>
               </Card>
             </>
           );
@@ -200,7 +201,7 @@ export const AiAnswer = () => {
                         setSearch(event.target.value);
                         setPage(1);
                       }}
-                      placeholder="Search entries..."
+                      placeholder={t("filter.searchPlaceholder")}
                       className="pl-9"
                     />
                   </div>
@@ -214,10 +215,10 @@ export const AiAnswer = () => {
                     }}
                   >
                     <SelectTrigger className="w-40">
-                      <SelectValue placeholder="All Categories" />
+                      <SelectValue placeholder={t("filter.allCategories")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
+                      <SelectItem value="all">{t("filter.allCategories")}</SelectItem>
                       {categoryOptions.map((categoryOption) => (
                         <SelectItem
                           key={categoryOption.id}
@@ -228,7 +229,7 @@ export const AiAnswer = () => {
                       ))}
                       {isCategoriesError && (
                         <SelectItem value="categories-error" disabled>
-                          โหลดหมวดหมู่ไม่สำเร็จ
+                          {t("filter.categoriesError")}
                         </SelectItem>
                       )}
                     </SelectContent>
@@ -236,24 +237,24 @@ export const AiAnswer = () => {
 
                   <Select value={status} onValueChange={setStatus}>
                     <SelectTrigger className="w-36">
-                      <SelectValue placeholder="All Statuses" />
+                      <SelectValue placeholder={t("filter.allStatuses")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="all">{t("filter.allStatuses")}</SelectItem>
+                      <SelectItem value="active">{t("filter.active")}</SelectItem>
+                      <SelectItem value="inactive">{t("filter.inactive")}</SelectItem>
                     </SelectContent>
                   </Select>
 
                   <Select value={priority} onValueChange={setPriority}>
                     <SelectTrigger className="w-36">
-                      <SelectValue placeholder="Priority: All" />
+                      <SelectValue placeholder={t("filter.priorityAll")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Priority: All</SelectItem>
-                      <SelectItem value="high">High (90-100)</SelectItem>
-                      <SelectItem value="medium">Medium (70-89)</SelectItem>
-                      <SelectItem value="low">Low (0-69)</SelectItem>
+                      <SelectItem value="all">{t("filter.priorityAll")}</SelectItem>
+                      <SelectItem value="high">{t("filter.priorityHigh")}</SelectItem>
+                      <SelectItem value="medium">{t("filter.priorityMedium")}</SelectItem>
+                      <SelectItem value="low">{t("filter.priorityLow")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -277,14 +278,16 @@ export const AiAnswer = () => {
                 {/* Pagination */}
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t pt-3">
                   <p className="text-xs text-mini">
-                    Showing {filtered.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1} to{" "}
-                    {Math.min(currentPage * rowsPerPage, filtered.length)} of {filtered.length}{" "}
-                    entries
+                    {t("pagination.showing", {
+                      from: filtered.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1,
+                      to: Math.min(currentPage * rowsPerPage, filtered.length),
+                      total: filtered.length,
+                    })}
                   </p>
 
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-mini">Rows per page</span>
+                      <span className="text-xs text-mini">{t("pagination.rowsPerPage")}</span>
                       <Select
                         value={String(rowsPerPage)}
                         onValueChange={(value) => {
@@ -311,7 +314,7 @@ export const AiAnswer = () => {
                         size="icon"
                         disabled={currentPage === 1}
                         onClick={() => setPage(currentPage - 1)}
-                        aria-label="Previous page"
+                        aria-label={t("pagination.previous")}
                       >
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
@@ -325,7 +328,7 @@ export const AiAnswer = () => {
                         size="icon"
                         disabled={currentPage === totalPages}
                         onClick={() => setPage(currentPage + 1)}
-                        aria-label="Next page"
+                        aria-label={t("pagination.next")}
                       >
                         <ChevronRight className="h-4 w-4" />
                       </Button>
@@ -352,10 +355,8 @@ export const AiAnswer = () => {
                 <Card className="absolute inset-0 flex items-center justify-center p-10 text-center">
                   <div>
                     <BookOpen className="mx-auto h-8 w-8 text-mini" />
-                    <p className="mt-3 text-sm text-normal">เลือก entry เพื่อดูรายละเอียด</p>
-                    <p className="mt-1 text-xs text-mini">
-                      คลิกแถวในตาราง หรือกด Add Knowledge เพื่อสร้างใหม่
-                    </p>
+                    <p className="mt-3 text-sm text-normal">{t("emptyPanel.title")}</p>
+                    <p className="mt-1 text-xs text-mini">{t("emptyPanel.hint")}</p>
                   </div>
                 </Card>
               )}

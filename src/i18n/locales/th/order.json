@@ -1,0 +1,59 @@
+{
+  "status": {
+    "all": "ทั้งหมด",
+    "pending": "รอดำเนินการ",
+    "paid": "ชำระแล้ว",
+    "cancel": "ยกเลิก"
+  },
+  "bulkAction": {
+    "shipping": "จัดส่ง",
+    "success": "สำเร็จ",
+    "cancel": "ยกเลิก"
+  },
+  "list": {
+    "status": "สถานะ",
+    "showing": "แสดง {{from}} จาก {{total}}"
+  },
+  "breadcrumb": {
+    "order": "คำสั่งซื้อ",
+    "confirm": "ยืนยันคำสั่งซื้อ"
+  },
+  "confirm": {
+    "orderNumber": "เลขที่คำสั่งซื้อ {{id}}"
+  },
+  "process": {
+    "title": "สถานะการดำเนินการ",
+    "description": "ตรวจสอบสินค้าที่พร้อมจัดส่ง",
+    "step": {
+      "order": "รับคำสั่งซื้อ",
+      "payment": "ชำระเงิน",
+      "processing": "เตรียมสินค้า",
+      "shipping": "จัดส่ง"
+    },
+    "cancelOrder": "ยกเลิกคำสั่งซื้อ"
+  },
+  "payments": {
+    "title": "การชำระเงิน",
+    "description": "สรุปยอดชำระ",
+    "invoice": "ใบเสร็จ",
+    "subtotal": "ยอดรวมสินค้า",
+    "discount": "ส่วนลด",
+    "shipping": "ค่าจัดส่ง",
+    "method": "ช่องทางชำระเงิน",
+    "total": "ยอดรวมทั้งหมด"
+  },
+  "products": {
+    "title": "รายการสินค้า",
+    "count_other": "{{count}} รายการ",
+    "sku": "SKU",
+    "size": "ขนาด:",
+    "qty": "จำนวน:"
+  },
+  "customer": {
+    "title": "ลูกค้า",
+    "description": "ข้อมูลลูกค้า",
+    "contact": "ข้อมูลติดต่อ",
+    "shippingAddress": "ที่อยู่จัดส่ง",
+    "trackingPackage": "ติดตามพัสดุ"
+  }
+}

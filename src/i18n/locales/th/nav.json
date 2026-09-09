@@ -1,0 +1,44 @@
+{
+  "group": {
+    "workspace": "พื้นที่ทำงาน",
+    "communication": "การสื่อสาร",
+    "insights": "รายงาน",
+    "system": "ระบบ",
+    "build": "เครื่องมือ"
+  },
+  "item": {
+    "home": "หน้าแรก",
+    "richMenu": "Rich Menu",
+    "product": "สินค้า",
+    "order": "คำสั่งซื้อ",
+    "users": "ผู้ใช้งาน",
+    "lineChat": "แชท LINE",
+    "answer": "คลังคำตอบ",
+    "aiChatbot": "แชทบอท AI",
+    "overview": "ภาพรวม",
+    "usage": "การใช้งาน",
+    "usageOverall": "ภาพรวมการใช้งาน",
+    "usageGraph": "กราฟการใช้งาน",
+    "bill": "ค่าใช้จ่าย",
+    "setting": "ตั้งค่า",
+    "settingOverall": "ตั้งค่าทั่วไป",
+    "settingSelectMenu": "เลือกเมนู",
+    "aiWorkflow": "AI Work Flow"
+  },
+  "brand": {
+    "fallbackName": "Dashboard",
+    "subtitle": "ระบบจัดการผู้ดูแล"
+  },
+  "user": {
+    "profile": "โปรไฟล์",
+    "setting": "ตั้งค่า",
+    "logout": "ออกจากระบบ"
+  },
+  "notification": {
+    "title": "การแจ้งเตือน",
+    "empty": "ยังไม่มีการแจ้งเตือน"
+  },
+  "theme": {
+    "toggle": "สลับธีมสว่าง/มืด"
+  }
+}

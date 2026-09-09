@@ -1,0 +1,110 @@
+{
+  "composer": {
+    "placeholder": "พิมพ์ข้อความถึงผู้ช่วย AI",
+    "disabled": "บัญชีนี้ถูกปิดการใช้งาน AI",
+    "hint": "กด Enter เพื่อส่ง · Shift + Enter เพื่อขึ้นบรรทัดใหม่",
+    "send": "ส่งข้อความ",
+    "disclaimer": "AI อาจให้ข้อมูลผิดพลาดได้ กรุณาตรวจสอบข้อมูลสำคัญอีกครั้ง"
+  },
+  "thinking": "AI กำลังคิด",
+  "greeting": "สวัสดี {{name}}",
+  "greetingSub": "วันนี้ให้ช่วยอะไรดีครับ?",
+  "suggestion": {
+    "summarize": {
+      "title": "สรุปเนื้อหา",
+      "description": "สรุปเอกสารหรือบทความให้เข้าใจง่าย",
+      "prompt": "ช่วยสรุปเนื้อหานี้ให้เข้าใจง่ายหน่อย"
+    },
+    "code": {
+      "title": "เขียนโค้ด",
+      "description": "ช่วยเขียนโค้ดหรือแก้ไขบัค",
+      "prompt": "ช่วยเขียนโค้ดให้หน่อย"
+    },
+    "analyze": {
+      "title": "วิเคราะห์ข้อมูล",
+      "description": "วิเคราะห์ข้อมูลและสร้าง insight",
+      "prompt": "ช่วยวิเคราะห์ข้อมูลชุดนี้ให้หน่อย"
+    },
+    "ideas": {
+      "title": "แนะนำไอเดีย",
+      "description": "ช่วยระดมความคิดสร้างสรรค์",
+      "prompt": "ช่วยระดมไอเดียให้หน่อย"
+    }
+  },
+  "privacy": {
+    "title": "ประวัติแชทแยกตามบัญชี",
+    "body": "แอดมินคนอื่นจะไม่เห็นห้องของคุณ ส่วน owner/dev สามารถตรวจสอบเพื่อ audit ได้",
+    "dismiss": "ปิดข้อความแจ้งเตือน"
+  },
+  "header": {
+    "history": "ประวัติแชท",
+    "openHistory": "เปิดประวัติแชท",
+    "newChat": "แชทใหม่",
+    "loadingModel": "กำลังโหลดโมเดล…",
+    "changeModelNote": "เปลี่ยนโมเดลที่ใช้ตอบ — มีผลกับแอดมินทุกคน",
+    "modelLockedNote": "โมเดลตั้งค่าโดย owner หรือ dev",
+    "apiKeyUnavailable": " · ไม่มี API key",
+    "credits": "{{used}} เครดิต",
+    "creditsWithLimit": "{{used}} / {{limit}} เครดิต"
+  },
+  "messages": {
+    "loadError": "โหลดข้อความในห้องนี้ไม่สำเร็จ",
+    "retry": "ลองใหม่"
+  },
+  "sidebar": {
+    "recent": "แชทล่าสุด",
+    "loading": "กำลังโหลดรายการแชท",
+    "error": "โหลดประวัติแชทไม่สำเร็จ",
+    "empty": "ยังไม่มีบทสนทนา"
+  },
+  "error": {
+    "createRoom": "สร้างแชทใหม่ไม่สำเร็จ",
+    "sendMessage": "AI ตอบข้อความนี้ไม่ได้",
+    "deleteRoom": "ลบแชทนี้ไม่สำเร็จ",
+    "renameRoom": "เปลี่ยนชื่อแชทนี้ไม่สำเร็จ",
+    "changeModel": "เปลี่ยนโมเดลไม่สำเร็จ"
+  },
+  "defaultName": "แอดมิน",
+  "line": {
+    "searchPlaceholder": "ค้นหาบทสนทนา...",
+    "newestFirst": "ใหม่ไปเก่า",
+    "oldestFirst": "เก่าไปใหม่",
+    "recent": "แชทล่าสุด",
+    "loading": "กำลังโหลดบทสนทนา...",
+    "error": "โหลดบทสนทนาไม่สำเร็จ",
+    "empty": "ไม่พบบทสนทนา",
+    "showMore": "ดูเพิ่มเติม",
+    "conversationCount": "{{count}} บทสนทนา",
+    "selectConversation": "เลือกบทสนทนา",
+    "lastActive": "ใช้งานล่าสุด {{time}}",
+    "loadingOlder": "กำลังโหลดข้อความก่อนหน้า...",
+    "replyPlaceholder": "พิมพ์ข้อความตอบกลับ... Enter เพื่อส่ง, Shift+Enter ขึ้นบรรทัดใหม่",
+    "connected": "เชื่อมต่อกับ LINE conversation API แล้ว",
+    "sending": "กำลังส่ง...",
+    "send": "ส่ง",
+    "sendFailed": "ส่งข้อความไม่สำเร็จ",
+    "defaultUser": "ผู้ใช้ LINE",
+    "channel": {
+      "all": "ทั้งหมด",
+      "line": "LINE",
+      "messenger": "Messenger",
+      "tiktok": "TikTok"
+    },
+    "quickFilter": {
+      "all": "ทั้งหมด",
+      "unread": "ยังไม่อ่าน"
+    },
+    "soon": "เร็ว ๆ นี้",
+    "preview": {
+      "image": "[รูปภาพ]",
+      "sticker": "[สติกเกอร์]",
+      "postback": "[postback]"
+    },
+    "message": {
+      "imageAlt": "รูปภาพจาก LINE",
+      "imageUnavailable": "ไม่สามารถแสดงรูปภาพได้",
+      "sticker": "สติกเกอร์ {{packageId}} / {{stickerId}}",
+      "postback": "Postback event"
+    }
+  }
+}

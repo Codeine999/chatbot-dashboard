@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useState } from "react";
 import {
   ChevronDown,
@@ -39,6 +40,7 @@ const ChatHistorySidebar = ({
   deletingRoomId,
   mobile = false,
 }: ChatHistorySidebarProps) => {
+  const { t } = useTranslation("chat");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
 
   const sortedConversations = useMemo(
@@ -83,12 +85,12 @@ const ChatHistorySidebar = ({
       </div>
 
       <div className="px-4 pb-2 pt-1">
-        <p className="text-xs font-semibold text-normal">Recent chats</p>
+        <p className="text-xs font-semibold text-normal">{t("sidebar.recent")}</p>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
         {isLoading ? (
-          <div className="space-y-2 px-2 py-3" aria-label="Loading chats">
+          <div className="space-y-2 px-2 py-3" aria-label={t("sidebar.loading")}>
             {[0, 1, 2, 3, 4].map((item) => (
               <div
                 key={item}
@@ -98,7 +100,7 @@ const ChatHistorySidebar = ({
           </div>
         ) : isError ? (
           <div className="px-2 py-4 text-center">
-            <p className="text-xs text-destructive">โหลดประวัติแชทไม่สำเร็จ</p>
+            <p className="text-xs text-destructive">{t("sidebar.error")}</p>
             <Button
               type="button"
               variant="ghost"
@@ -111,7 +113,7 @@ const ChatHistorySidebar = ({
             </Button>
           </div>
         ) : visibleConversations.length === 0 ? (
-          <p className="px-2 py-3 text-xs text-mini">ยังไม่มีบทสนทนา</p>
+          <p className="px-2 py-3 text-xs text-mini">{t("sidebar.empty")}</p>
         ) : (
           <div className="space-y-0.5">
             {visibleConversations.map((conversation) => {

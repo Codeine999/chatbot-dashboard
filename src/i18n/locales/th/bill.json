@@ -1,0 +1,131 @@
+{
+  "title": "ค่าใช้จ่ายและประวัติการชำระเงิน",
+  "subtitle": "ดูประวัติการชำระเงิน ใบแจ้งหนี้ และจัดการค่าใช้จ่ายของคุณ",
+  "summary": {
+    "currentBalance": "ยอดคงเหลือ",
+    "topUp": "เติมเครดิต",
+    "totalSpent": "ใช้ไปทั้งหมด",
+    "allTime": "ตลอดการใช้งาน",
+    "thisMonth": "เดือนนี้",
+    "upcomingInvoice": "ใบแจ้งหนี้รอบถัดไป"
+  },
+  "history": {
+    "title": "ประวัติการชำระเงิน",
+    "export": "ส่งออก",
+    "loading": "กำลังโหลดประวัติการชำระเงิน...",
+    "error": "ไม่สามารถโหลดประวัติการชำระเงินได้",
+    "empty": "ไม่พบประวัติการชำระเงิน",
+    "defaultDescription": "ทำรายการซื้อเครดิต",
+    "showing": "แสดง {{from}} ถึง {{to}} จากทั้งหมด {{total}} รายการ"
+  },
+  "filter": {
+    "all": "ทั้งหมด",
+    "paid": "ชำระแล้ว",
+    "pending": "รอดำเนินการ",
+    "failed": "ไม่สำเร็จ"
+  },
+  "table": {
+    "invoice": "รายการ",
+    "date": "วันที่",
+    "status": "สถานะ",
+    "amount": "จำนวนเงิน",
+    "paymentMethod": "ช่องทางชำระเงิน",
+    "action": "จัดการ"
+  },
+  "description": {
+    "pendingSlip": "รอตรวจสอบหลักฐานการชำระเงิน",
+    "pendingQrcode": "รอดำเนินการชำระเงินด้วย QRcode",
+    "paid": "ชำระเงินซื้อเครดิตด้วย {{method}} สำเร็จ",
+    "failed": "ชำระเงินซื้อเครดิตด้วย {{method}} ไม่สำเร็จ"
+  },
+  "statusBadge": {
+    "paid": "ชำระแล้ว",
+    "pending": "รอดำเนินการ",
+    "failed": "ไม่สำเร็จ"
+  },
+  "paymentMethod": {
+    "slip": "สลิปโอนเงิน",
+    "qrcode": "QR Code"
+  },
+  "invoice": {
+    "title": "รายละเอียดใบเสร็จ",
+    "downloadPdf": "ดาวน์โหลด PDF",
+    "downloadMock": "ตัวอย่างใบเสร็จ (mock) — ยังไม่มีไฟล์ PDF จริงให้ดาวน์โหลด",
+    "summary": "สรุปยอด",
+    "subtotal": "ยอดก่อนภาษี",
+    "vat": "ภาษีมูลค่าเพิ่ม (7%)",
+    "total": "ยอดรวม",
+    "credits": "เครดิต",
+    "creditsValue": "{{count, number}} เครดิต",
+    "amountPaid": "ยอดที่ชำระ",
+    "paymentInfo": "ข้อมูลการชำระเงิน",
+    "paymentMethod": "ช่องทางชำระเงิน",
+    "transactionId": "รหัสรายการ",
+    "paymentDate": "วันที่ชำระ",
+    "usageSummary": "สรุปการใช้งาน",
+    "chatMessages": "ข้อความแชท",
+    "chatMessagesValue": "{{count, number}} ข้อความ",
+    "aiAgents": "AI Agent",
+    "aiAgentsValue": "{{count, number}} ครั้ง",
+    "documents": "เอกสารที่ประมวลผล",
+    "documentsValue": "{{count, number}} ฉบับ",
+    "creditsUsed": "เครดิตที่ใช้",
+    "needHelp": "ต้องการความช่วยเหลือ?",
+    "contactSupport": "ติดต่อฝ่ายสนับสนุน",
+    "contactSupportMock": "ติดต่อฝ่ายสนับสนุน (mock)"
+  },
+  "topupSuccess": {
+    "title": "ส่งคำขอเติมเครดิตสำเร็จ",
+    "message": "คำขอเติม <1>{{credits}} เครดิต</1> ถูกส่งเรียบร้อยแล้ว",
+    "waiting": "รอทีมงานตรวจสอบการชำระเงิน เครดิตจะเข้าบัญชีของคุณหลังตรวจสอบเสร็จสิ้น",
+    "ok": "ตกลง"
+  },
+  "topup": {
+    "title": "เติมเครดิต",
+    "description": "เติมเครดิตเข้าบัญชีเพื่อใช้งานฟีเจอร์ทั้งหมดต่อได้",
+    "step1": "1. เลือกยอดเงิน",
+    "step2": "2. ช่องทางชำระเงิน",
+    "step3": "3. สรุปรายการ",
+    "loadingPackages": "กำลังโหลดแพ็กเกจเครดิต...",
+    "loadPackagesFailed": "โหลดแพ็กเกจเครดิตไม่สำเร็จ",
+    "customAmount": "ระบุยอดเอง",
+    "customHint": "ระบุยอดเงินที่ต้องการเติมเอง",
+    "customInvalid": "กรอกจำนวนบวก ทศนิยมได้ไม่เกิน 6 ตำแหน่ง",
+    "customCalculating": "กำลังคำนวณเครดิต...",
+    "customCalcFailed": "คำนวณเครดิตไม่สำเร็จ",
+    "customApprox": "≈ {{credits}} เครดิต",
+    "amountPlaceholder": "กรอกยอดเงิน",
+    "method": {
+      "qrcode": "QR Code",
+      "qrcodeDesc": "ชำระผ่าน PromptPay QR Code",
+      "slip": "สลิปโอนเงิน",
+      "slipDesc": "อัปโหลดสลิป ตรวจสอบภายใน 1-2 ชั่วโมง",
+      "recommended": "แนะนำ"
+    },
+    "slip": {
+      "alt": "หลักฐานการชำระเงิน",
+      "change": "เปลี่ยนหลักฐานการชำระเงิน",
+      "attachSlip": "แนบสลิปโอนเงิน",
+      "attachQr": "แนบหลักฐานการชำระผ่าน QR Code",
+      "hint": "รองรับไฟล์ JPG, PNG และ WebP ไม่เกิน 5 MB"
+    },
+    "summary": {
+      "amount": "จำนวนเครดิต",
+      "credits": "{{credits}} เครดิต",
+      "total": "ยอดที่ต้องชำระ"
+    },
+    "cancel": "ยกเลิก",
+    "submit": "ดำเนินการชำระเงิน",
+    "submitting": "กำลังส่งคำขอ...",
+    "secureNote": "ชำระเงินอย่างปลอดภัย ตรวจสอบยอดโดยทีมงาน",
+    "error": {
+      "amountRequired": "กรุณาระบุยอดเงินที่ต้องการเติม",
+      "slipRequired": "กรุณาแนบหลักฐานการชำระเงิน",
+      "packageMissing": "ไม่พบแพ็กเกจที่เลือก กรุณาเลือกใหม่อีกครั้ง"
+    },
+    "packageCredits": "{{credits}} เครดิต",
+    "popular": "ยอดนิยม",
+    "pricePerCredit": "฿{{price}} / เครดิต",
+    "rate": "อัตราปัจจุบัน 1 บาท = {{credits}} เครดิต"
+  }
+}

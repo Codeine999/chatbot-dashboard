@@ -1,11 +1,15 @@
+import { getIntlLocale } from "@/i18n/format";
 import type { Granularity } from "../type/analytics.type";
 
 const pad = (value: number) => String(value).padStart(2, "0");
 
-const MONTHS_SHORT = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
+/**
+ * ชื่อเดือนแบบย่อตามภาษาที่เลือกอยู่ เช่น "ก.ย." / "Sep"
+ * ป้ายพวกนี้ถูกสร้างตอน build ชุดข้อมูล ไม่ใช่ตอน render
+ * useAnalytics จึงใส่ภาษาไว้ใน queryKey ด้วย เพื่อให้สร้างป้ายใหม่เมื่อสลับภาษา
+ */
+const monthShort = (date: Date) =>
+  new Intl.DateTimeFormat(getIntlLocale(), { month: "short" }).format(date);
 
 /** จำนวน bucket ที่แสดงบนกราฟแต่ละใบ */
 export const BUCKET_COUNT: Record<Granularity, number> = {
@@ -88,9 +92,9 @@ export const toAxisLabel = (date: Date, granularity: Granularity) => {
     case "hour":
       return `${pad(date.getHours())}:00`;
     case "day":
-      return `${MONTHS_SHORT[date.getMonth()]} ${date.getDate()}`;
+      return `${monthShort(date)} ${date.getDate()}`;
     case "month":
-      return MONTHS_SHORT[date.getMonth()];
+      return monthShort(date);
     case "year":
       return String(date.getFullYear());
   }
@@ -98,7 +102,7 @@ export const toAxisLabel = (date: Date, granularity: Granularity) => {
 
 /** ป้ายเต็มบนหัว tooltip */
 export const toFullLabel = (date: Date, granularity: Granularity) => {
-  const day = `${MONTHS_SHORT[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  const day = `${monthShort(date)} ${date.getDate()}, ${date.getFullYear()}`;
 
   switch (granularity) {
     case "hour":
@@ -106,7 +110,7 @@ export const toFullLabel = (date: Date, granularity: Granularity) => {
     case "day":
       return day;
     case "month":
-      return `${MONTHS_SHORT[date.getMonth()]} ${date.getFullYear()}`;
+      return `${monthShort(date)} ${date.getFullYear()}`;
     case "year":
       return String(date.getFullYear());
   }

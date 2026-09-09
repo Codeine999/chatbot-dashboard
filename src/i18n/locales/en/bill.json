@@ -1,0 +1,135 @@
+{
+  "title": "Billing & History",
+  "subtitle": "View your payment history, invoices, and manage your billing.",
+  "summary": {
+    "currentBalance": "Current Balance",
+    "topUp": "Top Up Credits",
+    "totalSpent": "Total Spent",
+    "allTime": "All time",
+    "thisMonth": "This Month",
+    "upcomingInvoice": "Upcoming Invoice"
+  },
+  "history": {
+    "title": "Billing History",
+    "export": "Export",
+    "loading": "Loading billing history...",
+    "error": "Unable to load billing history.",
+    "empty": "No billing history found.",
+    "defaultDescription": "Credit purchase",
+    "showing": "Showing {{from}} to {{to}} of {{total}} entries"
+  },
+  "filter": {
+    "all": "All",
+    "paid": "Paid",
+    "pending": "Pending",
+    "failed": "Failed"
+  },
+  "table": {
+    "invoice": "Invoice",
+    "date": "Date",
+    "status": "Status",
+    "amount": "Amount",
+    "paymentMethod": "Payment Method",
+    "action": "Action"
+  },
+  "description": {
+    "pendingSlip": "Waiting for payment proof review",
+    "pendingQrcode": "Waiting for QRcode payment",
+    "paid": "Credit purchase via {{method}} succeeded",
+    "failed": "Credit purchase via {{method}} failed"
+  },
+  "statusBadge": {
+    "paid": "Paid",
+    "pending": "Pending",
+    "failed": "Failed"
+  },
+  "paymentMethod": {
+    "slip": "Bank transfer slip",
+    "qrcode": "QR Code"
+  },
+  "invoice": {
+    "title": "Invoice Details",
+    "downloadPdf": "Download PDF",
+    "downloadMock": "Invoice preview (mock) — no real PDF available yet",
+    "summary": "Invoice Summary",
+    "subtotal": "Subtotal",
+    "vat": "VAT (7%)",
+    "total": "Total",
+    "credits": "Credits",
+    "creditsValue_one": "{{count, number}} credit",
+    "creditsValue_other": "{{count, number}} credits",
+    "amountPaid": "Amount Paid",
+    "paymentInfo": "Payment Information",
+    "paymentMethod": "Payment Method",
+    "transactionId": "Transaction ID",
+    "paymentDate": "Payment Date",
+    "usageSummary": "Usage Summary",
+    "chatMessages": "Chat Messages",
+    "chatMessagesValue_one": "{{count, number}} message",
+    "chatMessagesValue_other": "{{count, number}} messages",
+    "aiAgents": "AI Agents",
+    "aiAgentsValue_one": "{{count, number}} run",
+    "aiAgentsValue_other": "{{count, number}} runs",
+    "documents": "Documents Processed",
+    "documentsValue_one": "{{count, number}} document",
+    "documentsValue_other": "{{count, number}} documents",
+    "creditsUsed": "Credits Used",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact Support",
+    "contactSupportMock": "Contact support (mock)"
+  },
+  "topupSuccess": {
+    "title": "Top-up request sent",
+    "message": "Your request for <1>{{credits}} credits</1> has been submitted",
+    "waiting": "Our team will verify your payment. Credits will be added to your account once the check is complete.",
+    "ok": "OK"
+  },
+  "topup": {
+    "title": "Top Up Credits",
+    "description": "Add credits to your account to continue using all features.",
+    "step1": "1. Select amount",
+    "step2": "2. Payment method",
+    "step3": "3. Order summary",
+    "loadingPackages": "Loading credit packages...",
+    "loadPackagesFailed": "Could not load credit packages",
+    "customAmount": "Custom amount",
+    "customHint": "Enter the amount you want to top up",
+    "customInvalid": "Enter a positive number with up to 6 decimal places",
+    "customCalculating": "Calculating credits...",
+    "customCalcFailed": "Could not calculate credits",
+    "customApprox": "≈ {{credits}} credits",
+    "amountPlaceholder": "Enter amount",
+    "method": {
+      "qrcode": "QR Code",
+      "qrcodeDesc": "Pay with PromptPay QR Code",
+      "slip": "Bank transfer slip",
+      "slipDesc": "Upload a slip, verified within 1-2 hours",
+      "recommended": "Recommended"
+    },
+    "slip": {
+      "alt": "Payment proof",
+      "change": "Change payment proof",
+      "attachSlip": "Attach transfer slip",
+      "attachQr": "Attach QR Code payment proof",
+      "hint": "JPG, PNG and WebP up to 5 MB"
+    },
+    "summary": {
+      "amount": "Amount",
+      "credits": "{{credits}} credits",
+      "total": "Total"
+    },
+    "cancel": "Cancel",
+    "submit": "Proceed to Payment",
+    "submitting": "Sending request...",
+    "secureNote": "Secure payment, verified by our team",
+    "error": {
+      "amountRequired": "Please enter an amount to top up",
+      "slipRequired": "Please attach your payment proof",
+      "packageMissing": "Selected package not found, please choose again"
+    },
+    "packageCredits": "{{credits}} credits",
+    "popular": "Popular",
+    "pricePerCredit": "฿{{price}} / credit",
+    "rate": "Current rate: ฿1 = {{credits}} credits"
+  }
+}

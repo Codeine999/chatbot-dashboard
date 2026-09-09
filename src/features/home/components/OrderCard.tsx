@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import {
     CardContent,
@@ -36,6 +37,7 @@ const OrderCard = () => {
 
 
 const Order = () => {
+    const { t } = useTranslation("home");
     const [orders, setOrders] = useState<any[]>([]);
 
     useEffect(() => {
@@ -52,8 +54,8 @@ const Order = () => {
 
             <div className="flex justify-between">
                 <div className="flex flex-col gap-1">
-                    <CardTitle>Recent Sales</CardTitle>
-                    <CardDescription>You made 265 sales this month.</CardDescription>
+                    <CardTitle>{t("sales.title")}</CardTitle>
+                    <CardDescription>{t("sales.subtitle")}</CardDescription>
                 </div>
                 <Button variant="ghost">
                     <Ellipsis className="!w-5 !h-5 text-normal" />
@@ -63,11 +65,11 @@ const Order = () => {
             <Table className="w-full table-fixed">
                 <TableHeader className="h-[50px] border-b">
                     <TableRow>
-                        <TableHead className="lg:w-[50px] w-[50px] lg:text-sm text-xs text-mini font-medium  ">Profile</TableHead>
-                        <TableHead className="lg:w-[50px] w-[60px] lg:text-sm text-xs text-mini font-medium">Users</TableHead>
-                        <TableHead className="lg:w-[60px] w-[70px] lg:text-sm text-xs text-mini font-medium">Status</TableHead>
-                        <TableHead className="lg:w-[50px] w-[50px] lg:text-sm text-xs text-mini font-medium">Total</TableHead>
-                        <TableHead className="lg:w-[40px] w-[50px] lg:text-sm text-xs text-mini font-medium">Edit</TableHead>
+                        <TableHead className="lg:w-[50px] w-[50px] lg:text-sm text-xs text-mini font-medium  ">{t("sales.profile")}</TableHead>
+                        <TableHead className="lg:w-[50px] w-[60px] lg:text-sm text-xs text-mini font-medium">{t("sales.users")}</TableHead>
+                        <TableHead className="lg:w-[60px] w-[70px] lg:text-sm text-xs text-mini font-medium">{t("sales.status")}</TableHead>
+                        <TableHead className="lg:w-[50px] w-[50px] lg:text-sm text-xs text-mini font-medium">{t("sales.total")}</TableHead>
+                        <TableHead className="lg:w-[40px] w-[50px] lg:text-sm text-xs text-mini font-medium">{t("sales.edit")}</TableHead>
                     </TableRow>
                 </TableHeader>
 

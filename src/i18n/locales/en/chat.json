@@ -1,0 +1,111 @@
+{
+  "composer": {
+    "placeholder": "Message your AI assistant",
+    "disabled": "AI access is disabled for this account",
+    "hint": "Enter to send · Shift + Enter for a new line",
+    "send": "Send message",
+    "disclaimer": "AI can make mistakes. Please verify important information."
+  },
+  "thinking": "AI is thinking",
+  "greeting": "Hello, {{name}}",
+  "greetingSub": "How can I help you today?",
+  "suggestion": {
+    "summarize": {
+      "title": "Summarize",
+      "description": "Condense a document or article into plain language",
+      "prompt": "Please summarise this content in plain language"
+    },
+    "code": {
+      "title": "Write code",
+      "description": "Write code or fix a bug",
+      "prompt": "Please help me write some code"
+    },
+    "analyze": {
+      "title": "Analyse data",
+      "description": "Analyse data and surface insights",
+      "prompt": "Please help me analyse this dataset"
+    },
+    "ideas": {
+      "title": "Brainstorm",
+      "description": "Generate creative ideas",
+      "prompt": "Please help me brainstorm some ideas"
+    }
+  },
+  "privacy": {
+    "title": "Chat history is per account",
+    "body": "Other admins cannot see your rooms. Owners and devs can review them for auditing.",
+    "dismiss": "Dismiss privacy notice"
+  },
+  "header": {
+    "history": "Chat history",
+    "openHistory": "Open chat history",
+    "newChat": "New chat",
+    "loadingModel": "Loading model…",
+    "changeModelNote": "Change the answering model — applies to all admins",
+    "modelLockedNote": "The model is set by an owner or dev",
+    "apiKeyUnavailable": " · API key unavailable",
+    "credits": "{{used}} credits",
+    "creditsWithLimit": "{{used}} / {{limit}} credits"
+  },
+  "messages": {
+    "loadError": "Could not load messages in this room",
+    "retry": "Retry"
+  },
+  "sidebar": {
+    "recent": "Recent chats",
+    "loading": "Loading chats",
+    "error": "Could not load chat history",
+    "empty": "No conversations yet"
+  },
+  "error": {
+    "createRoom": "Cannot create a new chat",
+    "sendMessage": "AI could not answer this message",
+    "deleteRoom": "Cannot delete this chat",
+    "renameRoom": "Cannot rename this chat",
+    "changeModel": "Cannot change the model"
+  },
+  "defaultName": "Admin",
+  "line": {
+    "searchPlaceholder": "Search conversations...",
+    "newestFirst": "Newest first",
+    "oldestFirst": "Oldest first",
+    "recent": "Recent chats",
+    "loading": "Loading conversations...",
+    "error": "Failed to load conversations",
+    "empty": "No conversations found",
+    "showMore": "Show more",
+    "conversationCount_one": "{{count}} conversation",
+    "conversationCount_other": "{{count}} conversations",
+    "selectConversation": "Select a conversation",
+    "lastActive": "Last active {{time}}",
+    "loadingOlder": "Loading older messages...",
+    "replyPlaceholder": "Type a reply... Enter to send, Shift+Enter for new line",
+    "connected": "Connected to LINE conversation API",
+    "sending": "Sending...",
+    "send": "Send",
+    "sendFailed": "Failed to send message",
+    "defaultUser": "LINE User",
+    "channel": {
+      "all": "All",
+      "line": "LINE",
+      "messenger": "Messenger",
+      "tiktok": "TikTok"
+    },
+    "quickFilter": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "soon": "Soon",
+    "preview": {
+      "image": "[image]",
+      "sticker": "[sticker]",
+      "postback": "[postback]"
+    },
+    "message": {
+      "imageAlt": "LINE image message",
+      "imageUnavailable": "Image message unavailable",
+      "sticker": "Sticker {{packageId}} / {{stickerId}}",
+      "postback": "Postback event"
+    }
+  }
+}

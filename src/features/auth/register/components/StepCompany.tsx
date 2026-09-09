@@ -13,14 +13,17 @@ import {
 import { compressImage } from "@/lib/image";
 import { cn } from "@/lib/utils";
 import type { OwnerRegisterForm } from "../type";
+import { useTranslation } from "react-i18next";
 
+// value คือค่าที่ส่งขึ้น backend ห้ามแปล ไม่งั้นข้อมูลเดิมจะไม่ตรงกัน
+// แปลเฉพาะ label ที่แสดงบนหน้าจอ
 const companyTypes = [
-  "ร้านอาหาร",
-  "ร้านค้า / อีคอมเมิร์ซ",
-  "ธุรกิจบริการ",
-  "สุขภาพ",
-  "การศึกษา",
-  "อื่นๆ",
+  { value: "ร้านอาหาร", labelKey: "register.companyType.restaurant" },
+  { value: "ร้านค้า / อีคอมเมิร์ซ", labelKey: "register.companyType.retail" },
+  { value: "ธุรกิจบริการ", labelKey: "register.companyType.service" },
+  { value: "สุขภาพ", labelKey: "register.companyType.health" },
+  { value: "การศึกษา", labelKey: "register.companyType.education" },
+  { value: "อื่นๆ", labelKey: "register.companyType.other" },
 ];
 
 type Props = {
@@ -28,6 +31,7 @@ type Props = {
 };
 
 export const StepCompany = ({ form }: Props) => {
+  const { t } = useTranslation("auth");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const companyImage = form.watch("companyImage");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -71,7 +75,7 @@ export const StepCompany = ({ form }: Props) => {
                 )}
               >
                 {previewUrl ? (
-                  <img src={previewUrl} alt="Company logo" className="size-full object-cover" />
+                  <img src={previewUrl} alt={t("register.logo.alt")} className="size-full object-cover" />
                 ) : (
                   <ImagePlus className="text-gray-400 size-6" />
                 )}
@@ -91,7 +95,7 @@ export const StepCompany = ({ form }: Props) => {
                   fieldState.error ? "text-destructive" : "text-gray-500"
                 )}
               >
-                {previewUrl ? "เปลี่ยนโลโก้บริษัท" : "อัปโหลดโลโก้บริษัท (จำเป็น)"}
+                {previewUrl ? t("register.logo.change") : t("register.logo.upload")}
               </FormLabel>
             </div>
           </FormItem>
@@ -103,14 +107,14 @@ export const StepCompany = ({ form }: Props) => {
         name="companyName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Company Name</FormLabel>
+            <FormLabel>{t("register.field.companyName")}</FormLabel>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center px-3 pointer-events-none">
                 <Building2 className="text-gray-400 w-5" />
               </div>
               <FormControl>
                 <Input
-                  placeholder="กรุณากรอก ชื่อ บริษํท"
+                  placeholder={t("register.placeholder.companyName")}
                   {...field}
                   className="bg-gray-50 h-[45px] focus-visible:ring-ring/0 pl-11 placeholder:text-[14px] text-[14px] text-gray-800"
                 />
@@ -125,20 +129,20 @@ export const StepCompany = ({ form }: Props) => {
         name="companyType"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Company Type</FormLabel>
+            <FormLabel>{t("register.field.companyType")}</FormLabel>
             <Select value={field.value} onValueChange={field.onChange}>
               <FormControl>
                 <SelectTrigger className="w-full !h-[45px] bg-gray-50 mb-41">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Briefcase className="w-5" />
-                    <SelectValue placeholder="กรุณาเลือกประเภทของธุรกิจ" />
+                    <SelectValue placeholder={t("register.placeholder.companyType")} />
                   </div>
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
                 {companyTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
+                  <SelectItem key={type.value} value={type.value}>
+                    {t(type.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>

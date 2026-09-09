@@ -69,7 +69,7 @@ export function useCreateTopup(
       onSuccess(topup);
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "เติมเครดิตไม่สำเร็จ กรุณาลองใหม่อีกครั้ง"));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }

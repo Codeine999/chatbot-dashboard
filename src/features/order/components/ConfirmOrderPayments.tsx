@@ -9,19 +9,22 @@ import {
   Download,
 
 } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 const ConfirmOrderPayments = () => {
+    const { t } = useTranslation("order");
+
     return (
         <Card className="w-full lg:h-[250px] h-[300px]">
             <div className="p-4">
                 <div className="flex justify-between">
                     <div>
-                        <CardTitle>Payments </CardTitle>
-                        <CardDescription>overview details</CardDescription>
+                        <CardTitle>{t("payments.title")}</CardTitle>
+                        <CardDescription>{t("payments.description")}</CardDescription>
                     </div>
                     <div className="flex ml-auto items-center gap-2">
                         <Download className="w-4 h-5 text-[#7794ca]" />
-                        <button className="text-xs text-mini cursor-pointer"> invoice</button>
+                        <button className="text-xs text-mini cursor-pointer">{t("payments.invoice")}</button>
                     </div>
                 </div>
             </div>
@@ -31,7 +34,7 @@ const ConfirmOrderPayments = () => {
                     <div className="flex flex-col lg:gap-2 gap-4">
                         <div className="flex justify-between">
                             <div className="text-sm text-normal">
-                                Subtotal
+                                {t("payments.subtotal")}
                             </div>
                             <div className="text-sm">
                                 ฿13900
@@ -40,7 +43,7 @@ const ConfirmOrderPayments = () => {
 
                         <div className="flex justify-between text-normal">
                             <div className="text-sm">
-                                Discount
+                                {t("payments.discount")}
                             </div>
                             <div className="text-sm text-green-600">
                                 -฿350
@@ -48,7 +51,7 @@ const ConfirmOrderPayments = () => {
                         </div>
                         <div className="flex justify-between">
                             <div className="text-sm text-normal">
-                                Shipping
+                                {t("payments.shipping")}
                             </div>
                             <div className="text-sm">
                                 ฿100
@@ -57,7 +60,7 @@ const ConfirmOrderPayments = () => {
 
                         <div className="flex justify-between items-center">
                             <div className="text-sm text-normal">
-                                Payment Method
+                                {t("payments.method")}
                             </div>
                             {/* text-[#683acd] */}
 
@@ -69,7 +72,7 @@ const ConfirmOrderPayments = () => {
 
                         <div className="flex justify-between">
                             <p className="text-md font-medium">
-                                Total
+                                {t("payments.total")}
                             </p>
                             <p className="text-md font-medium">
                                 ฿14,500

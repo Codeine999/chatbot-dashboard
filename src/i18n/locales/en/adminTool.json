@@ -1,0 +1,26 @@
+{
+  "title": "Admin AI Tool",
+  "subtitle": "Query dashboard data",
+  "open": "Open admin AI tool",
+  "welcome": "Hi, I'm the Admin AI Tool. I can query data in the system — look up users, check credits, or summarise LINE OA status.",
+  "quickPrompt": {
+    "user": "Look up user mb30997984",
+    "usage": "Summarise today's LINE OA usage",
+    "transfer": "Check the latest transfer requests"
+  },
+  "typing": "AI is querying mock data...",
+  "inputPlaceholder": "Ask admin AI to query data...",
+  "enterToSend": "Enter to send",
+  "send": "Send",
+  "mock": {
+    "userHeader": "Sample user record found:",
+    "userNote": "Note: this is a mock response, not connected to the real API yet",
+    "usageHeader": "Sample usage summary:",
+    "usageNote": "Note: mock response for UI only",
+    "transferHeader": "Latest transfer requests:",
+    "transferCustomer": "Customer: Petchanda",
+    "transferStatus": "Status: pending",
+    "transferAction": "Action: waiting for admin to review the slip",
+    "fallback": "Got it. This is currently a mock AI tool, not connected to the real API, but the UI is ready to query system data in the next step."
+  }
+}

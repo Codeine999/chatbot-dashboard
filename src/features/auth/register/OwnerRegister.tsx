@@ -29,29 +29,12 @@ import { StepAccount } from "./components/StepAccount";
 import { StepProfile } from "./components/StepProfile";
 import { StepCompany } from "./components/StepCompany";
 import { Background } from "@/components/BackGround";
-
-const stepHeaders = {
-  1: {
-    title: "สมัครสมาชิกครั้งแรก",
-    subtitle: "Step 1 of 3: Account Credentials",
-    description:
-      "กรุณากรอก username และ password เพื่อสมัครสมาชิก",
-  },
-  2: {
-    title: "Personal Information",
-    subtitle: "Step 2 of 3: Personal Information",
-    description: "กรุณากรอก ชื่อ และ นามสกุล ของคุณ",
-  },
-  3: {
-    title: "Company Information",
-    subtitle: "Step 3 of 3: Company Information",
-    description: "กรุณากรอก ชื่อ บริษัท และ ประเภทธุรกิจ ของคุณ",
-  },
-} as const;
+import { useTranslation } from "react-i18next";
 
 const draft = loadOwnerRegisterDraft();
 
 export const OwnerRegister = () => {
+  const { t } = useTranslation("auth");
   const { mutate: completeRegistration, isPending: isSubmitting } =
     useCompleteOwnerRegistration();
   const [step, setStep] = useState<1 | 2 | 3>(draft?.step ?? 1);
@@ -87,16 +70,15 @@ export const OwnerRegister = () => {
     try {
       const result = await ownerRegisterApi.auditOwner({ username, email, phone });
       if (result.data) {
-        setAuditError(result.message || "ข้อมูลนี้ไม่สามารถใช้งานได้ กรุณาตรวจสอบอีกครั้ง");
+        // backend ส่ง message มาเป็นภาษาไทย ใช้ตามที่ส่งมา ถ้าไม่มีค่อยใช้ข้อความของเราเอง
+        setAuditError(result.message || t("register.error.auditFallback"));
         return;
       }
 
       saveOwnerRegisterDraft(2, { username, email, phone });
       setStep(2);
     } catch (error) {
-      setAuditError(
-        getApiErrorMessage(error, "ไม่สามารถตรวจสอบข้อมูลได้ กรุณาลองใหม่อีกครั้ง")
-      );
+      setAuditError(getApiErrorMessage(error, t("register.error.auditFailed")));
     } finally {
       setIsAuditing(false);
     }
@@ -123,7 +105,6 @@ export const OwnerRegister = () => {
     completeRegistration(data);
   };
 
-  const header = stepHeaders[step];
 
   return (
     <div className="relative isolate min-h-screen w-full overflow-hidden bg-[#fcf8f7]">
@@ -140,11 +121,11 @@ export const OwnerRegister = () => {
             transition={{ duration: 0.4 }}
           >
             <div className="text-center">
-              <h1 className="text-xl font-bold">{header.title}</h1>
+              <h1 className="text-xl font-bold">{t(`register.step${step}.title`)}</h1>
               <p className="mt-2 text-gray-400 text-[13px]">
-                {header.subtitle}
+                {t(`register.step${step}.subtitle`)}
                 <br />
-                {header.description}
+                {t(`register.step${step}.description`)}
               </p>
 
               <Form {...form}>
@@ -175,7 +156,7 @@ export const OwnerRegister = () => {
                         className="w-[120px] h-[45px] rounded-2xl"
                       >
                         <ArrowLeft className="size-4" />
-                        Back
+                        {t("register.action.back")}
                       </Button>
                     )}
 
@@ -186,7 +167,7 @@ export const OwnerRegister = () => {
                         disabled={isAuditing}
                         className="flex-1 h-[45px] rounded-lg mt-6"
                       >
-                        {isAuditing ? "กำลังตรวจสอบ..." : "Continue"}
+                        {isAuditing ? t("register.action.auditing") : t("register.action.continue")}
                         <ArrowRight className="size-4" />
                       </Button>
                     )}
@@ -196,7 +177,7 @@ export const OwnerRegister = () => {
                         onClick={handleContinueProfile}
                         className="flex-1 h-[45px] rounded-lg"
                       >
-                        Continue
+                        {t("register.action.continue")}
                         <ArrowRight className="size-4" />
                       </Button>
                     )}
@@ -207,7 +188,7 @@ export const OwnerRegister = () => {
                         className="flex-1 h-[45px] rounded-lg"
                       >
                         <CheckCircle2 className="size-4" />
-                        {isSubmitting ? "Creating..." : "Complete Registration"}
+                        {isSubmitting ? t("register.action.submitting") : t("register.action.submit")}
                       </Button>
                     )}
                   </div>
@@ -221,11 +202,11 @@ export const OwnerRegister = () => {
       <Dialog open={!!auditError} onOpenChange={(open) => !open && setAuditError(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>ไม่สามารถดำเนินการต่อได้</DialogTitle>
+            <DialogTitle>{t("register.error.title")}</DialogTitle>
             <DialogDescription>{auditError}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button onClick={() => setAuditError(null)}>ตกลง</Button>
+            <Button onClick={() => setAuditError(null)}>{t("register.error.ok")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -8,6 +8,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import type { ActivityTone, RecentActivityItem } from "../type";
+import { useTranslation } from "react-i18next";
 
 const toneClass: Record<ActivityTone, string> = {
   green: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
@@ -70,14 +71,15 @@ const activityMock: RecentActivityItem[] = [
 ];
 
 const RecentActivityCard = () => {
+  const { t } = useTranslation("home");
   const activities = activityMock;
 
   return (
     <Card className="flex h-[384px] flex-col p-6">
       <div className="flex items-center justify-between">
-        <CardTitle>Recent Activity</CardTitle>
+        <CardTitle>{t("activity.title")}</CardTitle>
         <Button variant="ghost" className="text-sm font-medium text-icons">
-          View all
+          {t("activity.viewAll")}
         </Button>
       </div>
 

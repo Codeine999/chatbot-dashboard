@@ -1,18 +1,10 @@
 import { useState } from "react";
-import { ChevronDown, FlaskConical, TrendingDown, TrendingUp, TriangleAlert } from "lucide-react";
+import { FlaskConical, TrendingDown, TrendingUp, TriangleAlert } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useAnalytics } from "../hooks/useAnalytics";
 import { bucketDelta, formatFull } from "../lib/format";
-import { GRANULARITY_OPTIONS, GRANULARITY_UNIT, METRICS } from "../lib/metrics";
+import { GRANULARITY_OPTIONS, GRANULARITY_UNIT_KEY, METRICS } from "../lib/metrics";
 import type {
   AnalyticsMetric,
   AnalyticsPoint,
@@ -21,6 +13,7 @@ import type {
 } from "../type/analytics.type";
 import { GranularitySelect } from "./GranularitySelect";
 import { MetricChart } from "./MetricChart";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   metric: AnalyticsMetric;
@@ -32,35 +25,38 @@ type Props = {
  * จะได้แยกออกว่าเป็นปัญหา auth, ยังไม่มีข้อมูล หรือชื่อฟิลด์จาก API ไม่ตรงกับที่ map ไว้
  */
 function SourceBadge({ data }: { data: AnalyticsSeries }) {
+  const { t } = useTranslation("usage");
+
   // ข้อมูลจริงแต่แยกฟิลด์ได้ไม่ครบ ตัวเลขจะต่ำกว่าความจริง ต้องเตือนไว้
   if (!data.isSample) {
     if (!data.isPartial) return null;
 
     return (
       <span
-        title="Some numeric fields in the response did not match any series, so the totals shown are lower than the API reports"
+        title={t("badge.partialHint")}
         className="flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 ring-1 ring-inset ring-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20"
       >
         <TriangleAlert className="size-3" />
-        Partial mapping
+        {t("badge.partial")}
       </span>
     );
   }
 
   const { label, hint, warn } = {
     error: {
-      label: "API error",
-      hint: data.errorMessage ?? "Request failed",
+      label: t("badge.apiError"),
+      // errorMessage มาจาก backend ใช้ตามที่ส่งมา ถ้าไม่มีค่อยใช้ข้อความของเราเอง
+      hint: data.errorMessage ?? t("badge.apiErrorHint"),
       warn: true,
     },
     shape: {
-      label: "Unmapped fields",
-      hint: `API returned ${data.rowCount} rows but none matched the expected fields`,
+      label: t("badge.unmapped"),
+      hint: t("badge.unmappedHint", { count: data.rowCount }),
       warn: true,
     },
     empty: {
-      label: "Sample",
-      hint: "API returned no rows for this range",
+      label: t("badge.sample"),
+      hint: t("badge.sampleHint"),
       warn: false,
     },
   }[data.sampleReason ?? "empty"];
@@ -89,6 +85,7 @@ function DeltaBadge({
   points: AnalyticsPoint[];
   granularity: Granularity;
 }) {
+  const { t } = useTranslation("usage");
   const delta = bucketDelta(points);
   if (!delta) return null;
 
@@ -103,59 +100,10 @@ function DeltaBadge({
       />
       {isUp ? "+" : ""}
       {delta.percent.toFixed(1)}%
-      <span className="font-medium text-mini">vs prev {GRANULARITY_UNIT[granularity]}</span>
+      <span className="font-medium text-mini">
+        {t("chart.vsPrev", { unit: t(GRANULARITY_UNIT_KEY[granularity]) })}
+      </span>
     </span>
-  );
-}
-
-/** ตารางตัวเลขสำรอง สำหรับคนที่อ่านจากกราฟไม่ได้หรืออยากได้ค่าตรง ๆ */
-function DataTable({
-  metric,
-  points,
-}: {
-  metric: (typeof METRICS)[AnalyticsMetric];
-  points: AnalyticsPoint[];
-}) {
-  const showBreakdown = metric.series.length > 1;
-
-  return (
-    <div className="max-h-56 overflow-auto rounded-xl border">
-      <Table>
-        <TableHeader className="sticky top-0 bg-card">
-          <TableRow>
-            <TableHead className="text-xs">Period</TableHead>
-            {showBreakdown &&
-              metric.series.map((series) => (
-                <TableHead key={series.key} className="text-right text-xs">
-                  {series.label}
-                </TableHead>
-              ))}
-            <TableHead className="text-right text-xs">Total</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {[...points].reverse().map((point) => (
-            <TableRow key={point.bucket}>
-              <TableCell className="text-xs whitespace-nowrap text-mini">
-                {point.fullLabel}
-              </TableCell>
-              {showBreakdown &&
-                metric.series.map((series) => (
-                  <TableCell
-                    key={series.key}
-                    className="text-right text-xs tabular-nums text-normal"
-                  >
-                    {formatFull(point[series.key] as number)}
-                  </TableCell>
-                ))}
-              <TableCell className="text-right text-xs font-semibold tabular-nums text-normal">
-                {metric.formatValue(point.total)}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
   );
 }
 
@@ -163,8 +111,8 @@ function DataTable({
  * กราฟหนึ่งใบต่อหนึ่ง endpoint สลับช่วงเวลาได้ในตัวเองด้วย dropdown มุมขวาบน
  */
 export const MetricCard = ({ metric: metricId, defaultGranularity = "day" }: Props) => {
+  const { t } = useTranslation("usage");
   const [granularity, setGranularity] = useState<Granularity>(defaultGranularity);
-  const [showTable, setShowTable] = useState(false);
 
   const metric = METRICS[metricId];
   const { data, isPending, isFetching } = useAnalytics(metricId, granularity);
@@ -172,7 +120,9 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day" }: Pro
   const points = data?.points ?? [];
   // ข้อมูลจริงที่เป็นศูนย์ทั้งช่วง ต้องบอกให้ชัดว่า "ไม่มีความเคลื่อนไหว" ไม่ใช่กราฟพัง
   const isQuiet = Boolean(data) && !data?.isSample && points.every((point) => point.total === 0);
-  const window = GRANULARITY_OPTIONS.find((option) => option.value === granularity)?.window ?? "";
+  const windowKey =
+    GRANULARITY_OPTIONS.find((option) => option.value === granularity)?.windowKey ?? "";
+  const window = windowKey ? t(windowKey) : "";
   const Icon = metric.icon;
 
   return (
@@ -183,9 +133,9 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day" }: Pro
             <Icon className="size-[18px]" strokeWidth={2.1} />
           </div>
           <div>
-            <p className="text-sm font-semibold tracking-tight text-normal">{metric.title}</p>
+            <p className="text-sm font-semibold tracking-tight text-normal">{t(metric.titleKey)}</p>
             <p className="mt-1 text-xs text-mini">
-              {metric.description} · {window}
+              {t(metric.descriptionKey)} · {window}
             </p>
           </div>
         </div>
@@ -204,7 +154,7 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day" }: Pro
             <p className="text-3xl font-semibold tracking-[-0.04em] text-normal tabular-nums">
               {metric.formatValue(data?.headline ?? 0)}
             </p>
-            <p className="pb-1.5 text-xs font-medium text-mini">{metric.unit}</p>
+            <p className="pb-1.5 text-xs font-medium text-mini">{t(metric.unitKey)}</p>
             <div className="ml-auto pb-1">
               <DeltaBadge points={points} granularity={granularity} />
             </div>
@@ -213,36 +163,19 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day" }: Pro
       </div>
 
       {isPending ? (
-        <Skeleton className="h-[240px] w-full rounded-xl" />
+        <Skeleton className="h-[190px] w-full rounded-xl" />
       ) : (
         <div className={isFetching ? "opacity-60 transition-opacity" : "transition-opacity"}>
           {isQuiet ? (
-            <div className="flex h-[240px] flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed">
-              <p className="text-sm font-medium text-normal">No activity in this range</p>
+            <div className="flex h-[190px] flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed">
+              <p className="text-sm font-medium text-normal">{t("chart.noActivity")}</p>
               <p className="text-xs text-mini">
-                The API returned data for {window.toLowerCase()}, all of it zero.
+                {t("chart.noActivityHint", { window: window.toLowerCase() })}
               </p>
             </div>
           ) : (
             <MetricChart metric={metric} points={points} />
           )}
-        </div>
-      )}
-
-      {!isPending && (
-        <div className="space-y-3">
-          <button
-            type="button"
-            onClick={() => setShowTable((open) => !open)}
-            className="flex items-center gap-1.5 text-xs font-medium text-mini transition-colors hover:text-normal"
-          >
-            <ChevronDown
-              className={`size-3.5 transition-transform ${showTable ? "rotate-180" : ""}`}
-            />
-            {showTable ? "Hide data" : "View data"}
-          </button>
-
-          {showTable && <DataTable metric={metric} points={points} />}
         </div>
       )}
     </Card>

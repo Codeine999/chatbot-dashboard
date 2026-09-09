@@ -1,3 +1,6 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
+import { getIntlLocale } from "@/i18n/format";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -32,7 +35,7 @@ import type {
 const formatTime = (date?: string | null) => {
   if (!date) return "-";
 
-  return new Intl.DateTimeFormat("th-TH", {
+  return new Intl.DateTimeFormat(getIntlLocale(), {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(date));
@@ -43,9 +46,9 @@ const normalizeType = (type: LineChatMessageType) => type.toUpperCase();
 
 function getMessagePreview(message: string, type: LineChatMessageType) {
   const messageType = normalizeType(type);
-  if (messageType === "IMAGE") return "[image]";
-  if (messageType === "STICKER") return "[sticker]";
-  if (messageType === "POSTBACK") return "[postback]";
+  if (messageType === "IMAGE") return i18n.t("chat:line.preview.image");
+  if (messageType === "STICKER") return i18n.t("chat:line.preview.sticker");
+  if (messageType === "POSTBACK") return i18n.t("chat:line.preview.postback");
   return message || "-";
 }
 
@@ -78,19 +81,20 @@ function Avatar({
 }
 
 function MessageContent({ message }: { message: LineChatHistory }) {
+  const { t } = useTranslation("chat");
   const type = normalizeType(message.messageType);
 
   if (type === "IMAGE") {
     return message.mediaUrl ? (
       <img
         src={message.mediaUrl}
-        alt="LINE image message"
+        alt={t("line.message.imageAlt")}
         className="max-h-72 rounded-xl object-cover"
       />
     ) : (
       <div className="flex items-center gap-2 text-sm">
         <ImageIcon className="h-4 w-4" />
-        Image message unavailable
+        {t("line.message.imageUnavailable")}
       </div>
     );
   }
@@ -99,7 +103,10 @@ function MessageContent({ message }: { message: LineChatHistory }) {
     return (
       <div className="flex items-center gap-2 text-sm">
         <Smile className="h-4 w-4" />
-        Sticker {message.stickerPackageId ?? "-"} / {message.stickerId ?? "-"}
+        {t("line.message.sticker", {
+          packageId: message.stickerPackageId ?? "-",
+          stickerId: message.stickerId ?? "-",
+        })}
       </div>
     );
   }
@@ -107,7 +114,7 @@ function MessageContent({ message }: { message: LineChatHistory }) {
   if (type === "POSTBACK") {
     return (
       <div className="rounded-xl bg-background/60 px-3 py-2 text-xs font-medium text-mini">
-        {message.postbackData ?? "Postback event"}
+        {message.postbackData ?? t("line.message.postback")}
       </div>
     );
   }
@@ -121,22 +128,24 @@ const LOAD_MORE_CONVERSATIONS = 10;
 type ChannelId = "all" | "line" | "messenger" | "tiktok";
 type QuickFilterId = "all" | "unread";
 
-const CHANNELS: { id: ChannelId; label: string; soon?: boolean }[] = [
-  { id: "all", label: "All" },
-  { id: "line", label: "LINE" },
-  { id: "messenger", label: "Messenger", soon: true },
-  { id: "tiktok", label: "TikTok", soon: true },
+const CHANNELS: { id: ChannelId; labelKey: string; soon?: boolean }[] = [
+  { id: "all", labelKey: "line.channel.all" },
+  { id: "line", labelKey: "line.channel.line" },
+  { id: "messenger", labelKey: "line.channel.messenger", soon: true },
+  { id: "tiktok", labelKey: "line.channel.tiktok", soon: true },
 ];
 
-const QUICK_FILTERS: { id: QuickFilterId; label: string; soon?: boolean }[] = [
-  { id: "all", label: "All" },
-  { id: "unread", label: "Unread" },
+const QUICK_FILTERS: { id: QuickFilterId; labelKey: string; soon?: boolean }[] = [
+  { id: "all", labelKey: "line.quickFilter.all" },
+  { id: "unread", labelKey: "line.quickFilter.unread" },
 ];
 
 function SoonBadge() {
+  const { t } = useTranslation("chat");
+
   return (
     <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-mini">
-      Soon
+      {t("line.soon")}
     </span>
   );
 }
@@ -148,6 +157,8 @@ function ChannelTabs({
   value: ChannelId;
   onChange: (id: ChannelId) => void;
 }) {
+  const { t } = useTranslation("chat");
+
   return (
     <div className="flex items-center gap-1 overflow-x-auto">
       {CHANNELS.map((item) => {
@@ -167,7 +178,7 @@ function ChannelTabs({
                   : "text-mini hover:bg-hover hover:text-normal"
             }`}
           >
-            {item.label}
+            {t(item.labelKey)}
             {item.soon && <SoonBadge />}
           </button>
         );
@@ -183,6 +194,8 @@ function QuickFilterChips({
   value: QuickFilterId;
   onChange: (id: QuickFilterId) => void;
 }) {
+  const { t } = useTranslation("chat");
+
   return (
     <div className="flex items-center gap-2 text-xs">
       {QUICK_FILTERS.map((item, index) => (
@@ -200,7 +213,7 @@ function QuickFilterChips({
                   : "text-mini hover:text-normal"
             }`}
           >
-            {item.label}
+            {t(item.labelKey)}
           </button>
         </div>
       ))}
@@ -209,6 +222,7 @@ function QuickFilterChips({
 }
 
 export const LineChat = () => {
+  const { t } = useTranslation("chat");
   const [searchParams] = useSearchParams();
   const [selectedId, setSelectedId] = useState("");
   const [reply, setReply] = useState("");
@@ -436,14 +450,14 @@ export const LineChat = () => {
                       value={search}
                       onChange={(event) => setSearch(event.target.value)}
                       className="w-full bg-transparent text-sm text-normal outline-none placeholder:text-mini"
-                      placeholder="Search conversations..."
+                      placeholder={t("line.searchPlaceholder")}
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => setIsNewestFirst((value) => !value)}
-                    title={isNewestFirst ? "Newest first" : "Oldest first"}
-                    aria-label={isNewestFirst ? "Newest first" : "Oldest first"}
+                    title={isNewestFirst ? t("line.newestFirst") : t("line.oldestFirst")}
+                    aria-label={isNewestFirst ? t("line.newestFirst") : t("line.oldestFirst")}
                     className={`flex size-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
                       isNewestFirst
                         ? "bg-muted text-mini hover:text-normal"
@@ -463,26 +477,26 @@ export const LineChat = () => {
 
           {isInboxOpen && (
             <div className="shrink-0 px-4 pb-2 pt-1">
-              <p className="text-xs font-semibold text-normal">Recent chats</p>
+              <p className="text-xs font-semibold text-normal">{t("line.recent")}</p>
             </div>
           )}
 
           <div className="min-h-0 flex-1 overflow-y-auto pb-2">
             {conversationsQuery.isLoading && (
-              <div className="px-4 py-3 text-xs text-mini">Loading conversations...</div>
+              <div className="px-4 py-3 text-xs text-mini">{t("line.loading")}</div>
             )}
 
             {conversationsQuery.isError && (
-              <div className="px-4 py-3 text-xs text-destructive">Failed to load conversations</div>
+              <div className="px-4 py-3 text-xs text-destructive">{t("line.error")}</div>
             )}
 
             {!conversationsQuery.isLoading && filteredConversations.length === 0 && (
-              <div className="px-4 py-3 text-xs text-mini">No conversations found</div>
+              <div className="px-4 py-3 text-xs text-mini">{t("line.empty")}</div>
             )}
 
             {visibleConversations.map((conversation) => {
               const isActive = conversation.id === selectedConversation?.id;
-              const displayName = conversation.lineMember?.displayName ?? "LINE User";
+              const displayName = conversation.lineMember?.displayName ?? t("line.defaultUser");
               const preview = getMessagePreview(conversation.lastMessage, conversation.lastMessageType);
               const hasUnreadNotification = unreadNotificationConversationIds.has(
                 conversation.id
@@ -561,14 +575,14 @@ export const LineChat = () => {
                 }
                 className="flex h-11 w-full items-center justify-center gap-1.5 text-xs font-medium text-mini transition hover:bg-hover hover:text-normal"
               >
-                {isInboxOpen ? "Show more" : ""}
+                {isInboxOpen ? t("line.showMore") : ""}
                 <ChevronDown className="size-3.5" />
               </button>
             )}
 
             {isInboxOpen && !hasMoreConversations && filteredConversations.length > 0 && (
               <p className="py-3 text-center text-[11px] text-mini/70">
-                {filteredConversations.length} conversations
+                {t("line.conversationCount", { count: filteredConversations.length })}
               </p>
             )}
           </div>
@@ -580,13 +594,13 @@ export const LineChat = () => {
               {selectedConversation ? (
                 <div className="flex min-w-0 items-center gap-3">
                   <Avatar
-                    name={selectedConversation.lineMember?.displayName ?? "LINE User"}
+                    name={selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
                     src={selectedConversation.lineMember?.pictureUrl}
                     size="lg"
                   />
                   <div className="min-w-0">
                     <p className="truncate font-semibold text-normal">
-                      {selectedConversation.lineMember?.displayName ?? "LINE User"}
+                      {selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
                     </p>
                     <p className="truncate text-xs text-mini">
                       {selectedConversation.lineMember?.lineUserId ?? "-"}
@@ -597,11 +611,13 @@ export const LineChat = () => {
                   </span>
                 </div>
               ) : (
-                <p className="font-semibold text-normal">Select a conversation</p>
+                <p className="font-semibold text-normal">{t("line.selectConversation")}</p>
               )}
               {selectedConversation?.lineMember?.lastActiveAt && (
                 <span className="text-xs text-mini">
-                  Last active {formatTime(selectedConversation.lineMember.lastActiveAt)}
+                  {t("line.lastActive", {
+                    time: formatTime(selectedConversation.lineMember.lastActiveAt),
+                  })}
                 </span>
               )}
             </div>
@@ -615,7 +631,7 @@ export const LineChat = () => {
             <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1500px] space-y-4">
               {messagesQuery.isFetchingNextPage && (
                 <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-xs text-mini">
-                  Loading older messages...
+                  {t("line.loadingOlder")}
                 </div>
               )}
 
@@ -695,22 +711,22 @@ export const LineChat = () => {
                 onChange={(event) => setReply(event.target.value)}
                 onKeyDown={handleReplyKeyDown}
                 disabled={!selectedConversation || sendMessageMutation.isPending}
-                placeholder="Type a reply... Enter to send, Shift+Enter for new line"
+                placeholder={t("line.replyPlaceholder")}
                 className="max-h-36 min-h-20 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
               />
               <div className="mt-2 flex items-center justify-between px-1">
-                <p className="text-xs text-mini">Connected to LINE conversation API</p>
+                <p className="text-xs text-mini">{t("line.connected")}</p>
                 <Button
                   onClick={sendReply}
                   disabled={!reply.trim() || !selectedConversation || sendMessageMutation.isPending}
                   className="rounded-xl"
                 >
                   <Send className="h-4 w-4" />
-                  {sendMessageMutation.isPending ? "Sending..." : "Send"}
+                  {sendMessageMutation.isPending ? t("line.sending") : t("line.send")}
                 </Button>
               </div>
               {sendMessageMutation.isError && (
-                <p className="px-1 pt-2 text-xs text-destructive">Failed to send message</p>
+                <p className="px-1 pt-2 text-xs text-destructive">{t("line.sendFailed")}</p>
               )}
             </div>
           </footer>

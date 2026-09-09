@@ -31,8 +31,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button";
 import { PlusCircle, UploadCloud } from "lucide-react";
 import { OrderItemIn } from "@/interfaces/productInter";
+import { useTranslation } from "react-i18next";
 
 export default function AddProductPage() {
+  const { t } = useTranslation("product");
   const [orderItems, setOrderItems] = useState<OrderItemIn[]>([
     { size: "", quantity: 0, sku: "" },
   ]);
@@ -64,44 +66,44 @@ export default function AddProductPage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/product" className="text-xs">Products</BreadcrumbLink>
+              <BreadcrumbLink href="/product" className="text-xs">{t("breadcrumb.products")}</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-xs">Add Product</BreadcrumbPage>
+              <BreadcrumbPage className="text-xs">{t("breadcrumb.add")}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
       <Card className="md:mt-4 mt-10 w-full p-6">
         <CardHeader>
-          <CardTitle>Add New Product</CardTitle>
-          <CardDescription className="text-gray-500">Fill in product information below.</CardDescription>
+          <CardTitle>{t("form.addTitle")}</CardTitle>
+          <CardDescription className="text-gray-500">{t("form.description")}</CardDescription>
         </CardHeader>
         
         <CardContent className="space-y-9 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2.5">
-              <Label>Name</Label>
-              <Input placeholder="Product name" />
+              <Label>{t("form.name")}</Label>
+              <Input placeholder={t("form.namePlaceholder")} />
             </div>
             <div className="flex flex-col gap-2.5">
-              <Label>Category</Label>
-              <Input placeholder="Category" />
+              <Label>{t("form.category")}</Label>
+              <Input placeholder={t("form.categoryPlaceholder")} />
             </div>
             <div className="flex flex-col gap-2.5">
-              <Label>Price</Label>
-              <Input type="number" placeholder="Price" />
+              <Label>{t("form.price")}</Label>
+              <Input type="number" placeholder={t("form.pricePlaceholder")} />
             </div>
             <div className="flex flex-col gap-2.5 md:col-span-2">
-              <Label>Description</Label>
-              <Textarea placeholder="Product description..." />
+              <Label>{t("form.descriptionLabel")}</Label>
+              <Textarea placeholder={t("form.descriptionPlaceholder")} />
             </div>
           </div>
 
           {/* Order Items */}
           <div className="flex flex-col gap-2.5">
-            <Label>Order Items</Label>
+            <Label>{t("form.orderItems")}</Label>
             <div className="space-y-2">
               {orderItems.map((item, index) => (
                 <div
@@ -109,7 +111,7 @@ export default function AddProductPage() {
                   className="grid grid-cols-3 gap-2 border p-3 rounded-md"
                 >
                   <Input
-                    placeholder="Size"
+                    placeholder={t("form.size")}
                     value={item.size}
                     onChange={(e) =>
                       handleOrderItemChange(index, "size", e.target.value)
@@ -118,7 +120,7 @@ export default function AddProductPage() {
                   />
                   <Input
                     type="number"
-                    placeholder="Quantity"
+                    placeholder={t("form.quantity")}
                     value={item.quantity}
                     onChange={(e) =>
                       handleOrderItemChange(index, "quantity", Number(e.target.value))
@@ -126,7 +128,7 @@ export default function AddProductPage() {
                   
                   />
                   <Input
-                    placeholder="SKU"
+                    placeholder={t("form.sku")}
                     value={item.sku}
                     onChange={(e) =>
                       handleOrderItemChange(index, "sku", e.target.value)
@@ -142,14 +144,14 @@ export default function AddProductPage() {
                 className="text-green-500"
               >
                 <PlusCircle className="h-3 w-3" />
-                More Item
+                {t("form.moreItem")}
               </Button>
             </div>
           </div>
 
           {/* Upload Images */}
           <div className="flex flex-col gap-2">
-            <Label>Upload Images</Label>
+            <Label>{t("form.uploadImages")}</Label>
 
             <Input
               type="file"
@@ -172,7 +174,7 @@ export default function AddProductPage() {
           <div className="pt-4">
             <Button variant="save">
               <UploadCloud className="h-4 w-4 mr-2" />
-              Save Products
+              {t("form.save")}
             </Button>
           </div>
         </CardContent>

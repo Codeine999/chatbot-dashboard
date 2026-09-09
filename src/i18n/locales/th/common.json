@@ -1,0 +1,52 @@
+{
+  "actions": {
+    "save": "บันทึก",
+    "cancel": "ยกเลิก",
+    "confirm": "ยืนยัน",
+    "delete": "ลบ",
+    "edit": "แก้ไข",
+    "add": "เพิ่ม",
+    "search": "ค้นหา",
+    "close": "ปิด",
+    "back": "ย้อนกลับ",
+    "next": "ถัดไป",
+    "retry": "ลองใหม่",
+    "download": "ดาวน์โหลด",
+    "view": "ดู",
+    "export": "ส่งออก",
+    "more": "เพิ่มอีก",
+    "upload": "อัปโหลด"
+  },
+  "state": {
+    "loading": "กำลังโหลด...",
+    "empty": "ไม่พบข้อมูล",
+    "error": "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+    "noResults": "ไม่พบผลลัพธ์ที่ตรงกับการค้นหา",
+    "timeout": "หมดเวลาเชื่อมต่อ กรุณาลองใหม่อีกครั้ง",
+    "offline": "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้"
+  },
+  "unit": {
+    "credit_other": "เครดิต",
+    "message_other": "ข้อความ",
+    "document_other": "เอกสาร",
+    "run_other": "ครั้ง"
+  },
+  "time": {
+    "justNow": "เมื่อสักครู่",
+    "minutesAgo_other": "{{count}} นาทีที่แล้ว",
+    "hoursAgo_other": "{{count}} ชั่วโมงที่แล้ว",
+    "daysAgo_other": "{{count}} วันที่แล้ว",
+    "at": "เวลา"
+  },
+  "language": {
+    "label": "ภาษา",
+    "change": "เปลี่ยนภาษา"
+  },
+  "search": {
+    "placeholder": "ค้นหา..."
+  },
+  "toast": {
+    "registerSuccess": "สร้างบัญชีสำเร็จ",
+    "loginFailed": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง"
+  }
+}

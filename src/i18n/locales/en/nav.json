@@ -1,0 +1,44 @@
+{
+  "group": {
+    "workspace": "Workspace",
+    "communication": "Communication",
+    "insights": "Insights",
+    "system": "System",
+    "build": "Build"
+  },
+  "item": {
+    "home": "Home",
+    "richMenu": "Rich Menu",
+    "product": "Product",
+    "order": "Order",
+    "users": "Users",
+    "lineChat": "Line Chat",
+    "answer": "Answer",
+    "aiChatbot": "Ai Chatbot",
+    "overview": "Overview",
+    "usage": "Usage",
+    "usageOverall": "Over All",
+    "usageGraph": "Usage Graph",
+    "bill": "Bill",
+    "setting": "Setting",
+    "settingOverall": "Over All",
+    "settingSelectMenu": "Select Menu",
+    "aiWorkflow": "Ai Work Flow"
+  },
+  "brand": {
+    "fallbackName": "Dashboard",
+    "subtitle": "Admin Management"
+  },
+  "user": {
+    "profile": "Profile",
+    "setting": "Setting",
+    "logout": "Logout"
+  },
+  "notification": {
+    "title": "Notification",
+    "empty": "No notifications yet"
+  },
+  "theme": {
+    "toggle": "Toggle theme"
+  }
+}

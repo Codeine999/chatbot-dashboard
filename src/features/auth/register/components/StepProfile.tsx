@@ -5,12 +5,14 @@ import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/for
 import { Input } from "@/components/ui/input";
 import { compressImage } from "@/lib/image";
 import type { OwnerRegisterForm } from "../type";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   form: UseFormReturn<OwnerRegisterForm>;
 };
 
 export const StepProfile = ({ form }: Props) => {
+  const { t } = useTranslation("auth");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const avatar = form.watch("avatar");
   const username = form.watch("username");
@@ -37,7 +39,7 @@ export const StepProfile = ({ form }: Props) => {
           flex items-center justify-center overflow-hidden bg-gray-50 hover:border-primary transition-colors cursor-pointer"
         >
           {avatar ? (
-            <img src={avatar} alt="Profile" className="size-full object-cover" />
+            <img src={avatar} alt={t("register.photo.alt")} className="size-full object-cover" />
           ) : (
             <ImagePlus className="text-gray-400 size-6" />
           )}
@@ -50,7 +52,7 @@ export const StepProfile = ({ form }: Props) => {
           onChange={handleAvatarChange}
         />
         <span className="text-xs text-gray-500">
-          {avatar ? "Change Photo" : "Upload Photo"}
+          {avatar ? t("register.photo.change") : t("register.photo.upload")}
         </span>
       </div>
 
@@ -60,14 +62,14 @@ export const StepProfile = ({ form }: Props) => {
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>First Name</FormLabel>
+              <FormLabel>{t("register.field.firstName")}</FormLabel>
               <div className="relative">
                 <div className="absolute px-3 py-2.5 pointer-events-none">
                   <User className="text-gray-400 w-5" />
                 </div>
                 <FormControl>
                   <Input
-                    placeholder="กรุณากรอก ชื่อ"
+                    placeholder={t("register.placeholder.firstName")}
                     {...field}
                     className="bg-gray-50 h-[45px] focus-visible:ring-ring/0 pl-11 placeholder:text-[14px] text-[14px] text-gray-800"
                   />
@@ -82,14 +84,14 @@ export const StepProfile = ({ form }: Props) => {
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last Name</FormLabel>
+              <FormLabel>{t("register.field.lastName")}</FormLabel>
               <div className="relative">
                 <div className="absolute px-3 py-2.5 pointer-events-none">
                   <User className="text-gray-400 w-5" />
                 </div>
                 <FormControl>
                   <Input
-                    placeholder="กรุณากรอก นามสกุล"
+                    placeholder={t("register.placeholder.lastName")}
                     {...field}
                     className="bg-gray-50 h-[45px] focus-visible:ring-ring/0 pl-11 placeholder:text-[14px] text-[14px] text-gray-800"
                   />
@@ -102,7 +104,7 @@ export const StepProfile = ({ form }: Props) => {
 
       <div className="grid grid-cols-2 gap-3 mb-40">
         <FormItem>
-          <FormLabel>Username</FormLabel>
+          <FormLabel>{t("register.field.username")}</FormLabel>
           <FormControl>
             <Input
               value={username}
@@ -113,7 +115,7 @@ export const StepProfile = ({ form }: Props) => {
         </FormItem>
 
         <FormItem>
-          <FormLabel>Role</FormLabel>
+          <FormLabel>{t("register.field.role")}</FormLabel>
           <FormControl>
             <Input
               value="Owner"

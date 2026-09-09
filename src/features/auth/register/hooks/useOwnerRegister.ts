@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/api/api";
+import i18n from "@/i18n";
 import { authApi } from "@/features/auth/services/auth.service";
 import { useAuthStore } from "@/features/auth/store/auth.store";
 import { clearOwnerRegisterDraft } from "../ownerRegister.draft";
@@ -47,11 +48,11 @@ export function useCompleteOwnerRegistration() {
     onSuccess: () => {
       clearOwnerRegisterDraft();
       queryClient.clear();
-      toast.success("สร้างบัญชีสำเร็จ");
+      toast.success(i18n.t("toast.registerSuccess"));
       navigate("/", { replace: true });
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }

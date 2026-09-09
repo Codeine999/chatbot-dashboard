@@ -13,15 +13,17 @@ import { Switch } from "@/components/ui/switch";
 import { MenuOptionRow } from "./components/MenuOptionRow";
 import { menuGroupOrder, sidebarMenuOptionsMock } from "./mock/selectMenu.mock";
 import type { MenuFilter, SidebarMenuOption } from "./type";
+import { useTranslation } from "react-i18next";
 
-const filterOptions: { value: MenuFilter; label: string }[] = [
-  { value: "all", label: "All features" },
-  { value: "enabled", label: "Enabled" },
-  { value: "disabled", label: "Disabled" },
-  { value: "required", label: "Required" },
+const filterOptions: { value: MenuFilter; labelKey: string }[] = [
+  { value: "all", labelKey: "filter.all" },
+  { value: "enabled", labelKey: "filter.enabled" },
+  { value: "disabled", labelKey: "filter.disabled" },
+  { value: "required", labelKey: "filter.required" },
 ];
 
 export const SelectMenu = () => {
+  const { t } = useTranslation("settings");
   const [options, setOptions] = useState<SidebarMenuOption[]>(sidebarMenuOptionsMock);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<MenuFilter>("all");
@@ -74,18 +76,13 @@ export const SelectMenu = () => {
   return (
     <div className="mt-10 mb-12">
       <div>
-        <h1 className="text-2xl font-semibold text-normal">Sidebar &amp; navigation</h1>
-        <p className="mt-2 text-sm text-mini">
-          Choose which features appear in your workspace sidebar.
-        </p>
+        <h1 className="text-2xl font-semibold text-normal">{t("selectMenu.title")}</h1>
+        <p className="mt-2 text-sm text-mini">{t("selectMenu.subtitle")}</p>
       </div>
 
       <div className="mt-6 flex items-start gap-2 rounded-xl bg-primary/10 px-4 py-3">
         <Info className="mt-0.5 size-4 shrink-0 text-primary" />
-        <p className="text-[13px] text-normal">
-          Hidden menus remain accessible to administrators from Settings. Required menus
-          cannot be disabled.
-        </p>
+        <p className="text-[13px] text-normal">{t("selectMenu.hint")}</p>
       </div>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -94,7 +91,7 @@ export const SelectMenu = () => {
             <Search className="w-4 text-gray-400" />
           </div>
           <Input
-            placeholder="Search menu or feature"
+            placeholder={t("selectMenu.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-10 bg-gray-50 pl-10 text-[14px] placeholder:text-[14px]"
@@ -108,7 +105,7 @@ export const SelectMenu = () => {
           <SelectContent>
             {filterOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label}
+                {t(option.labelKey)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -118,17 +115,17 @@ export const SelectMenu = () => {
       <Card className="mt-4 overflow-hidden py-0">
         <CardContent className="p-0">
           <div className="flex items-center justify-between border-b px-4 py-3.5">
-            <p className="text-sm font-medium text-normal">Show all optional menus</p>
+            <p className="text-sm font-medium text-normal">{t("selectMenu.showAllOptional")}</p>
             <Switch
               checked={allOptionalOn}
               onCheckedChange={handleToggleAll}
-              aria-label="Show all optional menus"
+              aria-label={t("selectMenu.showAllOptional")}
             />
           </div>
 
           {groups.length === 0 ? (
             <p className="px-4 py-10 text-center text-sm text-mini">
-              ไม่พบเมนูที่ตรงกับการค้นหา
+              {t("selectMenu.noResults")}
             </p>
           ) : (
             groups.map((group) => (

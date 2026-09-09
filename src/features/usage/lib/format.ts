@@ -1,3 +1,4 @@
+import { formatNumber } from "@/i18n/format";
 import type { AnalyticsPoint } from "../type/analytics.type";
 
 /** ย่อเลขบนแกนและป้ายในกราฟ */
@@ -7,12 +8,12 @@ export const formatCompact = (value: number) => {
   return String(Math.round(value));
 };
 
-export const formatFull = (value: number) => Math.round(value).toLocaleString();
+export const formatFull = (value: number) => formatNumber(Math.round(value));
 
 export const formatBahtCompact = (value: number) => `฿${formatCompact(value)}`;
 
 export const formatBahtFull = (value: number) =>
-  `฿${Math.round(value).toLocaleString("en-US")}`;
+  `฿${formatNumber(Math.round(value))}`;
 
 /**
  * เทียบ bucket ล่าสุดที่จบแล้วกับ bucket ก่อนหน้า

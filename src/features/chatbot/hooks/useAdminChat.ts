@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/api/api";
@@ -47,7 +48,7 @@ export function useCreateAdminChatRoom() {
       );
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "Cannot create a new chat"));
+      toast.error(getApiErrorMessage(error, i18n.t("chat:error.createRoom")));
     },
   });
 }
@@ -77,7 +78,7 @@ export function useSendAdminChatMessage() {
       queryClient.invalidateQueries({ queryKey: adminChatKeys.myUsage });
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "AI could not answer this message"));
+      toast.error(getApiErrorMessage(error, i18n.t("chat:error.sendMessage")));
     },
     onSettled: (result, _error, variables) => {
       // The backend intentionally keeps the USER turn even when AI/billing
@@ -105,7 +106,7 @@ export function useDeleteAdminChatRoom() {
       queryClient.removeQueries({ queryKey: adminChatKeys.messages(roomId) });
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "Cannot delete this chat"));
+      toast.error(getApiErrorMessage(error, i18n.t("chat:error.deleteRoom")));
     },
   });
 }
@@ -120,7 +121,7 @@ export function useRenameAdminChatRoom() {
       queryClient.invalidateQueries({ queryKey: adminChatKeys.rooms });
     },
     onError: (error) =>
-      toast.error(getApiErrorMessage(error, "Cannot rename this chat")),
+      toast.error(getApiErrorMessage(error, i18n.t("chat:error.renameRoom"))),
   });
 }
 
@@ -169,7 +170,7 @@ export function useUpdateMyAiProviderSetting() {
       toast.success(`Now answering with ${setting.model}`);
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, "Cannot change the model"));
+      toast.error(getApiErrorMessage(error, i18n.t("chat:error.changeModel")));
     },
   });
 }

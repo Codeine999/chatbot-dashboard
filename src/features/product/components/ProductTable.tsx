@@ -34,6 +34,8 @@ import {
 import { http } from "@/lib/http";
 import { Link } from "react-router-dom";
 import { getProducts } from "../services/getProducts";
+import { useTranslation } from "react-i18next";
+import { formatNumber } from "@/i18n/format";
 
 
 interface ProductTableProps {
@@ -42,6 +44,7 @@ interface ProductTableProps {
 
 
 const ProductTable = () => {
+  const { t } = useTranslation("product");
   const [products, setProducts] = useState<any[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -139,12 +142,12 @@ const ProductTable = () => {
         <Table className="min-w-full table-fixed">
           <TableHeader className="h-[60px] border-b border">
             <TableRow>
-              <TableHead className="w-[100px] px-5 text-[#879da7] font-semibold">Picture</TableHead>
-              <TableHead className="w-[200px] text-[#879da7] font-semibold">Name</TableHead>
-              <TableHead className="w-[150px] text-[#879da7] font-semibold">Status</TableHead>
-              <TableHead className="w-[100px] text-[#879da7] font-semibold">Price</TableHead>
-              <TableHead className="w-[150px] text-[#879da7] text-center font-semibold">Stock</TableHead>
-              <TableHead className="w-[120px] text-[#879da7] text-center font-semibold">Action</TableHead>
+              <TableHead className="w-[100px] px-5 text-[#879da7] font-semibold">{t("table.picture")}</TableHead>
+              <TableHead className="w-[200px] text-[#879da7] font-semibold">{t("table.name")}</TableHead>
+              <TableHead className="w-[150px] text-[#879da7] font-semibold">{t("table.status")}</TableHead>
+              <TableHead className="w-[100px] text-[#879da7] font-semibold">{t("table.price")}</TableHead>
+              <TableHead className="w-[150px] text-[#879da7] text-center font-semibold">{t("table.stock")}</TableHead>
+              <TableHead className="w-[120px] text-[#879da7] text-center font-semibold">{t("table.action")}</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -174,13 +177,13 @@ const ProductTable = () => {
             ${isUnavailable ? "!bg-[#627c87]" : "!bg-green-400"}
             !text-white`}
                         >
-                          <span className="text-white text-sm">{currentStatus}</span>
+                          <span className="text-white text-sm">{t(`status.${currentStatus}`)}</span>
                         </SelectTrigger>
 
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="available">available</SelectItem>
-                            <SelectItem value="unavailable">unavailable</SelectItem>
+                            <SelectItem value="available">{t("status.available")}</SelectItem>
+                            <SelectItem value="unavailable">{t("status.unavailable")}</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -188,7 +191,7 @@ const ProductTable = () => {
                   })()}
                 </TableCell>
                 <TableCell className="text-md text-normal font-semibold">
-                  ฿ {items.price?.toLocaleString()}
+                  ฿ {formatNumber(Number(items.price) || 0)}
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-center items-center gap-1">

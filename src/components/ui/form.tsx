@@ -11,6 +11,8 @@ import {
   type FieldValues,
 } from "react-hook-form"
 
+import { useTranslation } from "react-i18next"
+
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 
@@ -135,7 +137,13 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? "") : props.children
+  const { t } = useTranslation()
+  const rawBody = error ? String(error?.message ?? "") : props.children
+
+  // zod schema ถูกสร้างนอก component จึงเก็บข้อความ error เป็น translation key
+  // แบบระบุ namespace เต็ม เช่น "auth:validation.usernameRequired" แล้วมาแปลตอน render
+  // ถ้าไม่ใช่ key ที่มีจริง i18next จะคืนค่าเดิมกลับมา ข้อความธรรมดาจึงยังแสดงได้ตามปกติ
+  const body = typeof rawBody === "string" ? t(rawBody as never) : rawBody
 
   if (!body) {
     return null

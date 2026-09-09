@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { compressImage } from "@/lib/image";
+import { useTranslation } from "react-i18next";
+import { formatNumber } from "@/i18n/format";
 import { cn } from "@/lib/utils";
 import { formatBaht } from "../format";
 import {
@@ -24,22 +26,22 @@ import type { PaymentMethod } from "../type";
 
 const paymentMethods: {
   value: PaymentMethod;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
   icon: typeof QrCode;
   recommended?: boolean;
 }[] = [
   {
     value: "qrcode",
-    label: "QR Code",
-    description: "ชำระผ่าน PromptPay QR Code",
+    labelKey: "topup.method.qrcode",
+    descriptionKey: "topup.method.qrcodeDesc",
     icon: QrCode,
     recommended: true,
   },
   {
     value: "slip",
-    label: "สลิปโอนเงิน",
-    description: "อัปโหลดสลิป ตรวจสอบภายใน 1-2 ชั่วโมง",
+    labelKey: "topup.method.slip",
+    descriptionKey: "topup.method.slipDesc",
     icon: Receipt,
   },
 ];
@@ -47,7 +49,7 @@ const paymentMethods: {
 const CUSTOM_ID = "custom";
 
 const formatCredits = (value: number) =>
-  value.toLocaleString("en-US", { maximumFractionDigits: 6 });
+  formatNumber(value, { maximumFractionDigits: 6 });
 
 type Props = {
   open: boolean;
@@ -56,6 +58,7 @@ type Props = {
 };
 
 export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => {
+  const { t } = useTranslation("bill");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState("");
   const [debouncedCustomAmount, setDebouncedCustomAmount] = useState("");
@@ -143,12 +146,12 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
 
   const handleSubmit = () => {
     if (!selectedQuote || totalPrice <= 0 || totalCredits <= 0) {
-      toast.error("กรุณาระบุยอดเงินที่ต้องการเติม");
+      toast.error(t("topup.error.amountRequired"));
       return;
     }
 
     if (!slip) {
-      toast.error("กรุณาแนบหลักฐานการชำระเงิน");
+      toast.error(t("topup.error.slipRequired"));
       return;
     }
 
@@ -160,7 +163,7 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
     }
 
     if (!selectedQuote.packageId) {
-      toast.error("ไม่พบแพ็กเกจที่เลือก กรุณาเลือกใหม่อีกครั้ง");
+      toast.error(t("topup.error.packageMissing"));
       return;
     }
 
@@ -175,20 +178,18 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[88vh] flex flex-col overflow-hidden">
         <DialogHeader>
-          <DialogTitle>Top Up Credits</DialogTitle>
-          <DialogDescription>
-            Add credits to your account to continue using all features.
-          </DialogDescription>
+          <DialogTitle>{t("topup.title")}</DialogTitle>
+          <DialogDescription>{t("topup.description")}</DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto space-y-4 -mx-1 px-1">
           <section className="space-y-2">
-          <p className="text-sm font-semibold text-normal">1. Select amount</p>
+          <p className="text-sm font-semibold text-normal">{t("topup.step1")}</p>
 
           <div className="space-y-2">
             {packagesQuery.isLoading && (
               <div className="rounded-xl border p-4 text-center text-sm text-mini">
-                กำลังโหลดแพ็กเกจเครดิต...
+                {t("topup.loadingPackages")}
               </div>
             )}
 
@@ -197,7 +198,7 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
                 <p className="text-sm text-destructive">
                   {getApiErrorMessage(
                     packagesQuery.error,
-                    "โหลดแพ็กเกจเครดิตไม่สำเร็จ"
+                    t("topup.loadPackagesFailed")
                   )}
                 </p>
                 <Button
@@ -207,7 +208,7 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
                   className="mt-2"
                   onClick={() => packagesQuery.refetch()}
                 >
-                  ลองใหม่
+                  {t("common:actions.retry")}
                 </Button>
               </div>
             )}
@@ -241,16 +242,20 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
                   <span className="flex-1">
                     <span className="flex items-center gap-2">
                       <span className="text-sm font-medium text-normal">
-                        {formatCredits(Number(packageQuote.creditAmount))} credits
+                        {t("topup.packageCredits", {
+                          credits: formatCredits(Number(packageQuote.creditAmount)),
+                        })}
                       </span>
                       {packageQuote.popular && (
                         <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                          Popular
+                          {t("topup.popular")}
                         </span>
                       )}
                     </span>
                     <span className="mt-0.5 block text-xs text-mini">
-                      ฿{Number(packageQuote.pricePerCredit).toFixed(6)} / credit
+                      {t("topup.pricePerCredit", {
+                        price: Number(packageQuote.pricePerCredit).toFixed(6),
+                      })}
                     </span>
                   </span>
 
@@ -283,7 +288,7 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
               <div className="flex-1">
                 <p className="flex items-center gap-1.5 text-sm font-medium text-normal">
                   <Pencil className="size-3.5 text-mini" />
-                  Custom amount
+                  {t("topup.customAmount")}
                 </p>
                 <p
                   className={cn(
@@ -292,17 +297,19 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
                   )}
                 >
                   {!isCustom || !normalizedCustomAmount
-                    ? "ระบุยอดเงินที่ต้องการเติมเอง"
+                    ? t("topup.customHint")
                     : !customAmountValid
-                      ? "กรอกจำนวนบวก ทศนิยมได้ไม่เกิน 6 ตำแหน่ง"
+                      ? t("topup.customInvalid")
                       : customQuoteQuery.isFetching || !customQuoteIsCurrent
-                        ? "กำลังคำนวณเครดิต..."
+                        ? t("topup.customCalculating")
                         : customQuoteQuery.isError
                           ? getApiErrorMessage(
                               customQuoteQuery.error,
-                              "คำนวณเครดิตไม่สำเร็จ"
+                              t("topup.customCalcFailed")
                             )
-                          : `≈ ${formatCredits(totalCredits)} credits`}
+                          : t("topup.customApprox", {
+                              credits: formatCredits(totalCredits),
+                            })}
                 </p>
               </div>
 
@@ -310,7 +317,7 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
                 type="number"
                 min="0.000001"
                 step="0.01"
-                placeholder="Enter amount"
+                placeholder={t("topup.amountPlaceholder")}
                 value={customAmount}
                 onFocus={() => setSelectedId(CUSTOM_ID)}
                 onChange={(e) => setCustomAmount(e.target.value)}
@@ -323,16 +330,16 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
             <div className="flex items-center gap-2 rounded-xl bg-primary/10 px-3 py-2.5">
               <Gift className="size-4 shrink-0 text-primary" />
               <p className="text-[13px] text-normal">
-                อัตราปัจจุบัน 1 บาท = {formatCredits(
-                  Number(packagesQuery.data.creditsPerThb)
-                )} เครดิต
+                {t("topup.rate", {
+                  credits: formatCredits(Number(packagesQuery.data.creditsPerThb)),
+                })}
               </p>
             </div>
           )}
         </section>
 
         <section className="space-y-2">
-          <p className="text-sm font-semibold text-normal">2. Payment method</p>
+          <p className="text-sm font-semibold text-normal">{t("topup.step2")}</p>
 
           {paymentMethods.map((method) => {
             const isSelected = paymentMethod === method.value;
@@ -362,16 +369,16 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
 
                 <span className="flex-1">
                   <span className="block text-sm font-medium text-normal">
-                    {method.label}
+                    {t(method.labelKey)}
                   </span>
                   <span className="mt-0.5 block text-xs text-mini">
-                    {method.description}
+                    {t(method.descriptionKey)}
                   </span>
                 </span>
 
                 {method.recommended && (
                   <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-semibold text-primary">
-                    Recommended
+                    {t("topup.method.recommended")}
                   </span>
                 )}
               </button>
@@ -387,7 +394,7 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
               {slipPreview ? (
                 <img
                   src={slipPreview}
-                  alt="หลักฐานการชำระเงิน"
+                  alt={t("topup.slip.alt")}
                   className="size-14 shrink-0 rounded-lg border object-cover"
                 />
               ) : (
@@ -399,14 +406,14 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
               <span className="flex-1">
                 <span className="block text-sm font-medium text-normal">
                   {slip
-                    ? "เปลี่ยนหลักฐานการชำระเงิน"
+                    ? t("topup.slip.change")
                     : paymentMethod === "slip"
-                      ? "แนบสลิปโอนเงิน"
-                      : "แนบหลักฐานการชำระผ่าน QR Code"}
+                      ? t("topup.slip.attachSlip")
+                      : t("topup.slip.attachQr")}
                   <span className="ml-1 text-destructive">*</span>
                 </span>
                 <span className="mt-0.5 block text-xs text-mini">
-                  {slip ? slip.name : "รองรับไฟล์ JPG, PNG และ WebP ไม่เกิน 5 MB"}
+                  {slip ? slip.name : t("topup.slip.hint")}
                 </span>
               </span>
             </button>
@@ -422,17 +429,17 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
         </section>
 
         <section className="space-y-2">
-          <p className="text-sm font-semibold text-normal">3. Order summary</p>
+          <p className="text-sm font-semibold text-normal">{t("topup.step3")}</p>
 
           <div className="rounded-xl bg-muted/50 p-4 space-y-2">
             <div className="flex items-center justify-between text-sm text-mini">
-              <span>Amount</span>
+              <span>{t("topup.summary.amount")}</span>
               <span className="text-normal">
-                {formatCredits(totalCredits)} credits
+                {t("topup.summary.credits", { credits: formatCredits(totalCredits) })}
               </span>
             </div>
             <div className="flex items-center justify-between border-t pt-2 text-sm font-semibold text-normal">
-              <span>Total</span>
+              <span>{t("topup.summary.total")}</span>
               <span className="text-primary">{formatBaht(totalPrice)}</span>
             </div>
           </div>
@@ -445,7 +452,7 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
             onClick={() => onOpenChange(false)}
             disabled={isPending}
           >
-            Cancel
+            {t("topup.cancel")}
           </Button>
           <Button
             onClick={handleSubmit}
@@ -457,14 +464,14 @@ export const TopUpCreditsDialog = ({ open, onOpenChange, onSuccess }: Props) => 
             }
             className="flex-1"
           >
-            {isPending ? "กำลังส่งคำขอ..." : "Proceed to Payment"}
+            {isPending ? t("topup.submitting") : t("topup.submit")}
             <Lock className="size-3.5" />
           </Button>
         </DialogFooter>
 
         <p className="flex items-center justify-center gap-1.5 text-xs text-mini">
           <Lock className="size-3" />
-          ชำระเงินอย่างปลอดภัย ตรวจสอบยอดโดยทีมงาน
+          {t("topup.secureNote")}
         </p>
       </DialogContent>
     </Dialog>

@@ -3,6 +3,8 @@ import { Bot, Database, Send, Sparkles, UserSearch, X } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 
 type AdminToolMessage = {
   id: string;
@@ -10,61 +12,57 @@ type AdminToolMessage = {
   content: string;
 };
 
-const initialMessages: AdminToolMessage[] = [
-  {
-    id: "welcome",
-    role: "ai",
-    content:
-      "สวัสดีครับ ผมคือ Admin AI Tool ใช้ช่วย query ข้อมูลในระบบได้ เช่น ดึงข้อมูล user, ตรวจสอบเครดิต, หรือสรุปสถานะ LINE OA",
-  },
+const quickPromptKeys = [
+  "quickPrompt.user",
+  "quickPrompt.usage",
+  "quickPrompt.transfer",
 ];
 
-const quickPrompts = [
-  "ดึงข้อมูลของ user mb30997984",
-  "สรุป usage LINE OA วันนี้",
-  "เช็คสถานะรายการแจ้งโอนล่าสุด",
-];
-
+/** mock response ยังไม่ได้ต่อ API จริง ใช้ i18n.t ตรง ๆ เพราะถูกเรียกนอกช่วง render */
 function getMockAiResponse(input: string) {
   const keyword = input.toLowerCase();
+  const t = (key: string) => i18n.t(`adminTool:${key}`);
 
   if (keyword.includes("user") || keyword.includes("ลูกค้า") || keyword.includes("mb")) {
     return [
-      "พบข้อมูลตัวอย่างของผู้ใช้:",
+      t("mock.userHeader"),
       "Username: mb30997984",
       "Name: เพชรอันดา ปักษา",
       "Register status: pending",
       "Transfer status: pending",
-      "หมายเหตุ: ข้อมูลนี้เป็น mock response ยังไม่ได้เชื่อม API จริง",
+      t("mock.userNote"),
     ].join("\n");
   }
 
   if (keyword.includes("usage") || keyword.includes("credit") || keyword.includes("เครดิต")) {
     return [
-      "สรุป usage ตัวอย่าง:",
+      t("mock.usageHeader"),
       "LINE_MESSAGE usedTotal: 225",
       "LINE_MESSAGE balance: 3000",
       "AI credit used: 332 / 1000",
-      "หมายเหตุ: ยังเป็น mock response สำหรับ UI เท่านั้น",
+      t("mock.usageNote"),
     ].join("\n");
   }
 
   if (keyword.includes("โอน") || keyword.includes("transfer")) {
     return [
-      "รายการแจ้งโอนล่าสุด:",
-      "ลูกค้า: เพชรอันดา",
-      "สถานะ: pending",
-      "Action: รอแอดมินตรวจสอบสลิป",
+      t("mock.transferHeader"),
+      t("mock.transferCustomer"),
+      t("mock.transferStatus"),
+      t("mock.transferAction"),
     ].join("\n");
   }
 
-  return "รับคำสั่งแล้วครับ ตอนนี้เป็น mock AI tool ยังไม่ได้เชื่อม API จริง แต่ UI พร้อมสำหรับต่อ query ข้อมูลระบบในขั้นถัดไป";
+  return t("mock.fallback");
 }
 
 export function AdminToolChat() {
+  const { t } = useTranslation("adminTool");
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<AdminToolMessage[]>(initialMessages);
+  const [messages, setMessages] = useState<AdminToolMessage[]>(() => [
+    { id: "welcome", role: "ai", content: i18n.t("adminTool:welcome") },
+  ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -128,7 +126,7 @@ export function AdminToolChat() {
               </div>
               <div>
                 <p className="font-semibold text-slate-950">Admin AI Tool</p>
-                <p className="text-xs text-slate-500">Query dashboard data</p>
+                <p className="text-xs text-slate-500">{t("subtitle")}</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
@@ -138,14 +136,14 @@ export function AdminToolChat() {
 
           <div className="border-b border-slate-100 px-4 py-3">
             <div className="flex flex-wrap gap-2">
-              {quickPrompts.map((prompt) => (
+              {quickPromptKeys.map((promptKey) => (
                 <button
-                  key={prompt}
+                  key={promptKey}
                   type="button"
-                  onClick={() => sendMessage(prompt)}
+                  onClick={() => sendMessage(t(promptKey))}
                   className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100"
                 >
-                  {prompt}
+                  {t(promptKey)}
                 </button>
               ))}
             </div>
@@ -182,7 +180,7 @@ export function AdminToolChat() {
             {isTyping && (
               <div className="flex justify-start">
                 <div className="rounded-full bg-white px-3 py-2 text-xs text-slate-500 shadow-sm ring-1 ring-slate-200">
-                  AI is querying mock data...
+                  {t("typing")}
                 </div>
               </div>
             )}
@@ -195,18 +193,18 @@ export function AdminToolChat() {
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask admin AI to query data..."
+                placeholder={t("inputPlaceholder")}
                 className="max-h-28 min-h-16 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
               />
               <div className="mt-2 flex items-center justify-between px-1">
-                <p className="text-xs text-slate-500">Enter to send</p>
+                <p className="text-xs text-slate-500">{t("enterToSend")}</p>
                 <Button
                   onClick={() => sendMessage()}
                   disabled={!input.trim() || isTyping}
                   className="h-9 rounded-xl bg-slate-950 text-white hover:bg-slate-800"
                 >
                   <Send className="h-4 w-4" />
-                  Send
+                  {t("send")}
                 </Button>
               </div>
             </div>
@@ -219,7 +217,7 @@ export function AdminToolChat() {
         className={`pointer-events-auto ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-950 text-white shadow-xl ring-1 ring-slate-800 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-slate-800 ${
           isOpen ? "rotate-90 scale-95" : "rotate-0 scale-100"
         }`}
-        aria-label="Open admin AI tool"
+        aria-label={t("open")}
       >
         {isOpen ? <X className="h-6 w-6" /> : <Database className="h-6 w-6" />}
       </button>

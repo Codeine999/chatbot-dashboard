@@ -25,9 +25,11 @@ import {
     Tag,
     Hash
 } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 
 const ConfirmOrderTable = ({ products }) => {
+    const { t } = useTranslation("order");
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 6;
 
@@ -53,8 +55,8 @@ const ConfirmOrderTable = ({ products }) => {
             <div className="relative rounded-lg md:h-[446px] h-[545px]">
                 <div className="p-4 flex gap-2 items-center border-b">
                     <Package className="w-5 h-5 text-normal" />
-                    <CardTitle>Products </CardTitle>
-                    <Button variant="items" className="text-[11px]">12 items</Button>
+                    <CardTitle>{t("products.title")}</CardTitle>
+                    <Button variant="items" className="text-[11px]">{t("products.count", { count: products.length })}</Button>
                 </div>
 
                 <Table className="mt-2 w-full table-fixed text-sm">
@@ -78,13 +80,13 @@ const ConfirmOrderTable = ({ products }) => {
                                             </div>
                                             <div className="flex gap-1 text-xs items-center">
                                                 <Tag className="w-3 h-3" />
-                                                <p>size:</p>
+                                                <p>{t("products.size")}</p>
                                                 <div className="border rounded-sm px-3">
                                                     <span>xs</span>
                                                 </div>
                                             </div>
                                             <div className="flex gap-1 text-xs items-center">
-                                                <p>Qty:</p>
+                                                <p>{t("products.qty")}</p>
                                                 <div className="border rounded-sm px-3">
                                                     <span>1</span>
                                                 </div>

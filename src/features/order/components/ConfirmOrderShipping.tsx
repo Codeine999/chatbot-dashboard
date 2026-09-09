@@ -24,10 +24,17 @@ import {
 
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 
 
-const steps = ["Order ", "Payment", "Processing", "Shipping"];
+// value ของ status ต้องคงเดิม เพราะใช้เทียบเงื่อนไขในโค้ด แปลเฉพาะข้อความที่แสดง
+const stepKeys = [
+    "process.step.order",
+    "process.step.payment",
+    "process.step.processing",
+    "process.step.shipping",
+];
 const icons = [
     <Layers2 className="text-[28px] text-[#603de1]" />,
     <CreditCard className="text-[28px] text-[#603de1]" />,
@@ -37,6 +44,7 @@ const icons = [
 
 
 const ConfirmOrderShipping = () => {
+    const { t } = useTranslation("order");
     const [status, setStatus] = useState('Pending');
     const [progress, setProgress] = useState([0, 0, 0, 0]);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,7 +65,7 @@ const ConfirmOrderShipping = () => {
             }, 1000);
             return () => clearTimeout(timer);
         } else {
-            if (currentIndex < steps.length - 1) {
+            if (currentIndex < stepKeys.length - 1) {
                 setTimeout(() => {
                     setCurrentIndex(currentIndex + 1);
                 }, 500);
@@ -71,8 +79,8 @@ const ConfirmOrderShipping = () => {
             <div className='p-4'>
                 <div className="flex justify-between">
                     <div className="">
-                        <CardTitle>Process</CardTitle>
-                        <CardDescription>Check items already to shipping</CardDescription>
+                        <CardTitle>{t("process.title")}</CardTitle>
+                        <CardDescription>{t("process.description")}</CardDescription>
                     </div>
 
                     <div>
@@ -80,7 +88,9 @@ const ConfirmOrderShipping = () => {
                             <DropdownMenuTrigger asChild>
 
                                 <Button variant="ghost" className="text-normal">
-                                    {status}
+                                    {status === 'Cancell Order'
+                                        ? t("process.cancelOrder")
+                                        : t(`status.${status.toLowerCase()}`)}
                                     <ChevronDown className="w-4 h-4" />
                                 </Button>
 
@@ -91,19 +101,19 @@ const ConfirmOrderShipping = () => {
                                         onClick={() => handleChangeStatus('Pending')}
                                         className={status === 'Pending' ? '' : 'text-gray-700'}
                                     >
-                                        <Clock /> Pending
+                                        <Clock /> {t("status.pending")}
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onClick={() => handleChangeStatus('Paid')}
                                         className={status === 'Paid' ? 'text-blue-gray-500' : 'text-gray-700'}
                                     >
-                                        <CreditCard />Paid
+                                        <CreditCard />{t("status.paid")}
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         onClick={() => handleChangeStatus('Cancell Order')}
                                         className="text-gray-700"
                                     >
-                                        <Ban />Cancell Order
+                                        <Ban />{t("process.cancelOrder")}
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                             </DropdownMenuContent>
@@ -115,11 +125,11 @@ const ConfirmOrderShipping = () => {
                     <div className='bg-inside w-full h-[100px] rounded-lg'>
 
                         <div className='p-2 flex justify-center md:gap-4 gap-2'>
-                            {steps.map((label, index) => (
+                            {stepKeys.map((labelKey, index) => (
                                 <div key={index} className='bg-background w-[130px] h-[84px] rounded-lg shadow-sm'>
                                     <div className='mt-2 px-2'>
                                         {icons[index]}
-                                        <p className='2xl:text-sm text-xs mt-1.5'>{label}</p>
+                                        <p className='2xl:text-sm text-xs mt-1.5'>{t(labelKey)}</p>
                                         <div
                                             className="h-1 mt-2 bg-green-500 rounded-full transition-all duration-1000 ease-in-out"
                                             style={{ width: `${progress[index]}%` }}

@@ -1,0 +1,20 @@
+{
+  "selectMenu": {
+    "title": "Sidebar & navigation",
+    "subtitle": "Choose which features appear in your workspace sidebar.",
+    "hint": "Hidden menus remain accessible to administrators from Settings. Required menus cannot be disabled.",
+    "searchPlaceholder": "Search menu or feature",
+    "showAllOptional": "Show all optional menus",
+    "noResults": "No menu matches your search"
+  },
+  "filter": {
+    "all": "All features",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "required": "Required"
+  },
+  "language": {
+    "title": "Language",
+    "subtitle": "Choose the language used across the dashboard"
+  }
+}

@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/select";
 import { GRANULARITY_OPTIONS } from "../lib/metrics";
 import type { Granularity } from "../type/analytics.type";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   value: Granularity;
@@ -14,12 +15,15 @@ type Props = {
 };
 
 /** ตัวเลือกช่วงเวลาประจำกราฟแต่ละใบ */
-export const GranularitySelect = ({ value, onChange }: Props) => (
+export const GranularitySelect = ({ value, onChange }: Props) => {
+  const { t } = useTranslation("usage");
+
+  return (
   <Select value={value} onValueChange={(next) => onChange(next as Granularity)}>
     <SelectTrigger
       size="sm"
       className="h-8 w-[112px] rounded-lg text-xs font-medium"
-      aria-label="Select time range"
+      aria-label={t("granularity.selectLabel")}
     >
       <SelectValue />
     </SelectTrigger>
@@ -27,9 +31,10 @@ export const GranularitySelect = ({ value, onChange }: Props) => (
     <SelectContent align="end">
       {GRANULARITY_OPTIONS.map((option) => (
         <SelectItem key={option.value} value={option.value} className="text-xs">
-          {option.label}
+          {t(option.labelKey)}
         </SelectItem>
       ))}
     </SelectContent>
   </Select>
-);
+  );
+};

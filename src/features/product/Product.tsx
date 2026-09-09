@@ -55,6 +55,7 @@ import { http } from "@/lib/http";
 import { Link } from "react-router-dom";
 import ProductTable from "./components/ProductTable";
 import SearchBar from "@/components/SearchBar";
+import { useTranslation } from "react-i18next";
 
 const icons = [
   <ShoppingCart className="text-[30px] mt-1.5 text-[#603de1] opacity-80" />,
@@ -65,6 +66,7 @@ const icons = [
 
 
 const Product = () => {
+  const { t } = useTranslation("product");
   const navigate = useNavigate();
   const [products, setProducts] = useState<any>([]);
 
@@ -93,7 +95,7 @@ const Product = () => {
       <div className="flex justify-between">
         <div />
         <div className="w-[140px]">
-          <ButtonAdd onClick={handleAddProduct} title={`Add Product +`} />
+          <ButtonAdd onClick={handleAddProduct} title={t("add")} />
         </div>
       </div>
 
@@ -108,7 +110,7 @@ const Product = () => {
             </div>
             <div className="mt-4 px-4">
               <CardDescription className="-mx-2">
-                Total Product
+                {t("summary.totalProducts")}
               </CardDescription>
               <p className="text-[20px]">
                 {products.totalProducts}
@@ -126,7 +128,7 @@ const Product = () => {
             </div>
             <div className="mt-4 px-4">
               <CardDescription className="-mx-2">
-                Total Stock
+                {t("summary.totalStock")}
               </CardDescription>
               <p className="text-[20px]">
                 {products.allStock}
@@ -144,7 +146,7 @@ const Product = () => {
             </div>
             <div className="mt-4 px-4">
               <CardDescription className="-mx-2">
-               Avilable Product
+                {t("summary.available")}
               </CardDescription>
               <p className="text-[20px]">
                 {products.allStock}
@@ -162,7 +164,7 @@ const Product = () => {
             </div>
             <div className="mt-4 px-4">
               <CardDescription className="-mx-2">
-                Unavilable Product
+                {t("summary.unavailable")}
               </CardDescription>
               <p className="text-[20px]">
                 0
@@ -179,7 +181,7 @@ const Product = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="w-24 border rounded-lg ml-auto shadow-xs">
               <div className="flex items-center gap-1 text-[#879da7]">
-                Export
+                {t("common:actions.export")}
                 <Download className="!w-4 !h-3.6" />
               </div>
             </Button>
@@ -191,7 +193,7 @@ const Product = () => {
                   src="/icon/pdf.png"
                   className="w-5 h-5"
                 />
-                PDF
+                {t("export.pdf")}
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem>
@@ -199,8 +201,8 @@ const Product = () => {
                   src="/icon/excel.png"
                   className="w-5 h-5"
                 />
-                EXCE
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                {t("export.excel")}
+                <DropdownMenuShortcut>⇧⌘E</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>

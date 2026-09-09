@@ -15,8 +15,11 @@ import {
     useLineOaFollowers,
     useLineOaMessageUsage,
 } from "../hooks/useLineOaDashboard";
+import { useTranslation } from "react-i18next";
+import { formatNumber } from "@/i18n/format";
 
 const OverviewCard = () => {
+    const { t } = useTranslation("home");
     const followers = useLineOaFollowers();
     const messageUsage = useLineOaMessageUsage();
 
@@ -25,13 +28,13 @@ const OverviewCard = () => {
     const cards = [
         {
             id: "followers",
-            title: "Followers",
+            title: t("overview.followers"),
             icon: Users,
             loading: followers.isLoading,
             total: followers.data?.followers ?? null,
             description:
                 followerDelta === null ? (
-                    "not enough history yet"
+                    t("overview.followersNoHistory")
                 ) : (
                     <>
                         <span
@@ -42,38 +45,40 @@ const OverviewCard = () => {
                             {followerDelta >= 0 ? "+" : ""}
                             {followerDelta}%
                         </span>{" "}
-                        last 7 days
+                        {t("overview.followersDelta")}
                     </>
                 ),
         },
         {
             id: "messages-sent",
-            title: "Messages Sent",
+            title: t("overview.messagesSent"),
             icon: MessageSquare,
             loading: messageUsage.isLoading,
             total: messageUsage.data?.sentThisMonth.count ?? null,
             description: messageUsage.data
-                ? `in ${messageUsage.data.sentThisMonth.period}`
+                ? t("overview.messagesPeriod", {
+                      period: messageUsage.data.sentThisMonth.period,
+                  })
                 : "",
         },
         {
             id: "quota-used",
-            title: "Message Quota Used",
+            title: t("overview.quotaUsed"),
             icon: Gauge,
             loading: messageUsage.isLoading,
             total: messageUsage.data?.quotaUsed ?? null,
-            description: "this month",
+            description: t("overview.thisMonth"),
         },
         {
             id: "active-now",
-            title: "Active now",
+            title: t("overview.activeNow"),
             icon: User,
             loading: false,
             total: 573,
             description: (
                 <>
                     <span className="text-green-600 mr-1">+20.1%</span>
-                    from last month
+                    {t("overview.fromLastMonth")}
                 </>
             ),
         },
@@ -91,7 +96,7 @@ const OverviewCard = () => {
                                 <p className="mt-1 text-xl font-medium">
                                     {item.loading || item.total === null
                                         ? "—"
-                                        : item.total.toLocaleString()}
+                                        : formatNumber(item.total)}
                                 </p>
                                 <CardDescription className="mt-1">
                                     {item.description}

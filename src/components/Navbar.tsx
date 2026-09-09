@@ -25,6 +25,8 @@ import {
   useUnreadNotificationCount,
 } from "@/features/notifications/hooks/useNotifications";
 import type { AdminNotification } from "@/features/notifications/types/notification.type";
+import { useTranslation } from "react-i18next";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 const getInitials = (firstname = "", lastname = "", username = "") => {
   const initials = `${firstname.charAt(0)}${lastname.charAt(0)}`.trim();
@@ -32,6 +34,7 @@ const getInitials = (firstname = "", lastname = "", username = "") => {
 };
 
 const Navbar = () => {
+  const { t } = useTranslation("nav");
   const { theme, setTheme } = useTheme();
   const user = useAuthUser();
   const logout = useLogout();
@@ -91,12 +94,12 @@ const Navbar = () => {
             >
 
               <div className="p-2 px-4 sticky top-0">
-                <p className="text-md text-mini font-medium">Notification</p>
+                <p className="text-md text-mini font-medium">{t("notification.title")}</p>
               </div>
 
               <div className="overflow-y-auto px-1">
                 {notifications.length === 0 && (
-                  <p className="px-3 py-4 text-xs text-mini">No notifications yet</p>
+                  <p className="px-3 py-4 text-xs text-mini">{t("notification.empty")}</p>
                 )}
 
                 {notifications.map((notification) => {
@@ -136,6 +139,8 @@ const Navbar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
+          <LanguageToggle />
+
           <Button variant="nav" size="icon" onClick={toggleTheme}>
             <Sun className={`!w-10 !h-5 transition-all duration-300
               ${theme === "dark" ? "rotate-0 scale-0" : "rotate-0 scale-100"}`}
@@ -144,7 +149,7 @@ const Navbar = () => {
               className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300
                 ${theme === "light" ? "rotate-90 scale-0" : "rotate-0 scale-100"}`}
             />
-            <span className="sr-only">Toggle theme</span>
+            <span className="sr-only">{t("theme.toggle")}</span>
           </Button>
 
           <div className="mx-6">
@@ -165,15 +170,15 @@ const Navbar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <User className="!w-5 !h-5 mr-2" />
-                  Profile
+                  {t("user.profile")}
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Settings className="!w-5 !h-5 mr-2" />
-                  Setting
+                  {t("user.setting")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={logout}>
                   <LogOut className="!w-5 !h-5 mr-2" />
-                  Logout
+                  {t("user.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

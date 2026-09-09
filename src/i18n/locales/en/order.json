@@ -1,0 +1,60 @@
+{
+  "status": {
+    "all": "All",
+    "pending": "Pending",
+    "paid": "Paid",
+    "cancel": "Cancel"
+  },
+  "bulkAction": {
+    "shipping": "shipping",
+    "success": "success",
+    "cancel": "cancel"
+  },
+  "list": {
+    "status": "Status",
+    "showing": "showing {{from}} of {{total}}"
+  },
+  "breadcrumb": {
+    "order": "Order",
+    "confirm": "Confirm Order"
+  },
+  "confirm": {
+    "orderNumber": "Order Number {{id}}"
+  },
+  "process": {
+    "title": "Process",
+    "description": "Check items already to shipping",
+    "step": {
+      "order": "Order",
+      "payment": "Payment",
+      "processing": "Processing",
+      "shipping": "Shipping"
+    },
+    "cancelOrder": "Cancel Order"
+  },
+  "payments": {
+    "title": "Payments",
+    "description": "overview details",
+    "invoice": "invoice",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "shipping": "Shipping",
+    "method": "Payment Method",
+    "total": "Total"
+  },
+  "products": {
+    "title": "Products",
+    "count_one": "{{count}} item",
+    "count_other": "{{count}} items",
+    "sku": "SKU",
+    "size": "size:",
+    "qty": "Qty:"
+  },
+  "customer": {
+    "title": "Customer",
+    "description": "Information Detail",
+    "contact": "Contact",
+    "shippingAddress": "Shipping Address",
+    "trackingPackage": "Tracking Package"
+  }
+}

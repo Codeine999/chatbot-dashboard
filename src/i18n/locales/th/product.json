@@ -1,0 +1,51 @@
+{
+  "title": "สินค้า",
+  "add": "เพิ่มสินค้า +",
+  "summary": {
+    "totalProducts": "สินค้าทั้งหมด",
+    "totalStock": "สต็อกทั้งหมด",
+    "available": "สินค้าที่พร้อมขาย",
+    "unavailable": "สินค้าที่ไม่พร้อมขาย"
+  },
+  "table": {
+    "picture": "รูปภาพ",
+    "name": "ชื่อสินค้า",
+    "status": "สถานะ",
+    "price": "ราคา",
+    "stock": "สต็อก",
+    "action": "จัดการ"
+  },
+  "status": {
+    "available": "พร้อมขาย",
+    "unavailable": "ไม่พร้อมขาย"
+  },
+  "breadcrumb": {
+    "products": "สินค้า",
+    "add": "เพิ่มสินค้า",
+    "edit": "แก้ไขสินค้า"
+  },
+  "form": {
+    "addTitle": "เพิ่มสินค้าใหม่",
+    "editTitle": "แก้ไขสินค้า {{name}}",
+    "description": "กรอกข้อมูลสินค้าด้านล่าง",
+    "name": "ชื่อสินค้า",
+    "namePlaceholder": "ชื่อสินค้า",
+    "category": "หมวดหมู่",
+    "categoryPlaceholder": "หมวดหมู่",
+    "price": "ราคา",
+    "pricePlaceholder": "ราคา",
+    "descriptionLabel": "รายละเอียด",
+    "descriptionPlaceholder": "รายละเอียดสินค้า...",
+    "orderItems": "ตัวเลือกสินค้า",
+    "size": "ขนาด",
+    "quantity": "จำนวน",
+    "sku": "SKU",
+    "moreItem": "เพิ่มตัวเลือก",
+    "uploadImages": "อัปโหลดรูปภาพ",
+    "save": "บันทึกสินค้า"
+  },
+  "export": {
+    "pdf": "PDF",
+    "excel": "Excel"
+  }
+}

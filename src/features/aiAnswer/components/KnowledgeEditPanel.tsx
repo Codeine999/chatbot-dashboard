@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import {
   BookOpen,
@@ -158,6 +159,7 @@ const CategorySelect = ({
   categories: SysCategory[];
   onChange: (value: string) => void;
 }) => {
+  const { t } = useTranslation("knowledge");
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
@@ -202,7 +204,7 @@ const CategorySelect = ({
           className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm text-normal shadow-xs outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <span className={value ? "truncate" : "truncate text-mini"}>
-            {value || "เลือกหมวด"}
+            {value || t("panel.categoryPlaceholder")}
           </span>
           <ChevronDown className="size-4 shrink-0 text-mini" />
         </button>
@@ -236,7 +238,7 @@ const CategorySelect = ({
                 autoFocus
                 value={name}
                 maxLength={100}
-                placeholder="ชื่อหมวดหมู่ใหม่"
+                placeholder={t("panel.newCategoryPlaceholder")}
                 onChange={(event) => setName(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {
@@ -257,7 +259,7 @@ const CategorySelect = ({
                 disabled={!name.trim() || createCategory.isPending}
                 onClick={() => void handleSave()}
               >
-                {createCategory.isPending ? "Saving..." : "Save"}
+                {createCategory.isPending ? t("panel.saving") : t("panel.save")}
               </Button>
             </div>
           ) : (
@@ -267,7 +269,7 @@ const CategorySelect = ({
               className="flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-left text-sm font-medium text-icons outline-none transition hover:bg-accent"
             >
               <Plus className="size-4" />
-              Add more
+              {t("panel.addMore")}
             </button>
           )}
         </div>
@@ -291,6 +293,7 @@ const KnowledgeEditPanel = ({
   onClose,
   onPublish,
 }: Props) => {
+  const { t } = useTranslation("knowledge");
   const [draft, setDraft] = useState<KnowledgeDraft>(emptyDraft);
   const [question, setQuestion] = useState("");
   const [showPreview, setShowPreview] = useState(true);
@@ -325,35 +328,35 @@ const KnowledgeEditPanel = ({
           <BookOpen className="h-4 w-4 text-icons" />
           <div>
             <p className="text-sm font-semibold text-normal">
-              {item ? "Edit Knowledge Entry" : "New Knowledge Entry"}
+              {item ? t("panel.editTitle") : t("panel.newTitle")}
             </p>
             {item && <p className="text-xs text-mini">ID: {item.id}</p>}
           </div>
         </div>
 
-        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close panel">
+        <Button variant="ghost" size="icon" onClick={onClose} aria-label={t("panel.close")}>
           <X className="h-4 w-4 text-mini" />
         </Button>
       </div>
 
       <div className="min-h-0 flex-1 touch-pan-y space-y-4 overflow-y-auto overscroll-contain p-4">
-        <p className="text-xs font-semibold text-normal">Basic Information</p>
+        <p className="text-xs font-semibold text-normal">{t("panel.basicInfo")}</p>
 
-        <Field label="Title" required>
+        <Field label={t("panel.title")} required>
           <Input
             value={draft.title}
             onChange={(event) => set("title", event.target.value)}
-            placeholder="ชื่อหัวข้อความรู้"
+            placeholder={t("panel.titlePlaceholder")}
           />
         </Field>
 
-        <Field label="Description">
+        <Field label={t("panel.description")}>
           <Textarea
             value={draft.description}
             maxLength={DESCRIPTION_MAX}
             onChange={(event) => set("description", event.target.value)}
             className="min-h-20 resize-none"
-            placeholder="อธิบายสั้น ๆ ว่า entry นี้ใช้ตอบเรื่องอะไร"
+            placeholder={t("panel.descriptionPlaceholder")}
           />
           <p className="mt-1 text-right text-[11px] text-mini">
             {draft.description.length}/{DESCRIPTION_MAX}
@@ -361,7 +364,7 @@ const KnowledgeEditPanel = ({
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Category" required>
+          <Field label={t("panel.category")} required>
             <CategorySelect
               value={draft.category}
               categories={categories}
@@ -369,7 +372,7 @@ const KnowledgeEditPanel = ({
             />
           </Field>
 
-          <Field label="Intent Key" required>
+          <Field label={t("panel.intentKey")} required>
             <div className="relative">
               <Input
                 value={draft.intentKey}
@@ -381,7 +384,7 @@ const KnowledgeEditPanel = ({
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    aria-label="วิธีตั้งค่า Intent Key"
+                    aria-label={t("panel.intentKeyHelp")}
                     className="absolute right-2.5 -mt-13 flex size-6 
                     -translate-y-1/2 items-center justify-center rounded-md 
                     text-mini transition hover:bg-hover hover:text-icons cursor-pointer
@@ -396,13 +399,13 @@ const KnowledgeEditPanel = ({
                   sideOffset={10}
                   className="max-w-64 rounded-xl px-3.5 py-3 text-left shadow-xl"
                 >
-                  <p className="font-semibold">Intent Key คืออะไร?</p>
+                  <p className="font-semibold">{t("panel.intentKeyTitle")}</p>
                   <p className="mt-1 leading-relaxed opacity-80">
-                    ใช้ระบุเจตนาของคำถามในรูปแบบหมวดหมู่เพื่อบอกให้ Ai ตอบกลับได้ถูกข้อความ <br/> เช่น
-                    <span className="ml-1 font-mono font-semibold"> member_register</span>
+                    {t("panel.intentKeyBody")}
+                    <span className="ml-1 font-mono font-semibold">member_register</span>
                   </p>
                   <p className="mt-1.5 leading-relaxed opacity-80">
-                    ควรใช้ตัวพิมพ์เล็ก ไม่มีเว้นวรรค และไม่ซ้ำกับรายการอื่น 
+                    {t("panel.intentKeyRule")}
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -410,29 +413,29 @@ const KnowledgeEditPanel = ({
           </Field>
         </div>
 
-        <Field label="Keywords">
+        <Field label={t("panel.keywords")}>
           <ChipEditor
             values={draft.keywords}
-            addLabel="Add keyword"
+            addLabel={t("panel.addKeyword")}
             onChange={(next) => set("keywords", next)}
           />
         </Field>
 
-        <Field label="Example Questions">
+        <Field label={t("panel.examples")}>
           <ChipEditor
             values={draft.questionExamples}
-            addLabel="Add question"
+            addLabel={t("panel.addQuestion")}
             onChange={(next) => set("questionExamples", next)}
           />
         </Field>
 
-        <Field label="Final Answer (shown to AI)">
+        <Field label={t("panel.answer")}>
           <Textarea
             value={draft.answer}
             maxLength={ANSWER_MAX}
             onChange={(event) => set("answer", event.target.value)}
             className="min-h-32 resize-none"
-            placeholder="คำตอบที่ AI จะใช้ตอบลูกค้า"
+            placeholder={t("panel.answerPlaceholder")}
           />
           <p className="mt-1 text-right text-[11px] text-mini">
             {draft.answer.length}/{ANSWER_MAX}
@@ -440,7 +443,7 @@ const KnowledgeEditPanel = ({
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Priority">
+          <Field label={t("panel.priority")}>
             <Input
               type="number"
               min={0}
@@ -450,7 +453,7 @@ const KnowledgeEditPanel = ({
             />
           </Field>
 
-          <Field label="Status">
+          <Field label={t("panel.status")}>
             <button
               type="button"
               onClick={() => set("active", !draft.active)}
@@ -468,7 +471,7 @@ const KnowledgeEditPanel = ({
                 />
               </span>
               <span className="text-sm text-normal">
-                {draft.active ? "Active" : "Inactive"}
+                {draft.active ? t("panel.active") : t("panel.inactive")}
               </span>
             </button>
           </Field>
@@ -481,7 +484,7 @@ const KnowledgeEditPanel = ({
             className="flex w-full items-center justify-between"
           >
             <span className="text-xs font-semibold text-normal">
-              Retrieval Preview (Test)
+              {t("panel.preview")}
             </span>
             <ChevronUp
               className={`h-4 w-4 text-mini transition ${showPreview ? "" : "rotate-180"}`}
@@ -490,7 +493,7 @@ const KnowledgeEditPanel = ({
 
           {showPreview && (
             <div className="mt-3">
-              <p className="mb-1.5 text-xs text-mini">Test with a sample question</p>
+              <p className="mb-1.5 text-xs text-mini">{t("panel.previewHint")}</p>
               <div className="flex gap-2">
                 <Input
                   value={question}
@@ -500,23 +503,23 @@ const KnowledgeEditPanel = ({
                       retrieval.mutate(question.trim());
                     }
                   }}
-                  placeholder="อยากสมัครสมาชิกต้องทำยังไงคะ?"
+                  placeholder={t("panel.previewPlaceholder")}
                   className="text-xs"
                 />
                 <Button
                   onClick={() => question.trim() && retrieval.mutate(question.trim())}
                   disabled={!question.trim() || retrieval.isPending}
                 >
-                  Test
+                  {t("panel.test")}
                 </Button>
               </div>
 
               {retrieval.isPending && (
-                <p className="mt-3 text-xs text-mini">กำลังค้นหา...</p>
+                <p className="mt-3 text-xs text-mini">{t("panel.searching")}</p>
               )}
 
               {retrieval.isSuccess && !topMatch && (
-                <p className="mt-3 text-xs text-mini">ไม่พบ entry ที่ตรงกับคำถามนี้</p>
+                <p className="mt-3 text-xs text-mini">{t("panel.noMatch")}</p>
               )}
 
               {topMatch && (
@@ -524,7 +527,7 @@ const KnowledgeEditPanel = ({
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center gap-1 rounded-md bg-green-50 px-1.5 py-0.5 text-[11px] font-medium text-green-700 dark:bg-green-500/10 dark:text-green-400">
                       <Sparkles className="h-3 w-3" />
-                      Top Match
+                      {t("panel.topMatch")}
                     </span>
                     <span className="text-xs font-semibold text-normal">
                       {topMatch.score}%
@@ -535,7 +538,10 @@ const KnowledgeEditPanel = ({
                     {topMatch.title} ({topMatch.id})
                   </p>
                   <p className="text-[11px] text-mini">
-                    Intent: {topMatch.intentKey} · Priority: {topMatch.priority}
+                    {t("panel.matchMeta", {
+                      intent: topMatch.intentKey,
+                      priority: topMatch.priority,
+                    })}
                   </p>
                 </div>
               )}
@@ -546,13 +552,13 @@ const KnowledgeEditPanel = ({
 
       <div className="flex shrink-0 items-center justify-end gap-2 border-t bg-card p-4">
         <Button variant="ghost" className="border" onClick={onClose}>
-          Cancel
+          {t("panel.cancel")}
         </Button>
         <Button
           disabled={!canPublish || isSaving}
           onClick={() => onPublish(draft)}
         >
-          {isSaving ? "Publishing..." : "Publish"}
+          {isSaving ? t("panel.publishing") : t("panel.publish")}
         </Button>
       </div>
     </aside>

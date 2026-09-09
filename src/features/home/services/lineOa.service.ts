@@ -1,5 +1,25 @@
 import { api } from "@/api/api";
 
+export type AiProviderSetting = {
+  scope: string;
+  provider: string;
+  model: string;
+  updatedAt: string;
+};
+
+export type AiProviderCatalogItem = {
+  provider: string;
+  label: string;
+  available: boolean;
+  models: string[];
+};
+
+export type UpdateAdminAiProviderSettingInput = {
+  scope: "ADMIN";
+  provider: string;
+  model: string;
+};
+
 export type LineBotInfo = {
   userId: string;
   basicId: string;
@@ -8,6 +28,7 @@ export type LineBotInfo = {
   pictureUrl?: string;
   chatMode: "chat" | "bot";
   markAsReadMode: "auto" | "manual";
+  aiProviderSettings?: AiProviderSetting[];
 };
 
 export type LineFollowerStats = {
@@ -38,6 +59,23 @@ export const lineOaApi = {
   getMessageUsage: async (): Promise<LineMessageUsage> => {
     const res = await api.get<LineMessageUsage>(
       "/line/admin/message-usage"
+    );
+    return res.data;
+  },
+
+  getMyAiProviderCatalog: async (): Promise<AiProviderCatalogItem[]> => {
+    const res = await api.get<AiProviderCatalogItem[]>(
+      "/admin/ai-providers/catalog/me"
+    );
+    return res.data;
+  },
+
+  updateAdminAiProviderSetting: async (
+    input: UpdateAdminAiProviderSettingInput
+  ): Promise<AiProviderSetting> => {
+    const res = await api.patch<AiProviderSetting>(
+      "/admin/ai-providers/settings/me",
+      input
     );
     return res.data;
   },

@@ -8,6 +8,7 @@
     "dev": "bunx vite",
     "build": "bunx tsc --noEmit && bunx vite build",
     "lint": "bunx eslint .",
+    "i18n:check": "bun scripts/check-i18n.mjs",
     "preview": "bunx vite preview"
   },
   "dependencies": {
@@ -32,10 +33,13 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "framer-motion": "^12.10.1",
+    "i18next": "^26.4.2",
+    "i18next-browser-languagedetector": "^8.2.1",
     "lucide-react": "^0.503.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.2",
+    "react-i18next": "^17.0.13",
     "react-router-dom": "^7.5.2",
     "recharts": "^2.15.3",
     "socket.io-client": "^4.8.3",

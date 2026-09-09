@@ -1,0 +1,51 @@
+{
+  "title": "Products",
+  "add": "Add Product +",
+  "summary": {
+    "totalProducts": "Total Product",
+    "totalStock": "Total Stock",
+    "available": "Available Product",
+    "unavailable": "Unavailable Product"
+  },
+  "table": {
+    "picture": "Picture",
+    "name": "Name",
+    "status": "Status",
+    "price": "Price",
+    "stock": "Stock",
+    "action": "Action"
+  },
+  "status": {
+    "available": "available",
+    "unavailable": "unavailable"
+  },
+  "breadcrumb": {
+    "products": "Products",
+    "add": "Add Product",
+    "edit": "Edit Product"
+  },
+  "form": {
+    "addTitle": "Add New Product",
+    "editTitle": "Edit Product {{name}}",
+    "description": "Fill in product information below.",
+    "name": "Name",
+    "namePlaceholder": "Product name",
+    "category": "Category",
+    "categoryPlaceholder": "Category",
+    "price": "Price",
+    "pricePlaceholder": "Price",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Product description...",
+    "orderItems": "Order Items",
+    "size": "Size",
+    "quantity": "Quantity",
+    "sku": "SKU",
+    "moreItem": "More Item",
+    "uploadImages": "Upload Images",
+    "save": "Save Product"
+  },
+  "export": {
+    "pdf": "PDF",
+    "excel": "Excel"
+  }
+}

@@ -11,6 +11,7 @@ import { formatBaht, formatDateTime } from "../format";
 import type { Invoice } from "../type";
 import { PaymentMethodBadge } from "./PaymentMethodBadge";
 import { StatusBadge } from "./StatusBadge";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   invoice: Invoice | null;
@@ -18,8 +19,10 @@ type Props = {
 };
 
 export const InvoiceDetailsDialog = ({ invoice, onOpenChange }: Props) => {
+  const { t } = useTranslation("bill");
+
   const handleDownload = () => {
-    toast.info("ตัวอย่างใบเสร็จ (mock) — ยังไม่มีไฟล์ PDF จริงให้ดาวน์โหลด");
+    toast.info(t("invoice.downloadMock"));
   };
 
   return (
@@ -28,7 +31,7 @@ export const InvoiceDetailsDialog = ({ invoice, onOpenChange }: Props) => {
         {invoice && (
           <>
             <DialogHeader>
-              <DialogTitle>Invoice Details</DialogTitle>
+              <DialogTitle>{t("invoice.title")}</DialogTitle>
             </DialogHeader>
 
             <div className="flex items-center justify-between">
@@ -46,105 +49,105 @@ export const InvoiceDetailsDialog = ({ invoice, onOpenChange }: Props) => {
                 onClick={handleDownload}
                 className="text-primary font-semibold"
               >
-                Download PDF
+                {t("invoice.downloadPdf")}
                 <Download className="size-3.5" />
               </Button>
             </div>
 
             <div className="rounded-xl border p-4 space-y-2.5">
-              <p className="text-sm font-semibold text-gray-700">Invoice Summary</p>
+              <p className="text-sm font-semibold text-gray-700">{t("invoice.summary")}</p>
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Subtotal</span>
+                <span>{t("invoice.subtotal")}</span>
                 <span>{formatBaht(invoice.subtotal)}</span>
               </div>
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>VAT (7%)</span>
+                <span>{t("invoice.vat")}</span>
                 <span>{formatBaht(invoice.vat)}</span>
               </div>
               <div className="flex items-center justify-between text-sm font-semibold text-gray-800 pt-1 border-t">
-                <span>Total</span>
+                <span>{t("invoice.total")}</span>
                 <span>{formatBaht(invoice.total)}</span>
               </div>
               {invoice.creditAmount !== undefined && (
                 <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>Credits</span>
-                  <span>{invoice.creditAmount.toLocaleString()} credits</span>
+                  <span>{t("invoice.credits")}</span>
+                  <span>{t("invoice.creditsValue", { count: invoice.creditAmount })}</span>
                 </div>
               )}
               <div className="flex items-center justify-between rounded-lg bg-green-50 dark:bg-green-500/10 px-3 py-2 text-sm font-semibold text-green-700 dark:text-green-400">
-                <span>Amount Paid</span>
+                <span>{t("invoice.amountPaid")}</span>
                 <span>{formatBaht(invoice.amountPaid)}</span>
               </div>
             </div>
 
             <div className="rounded-xl border p-4 space-y-2.5">
-              <p className="text-sm font-semibold text-gray-700">Payment Information</p>
+              <p className="text-sm font-semibold text-gray-700">{t("invoice.paymentInfo")}</p>
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Payment Method</span>
+                <span>{t("invoice.paymentMethod")}</span>
                 <PaymentMethodBadge method={invoice.paymentMethod} />
               </div>
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Transaction ID</span>
+                <span>{t("invoice.transactionId")}</span>
                 <span className="max-w-[15rem] break-all text-right text-gray-700">
                   {invoice.transactionId}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>Payment Date</span>
+                <span>{t("invoice.paymentDate")}</span>
                 <span className="text-gray-700">{formatDateTime(invoice.paymentDate)}</span>
               </div>
             </div>
 
             {invoice.usage && (
               <div className="rounded-xl border p-4 space-y-2.5">
-                <p className="text-sm font-semibold text-gray-700">Usage Summary</p>
+                <p className="text-sm font-semibold text-gray-700">{t("invoice.usageSummary")}</p>
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <span className="flex items-center gap-1.5">
                     <MessageCircle className="size-3.5 text-gray-400" />
-                    Chat Messages
+                    {t("invoice.chatMessages")}
                   </span>
                   <span className="text-gray-700">
-                    {invoice.usage.chatMessages.toLocaleString()} messages
+                    {t("invoice.chatMessagesValue", { count: invoice.usage.chatMessages })}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <span className="flex items-center gap-1.5">
                     <Bot className="size-3.5 text-gray-400" />
-                    AI Agents
+                    {t("invoice.aiAgents")}
                   </span>
                   <span className="text-gray-700">
-                    {invoice.usage.aiAgentRuns.toLocaleString()} runs
+                    {t("invoice.aiAgentsValue", { count: invoice.usage.aiAgentRuns })}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <span className="flex items-center gap-1.5">
                     <FileText className="size-3.5 text-gray-400" />
-                    Documents Processed
+                    {t("invoice.documents")}
                   </span>
                   <span className="text-gray-700">
-                    {invoice.usage.documentsProcessed.toLocaleString()} documents
+                    {t("invoice.documentsValue", { count: invoice.usage.documentsProcessed })}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm text-gray-500">
                   <span className="flex items-center gap-1.5">
                     <WalletCards className="size-3.5 text-gray-400" />
-                    Credits Used
+                    {t("invoice.creditsUsed")}
                   </span>
                   <span className="text-gray-700">
-                    {invoice.usage.creditsUsed.toLocaleString()} credits
+                    {t("invoice.creditsValue", { count: invoice.usage.creditsUsed })}
                   </span>
                 </div>
               </div>
             )}
 
             <p className="text-center text-sm text-gray-400">
-              Need help?{" "}
+              {t("invoice.needHelp")}{" "}
               <button
                 type="button"
-                onClick={() => toast.info("ติดต่อฝ่ายสนับสนุน (mock)")}
+                onClick={() => toast.info(t("invoice.contactSupportMock"))}
                 className="text-primary font-medium hover:underline cursor-pointer"
               >
-                Contact Support
+                {t("invoice.contactSupport")}
               </button>
             </p>
           </>

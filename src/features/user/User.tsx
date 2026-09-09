@@ -17,8 +17,10 @@ import {
 
 import UserTable from "./components/UserTable";
 import { useUsers } from "./hooks/useUsers";
+import { useTranslation } from "react-i18next";
 
 const User = () => {
+  const { t } = useTranslation("users");
   const [search, setSearch] = useState("");
   const { data: users = [], isLoading, isError } = useUsers();
 
@@ -54,7 +56,7 @@ const User = () => {
           </div> */}
         </div>
         <div>
-          <ButtonAdd onClick={() => {}} title="Add User +" />
+          <ButtonAdd onClick={() => {}} title={t("add")} />
         </div>
       </div>
 
@@ -68,7 +70,7 @@ const User = () => {
               <Search className="mr-2 text-mini" />
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder={t("searchPlaceholder")}
                 value={search}
                 className="bg-transparent outline-none w-full"
                 onChange={(event) => setSearch(event.target.value)}
@@ -90,7 +92,7 @@ const User = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="border-2">
               <div className="flex items-center gap-1 text-[#879da7] ">
-                Export
+                {t("common:actions.export")}
                 <Download className="!w-4 !h-3.6" />
               </div>
             </Button>
@@ -102,8 +104,8 @@ const User = () => {
                   src="/icon/excel.png"
                   className="w-5 h-5"
                 />
-                Excel
-                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                {t("product:export.excel")}
+                <DropdownMenuShortcut>⇧⌘E</DropdownMenuShortcut>
               </DropdownMenuItem>
 
             </DropdownMenuGroup>
@@ -114,7 +116,7 @@ const User = () => {
       </div>
 
       {isError && (
-        <p className="mt-3 text-sm text-red-500">Failed to load users</p>
+        <p className="mt-3 text-sm text-red-500">{t("loadFailed")}</p>
       )}
 
       <UserTable users={filteredUsers} isLoading={isLoading} />

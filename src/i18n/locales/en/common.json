@@ -1,0 +1,59 @@
+{
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "retry": "Retry",
+    "download": "Download",
+    "view": "View",
+    "export": "Export",
+    "more": "More",
+    "upload": "Upload"
+  },
+  "state": {
+    "loading": "Loading...",
+    "empty": "No data found",
+    "error": "Something went wrong, please try again",
+    "noResults": "No results match your search",
+    "timeout": "Request timeout",
+    "offline": "Cannot connect to server"
+  },
+  "unit": {
+    "credit_one": "credit",
+    "credit_other": "credits",
+    "message_one": "message",
+    "message_other": "messages",
+    "document_one": "document",
+    "document_other": "documents",
+    "run_one": "run",
+    "run_other": "runs"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo_one": "{{count}} min ago",
+    "minutesAgo_other": "{{count}} mins ago",
+    "hoursAgo_one": "{{count}} hr ago",
+    "hoursAgo_other": "{{count}} hrs ago",
+    "daysAgo_one": "{{count}} day ago",
+    "daysAgo_other": "{{count}} days ago",
+    "at": "at"
+  },
+  "language": {
+    "label": "Language",
+    "change": "Change language"
+  },
+  "search": {
+    "placeholder": "Search Something..."
+  },
+  "toast": {
+    "registerSuccess": "Account created successfully",
+    "loginFailed": "Username or password is incorrect"
+  }
+}

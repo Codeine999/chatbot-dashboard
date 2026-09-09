@@ -16,14 +16,17 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from "@/components/ui/command"
+import { useTranslation } from "react-i18next"
 
 const SearchBar = () => {
+    const { t } = useTranslation();
+
     return (
 
         <div className="relative md:w-[400px]">
             <Command className="h-10 rounded-lg border bg-background  shadow-xs">
                 <CommandInput
-                    placeholder="Search Something..."
+                    placeholder={t("search.placeholder")}
                 />
             </Command>
 

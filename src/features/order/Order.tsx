@@ -44,8 +44,10 @@ import {
 } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import { getOrder } from "../home/services/getOrder";
+import { useTranslation } from "react-i18next";
 
-const order = () => {
+const Order = () => {
+  const { t } = useTranslation("order");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [rawOrder, setRawOrder] = useState(orderList);
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,10 +134,10 @@ const order = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-44 p-2">
                   <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-                    <DropdownMenuRadioItem value="All">All</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="Pending">Pending</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="Paid">Paid</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="Cancel">Cancel</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="All">{t("status.all")}</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="Pending">{t("status.pending")}</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="Paid">{t("status.paid")}</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="Cancel">{t("status.cancel")}</DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -160,9 +162,9 @@ const order = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="mt-2  w-50">
                     <DropdownMenuGroup>
-                      <DropdownMenuItem>shipping</DropdownMenuItem>
-                      <DropdownMenuItem>success</DropdownMenuItem>
-                      <DropdownMenuItem>cancel</DropdownMenuItem>
+                      <DropdownMenuItem>{t("bulkAction.shipping")}</DropdownMenuItem>
+                      <DropdownMenuItem>{t("bulkAction.success")}</DropdownMenuItem>
+                      <DropdownMenuItem>{t("bulkAction.cancel")}</DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -203,7 +205,7 @@ const order = () => {
                       item.status === "Cancel" && "bg-red-100 text-red-600 font-normal"
                     )}
                   >
-                    {item.status}
+                    {t(`status.${item.status.toLowerCase()}`)}
                   </Button>
                 </div>
 
@@ -263,7 +265,7 @@ const order = () => {
                           items.status === "Cancel" && "bg-[#fe8080]"
                         )}
                       >
-                        {items.status}
+                        {t(`status.${items.status.toLowerCase()}`)}
                       </Button>
                     </div>
                     <p className="text-xs text-normal md:w-full w-[230px]">
@@ -273,7 +275,7 @@ const order = () => {
                 </div>
 
                 <div className="md:block hidden mr-auto">
-                  <h1 className="text-sm text-gray-500">Status</h1>
+                  <h1 className="text-sm text-gray-500">{t("list.status")}</h1>
                 </div>
 
                 <div className="-mt-1">
@@ -287,7 +289,7 @@ const order = () => {
 
         <div className="block md:hidden">
           <div className="flex justify-between -mt-1 p-2 px-4">
-            <p className="text-sm">showing 1 of 88</p>
+            <p className="text-sm">{t("list.showing", { from: 1, total: 88 })}</p>
           </div>
         </div>
       </Card>
@@ -295,4 +297,4 @@ const order = () => {
   );
 };
 
-export default order;
+export default Order;

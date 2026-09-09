@@ -1,0 +1,19 @@
+{
+  "add": "Add User +",
+  "searchPlaceholder": "Search...",
+  "loadFailed": "Failed to load users",
+  "loading": "Loading users...",
+  "empty": "No users found",
+  "table": {
+    "picture": "Picture",
+    "username": "Username",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone",
+    "bank": "Bank",
+    "bankNo": "Bank No.",
+    "status": "Status",
+    "action": "Action"
+  },
+  "avatarAlt": "user"
+}

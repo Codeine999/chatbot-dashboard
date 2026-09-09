@@ -1,3 +1,6 @@
+import i18n from "@/i18n";
+import { formatDate, formatTime } from "@/i18n/format";
+
 import type {
   BillHistoryItem,
   Invoice,
@@ -5,25 +8,11 @@ import type {
   PaymentMethod,
 } from "./type";
 
-export const formatBaht = (value: number) =>
-  `฿${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+export { formatBaht, formatDate } from "@/i18n/format";
 
-export const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-
-export const formatDateTime = (iso: string) => {
-  const d = new Date(iso);
-  const time = d.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-  return `${formatDate(iso)} at ${time}`;
-};
+/** เช่น "6 ก.ย. 2569 เวลา 14:30" / "Sep 6, 2026 at 14:30" */
+export const formatDateTime = (iso: string) =>
+  `${formatDate(iso)} ${i18n.t("time.at")} ${formatTime(iso)}`;
 
 export const mapBillHistoryStatus = (status: string): InvoiceStatus => {
   switch (status.toUpperCase()) {
@@ -49,17 +38,18 @@ export const getBillHistoryDescription = (
   paymentMethod: PaymentMethod,
   status: InvoiceStatus
 ) => {
-  const methodLabel = paymentMethod === "qrcode" ? "QRcode" : "Slip";
+  // "QRcode"/"Slip" เป็นชื่อช่องทางชำระเงิน ใช้เหมือนกันทุกภาษา
+  const method = paymentMethod === "qrcode" ? "QRcode" : "Slip";
 
   if (status === "pending") {
     return paymentMethod === "slip"
-      ? "รอตรวจสอบหลักฐานการชำระเงิน"
-      : "รอดำเนินการชำระเงินด้วย QRcode";
+      ? i18n.t("bill:description.pendingSlip")
+      : i18n.t("bill:description.pendingQrcode");
   }
 
   return status === "paid"
-    ? `ชำระเงินซื้อเครดิตด้วย ${methodLabel} สำเร็จ`
-    : `ชำระเงินซื้อเครดิตด้วย ${methodLabel} ไม่สำเร็จ`;
+    ? i18n.t("bill:description.paid", { method })
+    : i18n.t("bill:description.failed", { method });
 };
 
 const toNumber = (value: string) => {

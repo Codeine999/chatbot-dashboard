@@ -1,0 +1,26 @@
+{
+  "title": "Admin AI Tool",
+  "subtitle": "ค้นข้อมูลในแดชบอร์ด",
+  "open": "เปิด Admin AI Tool",
+  "welcome": "สวัสดีครับ ผมคือ Admin AI Tool ใช้ช่วย query ข้อมูลในระบบได้ เช่น ดึงข้อมูล user, ตรวจสอบเครดิต, หรือสรุปสถานะ LINE OA",
+  "quickPrompt": {
+    "user": "ดึงข้อมูลของ user mb30997984",
+    "usage": "สรุป usage LINE OA วันนี้",
+    "transfer": "เช็คสถานะรายการแจ้งโอนล่าสุด"
+  },
+  "typing": "AI กำลังค้นข้อมูลตัวอย่าง...",
+  "inputPlaceholder": "ถาม Admin AI เพื่อค้นข้อมูล...",
+  "enterToSend": "กด Enter เพื่อส่ง",
+  "send": "ส่ง",
+  "mock": {
+    "userHeader": "พบข้อมูลตัวอย่างของผู้ใช้:",
+    "userNote": "หมายเหตุ: ข้อมูลนี้เป็น mock response ยังไม่ได้เชื่อม API จริง",
+    "usageHeader": "สรุป usage ตัวอย่าง:",
+    "usageNote": "หมายเหตุ: ยังเป็น mock response สำหรับ UI เท่านั้น",
+    "transferHeader": "รายการแจ้งโอนล่าสุด:",
+    "transferCustomer": "ลูกค้า: เพชรอันดา",
+    "transferStatus": "สถานะ: pending",
+    "transferAction": "Action: รอแอดมินตรวจสอบสลิป",
+    "fallback": "รับคำสั่งแล้วครับ ตอนนี้เป็น mock AI tool ยังไม่ได้เชื่อม API จริง แต่ UI พร้อมสำหรับต่อ query ข้อมูลระบบในขั้นถัดไป"
+  }
+}

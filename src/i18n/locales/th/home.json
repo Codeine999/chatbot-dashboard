@@ -1,0 +1,69 @@
+{
+  "welcome": "ยินดีต้อนรับ, {{name}}",
+  "subtitle": "ภาพรวมระบบ",
+  "overview": {
+    "followers": "ผู้ติดตาม",
+    "followersNoHistory": "ข้อมูลย้อนหลังยังไม่พอ",
+    "followersDelta": "ใน 7 วันล่าสุด",
+    "messagesSent": "ข้อความที่ส่ง",
+    "messagesPeriod": "ใน {{period}}",
+    "quotaUsed": "โควตาข้อความที่ใช้",
+    "thisMonth": "เดือนนี้",
+    "activeNow": "กำลังใช้งาน",
+    "fromLastMonth": "เทียบกับเดือนที่แล้ว"
+  },
+  "account": {
+    "title": "ภาพรวมบัญชี",
+    "sync": "ซิงก์ข้อมูล",
+    "loading": "กำลังโหลดข้อมูล LINE OA…",
+    "error": "ไม่สามารถโหลดข้อมูล LINE OA ได้",
+    "active": "ใช้งานอยู่",
+    "chatMode": "โหมดแชท",
+    "replyWith": "ตอบกลับด้วย",
+    "markAsReadMode": "โหมดอ่านข้อความ",
+    "webhook": "Webhook",
+    "webhookConnected": "เชื่อมต่อแล้ว",
+    "lastSync": "ซิงก์ล่าสุด",
+    "changeModel": "เปลี่ยนโมเดล AI",
+    "changeModelDescription": "โมเดลใหม่นี้จะถูกใช้สำหรับการตอบกลับครั้งถัดไป",
+    "loadingModels": "กำลังโหลดรายการโมเดล…",
+    "modelsError": "ไม่สามารถโหลดรายการโมเดลได้",
+    "selectModel": "เลือกโมเดล",
+    "cancel": "ยกเลิก",
+    "saveModel": "บันทึกการเปลี่ยนแปลง",
+    "modelUpdated": "เปลี่ยนโมเดลเป็น {{model}} แล้ว",
+    "modelUpdateError": "ไม่สามารถเปลี่ยนโมเดล AI ได้"
+  },
+  "money": {
+    "title": "รายได้{{period}}",
+    "weekly": "รายสัปดาห์",
+    "monthly": "รายเดือน",
+    "yearly": "รายปี",
+    "trend": "เพิ่มขึ้น 5.2% ในเดือนนี้"
+  },
+  "activity": {
+    "title": "กิจกรรมล่าสุด",
+    "viewAll": "ดูทั้งหมด"
+  },
+  "chatbot": {
+    "title": "แชทบอท AI",
+    "model": "ขับเคลื่อนด้วย Gemini",
+    "greeting": "สวัสดีครับ มีอะไรให้ช่วยมั้ย :)",
+    "typing": "AI กำลังพิมพ์...",
+    "inputPlaceholder": "พิมพ์ข้อความของคุณ...",
+    "noContent": "ไม่มีข้อความ",
+    "error": "เกิดข้อผิดพลาดในการติดต่อ API"
+  },
+  "views": {
+    "title": "ยอดเข้าชม{{period}}"
+  },
+  "sales": {
+    "title": "ยอดขายล่าสุด",
+    "subtitle": "เดือนนี้มียอดขาย 265 รายการ",
+    "profile": "รูป",
+    "users": "ผู้ใช้",
+    "status": "สถานะ",
+    "total": "ยอดรวม",
+    "edit": "แก้ไข"
+  }
+}

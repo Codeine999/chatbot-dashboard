@@ -1,14 +1,18 @@
 import { Fragment } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const steps = [
-  { id: 1, label: "Account Credentials" },
-  { id: 2, label: "Personal Information" },
-  { id: 3, label: "Company Information" },
+  { id: 1, labelKey: "register.stepper.account" },
+  { id: 2, labelKey: "register.stepper.profile" },
+  { id: 3, labelKey: "register.stepper.company" },
 ] as const;
 
-export const RegisterStepper = ({ step }: { step: 1 | 2 | 3 }) => (
+export const RegisterStepper = ({ step }: { step: 1 | 2 | 3 }) => {
+  const { t } = useTranslation("auth");
+
+  return (
   <div className="flex items-center justify-center gap-2 mb-8">
     {steps.map((s, i) => (
       <Fragment key={s.id}>
@@ -29,7 +33,7 @@ export const RegisterStepper = ({ step }: { step: 1 | 2 | 3 }) => (
               step === s.id ? "text-primary font-medium" : "text-muted-foreground"
             )}
           >
-            {s.label}
+            {t(s.labelKey)}
           </span>
         </div>
         {i < steps.length - 1 && (
@@ -43,4 +47,5 @@ export const RegisterStepper = ({ step }: { step: 1 | 2 | 3 }) => (
       </Fragment>
     ))}
   </div>
-);
+  );
+};

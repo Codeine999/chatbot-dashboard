@@ -31,16 +31,18 @@ import { PaymentMethodBadge } from "./components/PaymentMethodBadge";
 import { StatusBadge } from "./components/StatusBadge";
 import { TopUpCreditsDialog } from "./components/TopUpCreditsDialog";
 import { TopupSuccessDialog } from "./components/TopupSuccessDialog";
-import { formatBaht, formatDate } from "./format";
+import { formatBaht, formatDate, getBillHistoryDescription } from "./format";
+import { formatNumber } from "@/i18n/format";
+import { useTranslation } from "react-i18next";
 import { billingSummaryMock } from "./mock/bill.mock";
 import { useBillHistory, useWallet } from "./hooks/useBill";
 import type { BillHistoryFilter, Invoice } from "./type";
 
-const filterTabs: { value: BillHistoryFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "paid", label: "Paid" },
-  { value: "pending", label: "Pending" },
-  { value: "failed", label: "Failed" },
+const filterTabs: { value: BillHistoryFilter; labelKey: string }[] = [
+  { value: "all", labelKey: "filter.all" },
+  { value: "paid", labelKey: "filter.paid" },
+  { value: "pending", labelKey: "filter.pending" },
+  { value: "failed", labelKey: "filter.failed" },
 ];
 
 const formatCredits = (value: string | undefined, isLoading: boolean) => {
@@ -48,11 +50,12 @@ const formatCredits = (value: string | undefined, isLoading: boolean) => {
 
   const credits = Number(value);
   return Number.isFinite(credits)
-    ? credits.toLocaleString("en-US", { maximumFractionDigits: 6 })
+    ? formatNumber(credits, { maximumFractionDigits: 6 })
     : "—";
 };
 
 export const Bill = () => {
+  const { t } = useTranslation("bill");
   const [filter, setFilter] = useState<BillHistoryFilter>("all");
   const [page, setPage] = useState(1);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
@@ -74,9 +77,9 @@ export const Bill = () => {
 
   const summaryCards = [
     {
-      title: "Current Balance",
+      title: t("summary.currentBalance"),
       value: formatCredits(wallet?.balanceCredit, isWalletLoading),
-      unit: "credits",
+      unit: t("common:unit.credit", { count: 2 }),
       accentValue: true,
       icon: Coins,
       action: (
@@ -86,25 +89,25 @@ export const Bill = () => {
           onClick={() => setIsTopUpOpen(true)}
           className="mt-3 text-primary font-semibold"
         >
-          Top Up Credits
+          {t("summary.topUp")}
         </Button>
       ),
     },
     {
-      title: "Total Spent",
+      title: t("summary.totalSpent"),
       value: formatCredits(wallet?.lifetimeSpentCredit, isWalletLoading),
-      unit: "credits",
-      helper: "All time",
+      unit: t("common:unit.credit", { count: 2 }),
+      helper: t("summary.allTime"),
       icon: TrendingUp,
     },
     {
-      title: "This Month",
+      title: t("summary.thisMonth"),
       value: formatBaht(billingSummaryMock.thisMonthSpent),
       helper: billingSummaryMock.thisMonthRangeLabel,
       icon: CalendarDays,
     },
     {
-      title: "Upcoming Invoice",
+      title: t("summary.upcomingInvoice"),
       value: formatBaht(billingSummaryMock.upcomingInvoiceAmount),
       helper: billingSummaryMock.upcomingInvoiceDueLabel,
       icon: FileText,
@@ -114,10 +117,8 @@ export const Bill = () => {
   return (
     <div className="mt-10 mb-12">
       <div>
-        <h1 className="text-2xl font-semibold text-normal">Billing & History</h1>
-        <p className="mt-2 text-sm text-mini">
-          View your payment history, invoices, and manage your billing.
-        </p>
+        <h1 className="text-2xl font-semibold text-normal">{t("title")}</h1>
+        <p className="mt-2 text-sm text-mini">{t("subtitle")}</p>
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -157,10 +158,10 @@ export const Bill = () => {
       <Card className="mt-6">
         <CardContent className="p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="text-base font-semibold text-normal">Billing History</h2>
+            <h2 className="text-base font-semibold text-normal">{t("history.title")}</h2>
             <Button variant="outline" size="sm">
               <Download className="size-3.5" />
-              Export
+              {t("history.export")}
             </Button>
           </div>
 
@@ -180,7 +181,7 @@ export const Bill = () => {
                     : "text-mini hover:text-normal"
                 )}
               >
-                {tab.label}
+                {t(tab.labelKey)}
               </button>
             ))}
           </div>
@@ -189,19 +190,19 @@ export const Bill = () => {
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="px-4">Invoice</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Payment Method</TableHead>
-                  <TableHead className="px-4 text-right">Action</TableHead>
+                  <TableHead className="px-4">{t("table.invoice")}</TableHead>
+                  <TableHead>{t("table.date")}</TableHead>
+                  <TableHead>{t("table.status")}</TableHead>
+                  <TableHead>{t("table.amount")}</TableHead>
+                  <TableHead>{t("table.paymentMethod")}</TableHead>
+                  <TableHead className="px-4 text-right">{t("table.action")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isHistoryLoading && (
                   <TableRow>
                     <TableCell colSpan={6} className="h-28 text-center text-sm text-mini">
-                      Loading billing history...
+                      {t("history.loading")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -210,9 +211,9 @@ export const Bill = () => {
                   <TableRow>
                     <TableCell colSpan={6} className="h-28 text-center">
                       <div className="flex flex-col items-center gap-3">
-                        <p className="text-sm text-destructive">Unable to load billing history.</p>
+                        <p className="text-sm text-destructive">{t("history.error")}</p>
                         <Button variant="outline" size="sm" onClick={() => refetchHistory()}>
-                          Try again
+                          {t("common:actions.retry")}
                         </Button>
                       </div>
                     </TableCell>
@@ -222,7 +223,7 @@ export const Bill = () => {
                 {!isHistoryLoading && !isHistoryError && invoices.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={6} className="h-28 text-center text-sm text-mini">
-                      No billing history found.
+                      {t("history.empty")}
                     </TableCell>
                   </TableRow>
                 )}
@@ -230,7 +231,7 @@ export const Bill = () => {
                 {!isHistoryLoading && !isHistoryError && invoices.map((invoice) => (
                   <TableRow key={invoice.id} className="h-14">
                     <TableCell className="px-4 font-medium text-normal">
-                      {invoice.description ?? "ทำรายการซื้อเครดิต"}
+                      {getBillHistoryDescription(invoice.paymentMethod, invoice.status)}
                     </TableCell>
                     <TableCell className="text-mini">{formatDate(invoice.date)}</TableCell>
                     <TableCell>
@@ -263,7 +264,11 @@ export const Bill = () => {
 
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-xs text-mini">
-              Showing {firstItem} to {lastItem} of {pagination?.total ?? 0} entries
+              {t("history.showing", {
+                from: firstItem,
+                to: lastItem,
+                total: pagination?.total ?? 0,
+              })}
             </p>
             <Pagination className="mx-0 w-auto">
               <PaginationContent>

@@ -1,13 +1,15 @@
+import { useTranslation } from "react-i18next";
 import { MetricCard } from "./components/MetricCard";
 import { METRIC_ORDER } from "./lib/metrics";
 
-export const UsageGraph = () => (
+export const UsageGraph = () => {
+  const { t } = useTranslation("usage");
+
+  return (
   <div className="mt-10 mb-12">
     <div>
-      <h1 className="text-2xl font-semibold text-normal">Analytics</h1>
-      <p className="mt-2 text-sm text-mini">
-        Token spend, chat volume, followers, and revenue. Pick a range on any chart.
-      </p>
+      <h1 className="text-2xl font-semibold text-normal">{t("graph.title")}</h1>
+      <p className="mt-2 text-sm text-mini">{t("graph.subtitle")}</p>
     </div>
 
     <div className="mt-6 grid gap-5 xl:grid-cols-2">
@@ -16,6 +18,7 @@ export const UsageGraph = () => (
       ))}
     </div>
   </div>
-);
+  );
+};
 
 export default UsageGraph;

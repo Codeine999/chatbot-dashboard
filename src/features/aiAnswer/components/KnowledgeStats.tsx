@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { formatNumber } from "@/i18n/format";
 import { BookOpen, CircleCheck, Folder } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import type { KnowledgeStats } from "../type/knowledge.type";
@@ -30,6 +32,7 @@ type Props = {
 };
 
 const KnowledgeStatsCards = ({ stats, onManageCategories }: Props) => {
+  const { t } = useTranslation("knowledge");
   const activePercent = stats.total
     ? Math.round((stats.active / stats.total) * 100)
     : 0;
@@ -37,23 +40,23 @@ const KnowledgeStatsCards = ({ stats, onManageCategories }: Props) => {
   return (
     <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
       <StatCard
-        label="Total Entries"
-        value={stats.total.toLocaleString()}
-        hint="All knowledge entries"
+        label={t("stats.total")}
+        value={formatNumber(stats.total)}
+        hint={t("stats.totalHint")}
         icon={BookOpen}
         tone="bg-purple-50 text-icons dark:bg-purple-500/10"
       />
 
       <StatCard
-        label="Active Entries"
-        value={stats.active.toLocaleString()}
-        hint={`${activePercent}% of total`}
+        label={t("stats.active")}
+        value={formatNumber(stats.active)}
+        hint={t("stats.activeHint", { percent: activePercent })}
         icon={CircleCheck}
         tone="bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400"
       />
 
       <StatCard
-        label="Categories"
+        label={t("stats.categories")}
         value={String(stats.categories)}
         hint={
           <button
@@ -61,7 +64,7 @@ const KnowledgeStatsCards = ({ stats, onManageCategories }: Props) => {
             onClick={onManageCategories}
             className="text-icons hover:underline"
           >
-            Manage categories
+            {t("stats.manageCategories")}
           </button>
         }
         icon={Folder}

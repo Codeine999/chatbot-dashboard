@@ -37,6 +37,7 @@ import {
   MessageCircle,
   Receipt,
   Workflow,
+  LayoutGrid,
   type LucideIcon,
 } from "lucide-react";
 
@@ -46,67 +47,70 @@ import { CardDescription, CardTitle } from "./ui/card";
 import { useCompanyBrandInfo } from "@/features/company/hooks/useCompany";
 import { resolveImageUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 
 type NavItem = {
-  title: string;
+  /** key ใน namespace "nav" ไม่ใช่ข้อความจริง แปลตอน render */
+  titleKey: string;
   url: string;
   icon: LucideIcon;
-  /** ป้ายเล็กท้ายเมนู เช่น AI / Beta */
+  /** ป้ายเล็กท้ายเมนู เช่น AI / Beta — เป็นชื่อเฉพาะ ไม่ต้องแปล */
   badge?: string;
   /** ถ้ามี children เมนูจะกลายเป็น dropdown แทนการลิงก์ตรง */
-  children?: { title: string; url: string }[];
+  children?: { titleKey: string; url: string }[];
 };
 
 type NavGroup = {
-  label: string;
+  labelKey: string;
   items: NavItem[];
 };
 
 const navGroups: NavGroup[] = [
   {
-    label: "Workspace",
+    labelKey: "group.workspace",
     items: [
-      { title: "Home", url: "/", icon: Home },
-      { title: "Product", url: "/product", icon: Inbox },
-      { title: "Order", url: "/order", icon: Calendar },
-      { title: "Users", url: "/users", icon: UsersRound },
+      { titleKey: "item.home", url: "/", icon: Home },
+      { titleKey: "item.richMenu", url: "/rich-menu/setting", icon: LayoutGrid },
+      { titleKey: "item.product", url: "/product", icon: Inbox },
+      { titleKey: "item.order", url: "/order", icon: Calendar },
+      { titleKey: "item.users", url: "/users", icon: UsersRound },
     ],
   },
   {
-    label: "Communication",
+    labelKey: "group.communication",
     items: [
-      { title: "Line Chat", url: "/chat/line", icon: MessageCircle },
-      { title: "Answer", url: "/ai-answer", icon: Search },
-      { title: "Ai Chatbot", url: "/ai-chat", icon: MessagesSquare, badge: "AI" },
+      { titleKey: "item.lineChat", url: "/chat/line", icon: MessageCircle },
+      { titleKey: "item.answer", url: "/ai-answer", icon: Search },
+      { titleKey: "item.aiChatbot", url: "/ai-chat", icon: MessagesSquare, badge: "AI" },
     ],
   },
   {
-    label: "Insights",
+    labelKey: "group.insights",
     items: [
-      { title: "Overview", url: "../", icon: Search },
+      { titleKey: "item.overview", url: "../", icon: Search },
       {
-        title: "Usage",
+        titleKey: "item.usage",
         url: "/usage",
         icon: ChartPie,
         children: [
-          { title: "Over All", url: "/usage" },
-          { title: "Usage Graph", url: "/usage/Graph" },
+          { titleKey: "item.usageOverall", url: "/usage" },
+          { titleKey: "item.usageGraph", url: "/usage/Graph" },
         ],
       },
-      { title: "Bill", url: "/bill", icon: Receipt },
+      { titleKey: "item.bill", url: "/bill", icon: Receipt },
     ],
   },
   {
-    label: "System",
+    labelKey: "group.system",
     items: [
       {
-        title: "Setting",
+        titleKey: "item.setting",
         url: "/setting",
         icon: Settings,
         children: [
-          { title: "Over All", url: "/setting/admin/over-all" },
-          { title: "Select Menu", url: "/setting/admin/select-menu" },
+          { titleKey: "item.settingOverall", url: "/setting/admin/over-all" },
+          { titleKey: "item.settingSelectMenu", url: "/setting/admin/select-menu" },
         ],
       },
     ],
@@ -141,6 +145,7 @@ const SidebarNavigation = () => {
   const { state } = useSidebar()
   const isCollapsed = state === "collapsed"
   const { data: brandInfo } = useCompanyBrandInfo();
+  const { t } = useTranslation("nav");
 
   const handleClose = () => {
     if (isMobile) {
@@ -174,8 +179,8 @@ const SidebarNavigation = () => {
                   {!isCollapsed && (
                     <div className="flex items-center gap-6">
                       <div className="flex flex-col">
-                        <CardTitle className="text-sm">{brandInfo?.name || "Dashboard"}</CardTitle>
-                        <CardDescription className="text-[10px]">Admin Managent</CardDescription>
+                        <CardTitle className="text-sm">{brandInfo?.name || t("brand.fallbackName")}</CardTitle>
+                        <CardDescription className="text-[10px]">{t("brand.subtitle")}</CardDescription>
                       </div>
 
                       <ChevronDown className="w-4 h-4 text-normal" />
@@ -190,9 +195,9 @@ const SidebarNavigation = () => {
 
       <SidebarContent className="gap-1 overflow-x-hidden">
         {navGroups.map((group) => (
-          <SidebarGroup key={group.label} className="py-1">
+          <SidebarGroup key={group.labelKey} className="py-1">
             <SidebarGroupLabel className={groupLabelClass}>
-              {group.label}
+              {t(group.labelKey)}
             </SidebarGroupLabel>
 
             <SidebarGroupContent>
@@ -207,9 +212,30 @@ const SidebarNavigation = () => {
                   );
 
                   if (item.children) {
+                    const firstChild = item.children[0];
+
+                    // เมื่อ sidebar เป็นแถบไอคอน รายการย่อยของ Collapsible
+                    // เลือกไม่ได้ จึงให้ปุ่มหลักเป็นลิงก์ไป child แรกแทน
+                    if (isCollapsed && firstChild) {
+                      return (
+                        <SidebarMenuItem key={item.titleKey}>
+                          <SidebarMenuButton
+                            asChild
+                            isActive={false}
+                            className={menuButtonClass}
+                          >
+                            <NavLink to={firstChild.url} onClick={handleClose}>
+                              <item.icon className="w-4.5 h-4.5" />
+                              <span>{t(item.titleKey)}</span>
+                            </NavLink>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    }
+
                     return (
                       <Collapsible
-                        key={item.title}
+                        key={item.titleKey}
                         asChild
                         defaultOpen={hasActiveChild}
                         className="group/menu-collapsible"
@@ -221,7 +247,7 @@ const SidebarNavigation = () => {
                               className={cn(menuButtonClass, "cursor-pointer")}
                             >
                               <item.icon className="w-4.5 h-4.5" />
-                              <span>{item.title}</span>
+                              <span>{t(item.titleKey)}</span>
                               <ChevronDown
                                 className="ml-auto size-4 transition-transform
                                   group-data-[state=open]/menu-collapsible:rotate-180"
@@ -232,14 +258,14 @@ const SidebarNavigation = () => {
                           <CollapsibleContent>
                             <SidebarMenuSub>
                               {item.children.map((child) => (
-                                <SidebarMenuSubItem key={child.title}>
+                                <SidebarMenuSubItem key={child.titleKey}>
                                   <SidebarMenuSubButton
                                     asChild
                                     isActive={location.pathname === child.url}
                                     className="text-normal data-[active=true]:!bg-primary/10 data-[active=true]:!text-primary"
                                   >
                                     <NavLink to={child.url} onClick={handleClose}>
-                                      <span>{child.title}</span>
+                                      <span>{t(child.titleKey)}</span>
                                     </NavLink>
                                   </SidebarMenuSubButton>
                                 </SidebarMenuSubItem>
@@ -252,7 +278,7 @@ const SidebarNavigation = () => {
                   }
 
                   return (
-                    <SidebarMenuItem key={item.title}>
+                    <SidebarMenuItem key={item.titleKey}>
                       <SidebarMenuButton
                         asChild
                         isActive={isItemActive}
@@ -262,7 +288,7 @@ const SidebarNavigation = () => {
                           {/* icon กับ label ต้องเป็น child คนละตัวของปุ่ม
                               ไม่งั้นตอน sidebar ยุบเป็นแถบไอคอน CSS จะซ่อน label ไม่ได้ */}
                           <item.icon className="w-4.5 h-4.5" />
-                          <span>{item.title}</span>
+                          <span>{t(item.titleKey)}</span>
                           {item.badge && <NavBadge>{item.badge}</NavBadge>}
                         </NavLink>
                       </SidebarMenuButton>
@@ -275,7 +301,7 @@ const SidebarNavigation = () => {
         ))}
 
         <SidebarGroup className="py-1">
-          <SidebarGroupLabel className={groupLabelClass}>Build</SidebarGroupLabel>
+          <SidebarGroupLabel className={groupLabelClass}>{t("group.build")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               <Collapsible asChild className="group/collapsible">
@@ -283,7 +309,7 @@ const SidebarNavigation = () => {
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton className={cn(menuButtonClass, "cursor-pointer")}>
                       <Workflow className="w-4.5 h-4.5" />
-                      <span>Ai Work Flow</span>
+                      <span>{t("item.aiWorkflow")}</span>
                       <NavBadge>Beta</NavBadge>
                       <ChevronDown
                         className="size-4 transition-transform

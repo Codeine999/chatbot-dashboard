@@ -1,42 +1,45 @@
 import { z } from "zod";
 
+// ข้อความ error เก็บเป็น translation key (schema ถูกสร้างครั้งเดียวนอก component)
+// FormMessage เป็นคนแปลตอน render — ดู src/components/ui/form.tsx
+
 export const ownerRegisterSchema = z
   .object({
-    username: z.string().trim().min(3, "At least 3 characters").max(100),
+    username: z.string().trim().min(3, "auth:validation.usernameMin").max(100),
     email: z
       .string()
       .trim()
-      .min(1, "Email is required")
-      .email("Enter a valid email")
+      .min(1, "auth:validation.emailRequired")
+      .email("auth:validation.emailInvalid")
       .max(255),
     phone: z
       .string()
       .trim()
-      .min(1, "Phone number is required")
+      .min(1, "auth:validation.phoneRequired")
       .refine(
         (v) => {
           const digits = v.replace(/\D/g, "");
           return digits.length >= 8 && digits.length <= 10;
         },
-        { message: "Enter a valid phone number" }
+        { message: "auth:validation.phoneInvalid" }
       ),
     password: z
       .string()
-      .min(8, "At least 8 characters")
+      .min(8, "auth:validation.passwordMin")
       .max(128)
-      .regex(/[A-Z]/, "One uppercase letter")
-      .regex(/[a-z]/, "One lowercase letter")
-      .regex(/[0-9!@#$%^&*(),.?":{}|<>]/, "One number or symbol"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-    firstName: z.string().trim().min(1, "First name is required").max(100),
-    lastName: z.string().trim().min(1, "Last name is required").max(100),
+      .regex(/[A-Z]/, "auth:validation.passwordUpper")
+      .regex(/[a-z]/, "auth:validation.passwordLower")
+      .regex(/[0-9!@#$%^&*(),.?":{}|<>]/, "auth:validation.passwordNumberOrSymbol"),
+    confirmPassword: z.string().min(1, "auth:validation.confirmPasswordRequired"),
+    firstName: z.string().trim().min(1, "auth:validation.firstNameRequired").max(100),
+    lastName: z.string().trim().min(1, "auth:validation.lastNameRequired").max(100),
     avatar: z.string().optional(),
-    companyName: z.string().min(1, "Company name is required"),
-    companyType: z.string().min(1, "Please select a company type"),
-    companyImage: z.instanceof(File, { message: "กรุณาอัปโหลดโลโก้บริษัท" }),
+    companyName: z.string().min(1, "auth:validation.companyNameRequired"),
+    companyType: z.string().min(1, "auth:validation.companyTypeRequired"),
+    companyImage: z.instanceof(File, { message: "auth:validation.companyImageRequired" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "auth:validation.passwordMismatch",
     path: ["confirmPassword"],
   });
 

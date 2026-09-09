@@ -19,9 +19,11 @@ import { motion } from "framer-motion";
 import { IAiChatbot } from "./type";
 import { getAiChatbot } from "./services/aiChatbotApi";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 
 const Chatbot = () => {
-
+    const { t } = useTranslation("home");
     const [messages, setMessages] = useState<IAiChatbot[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +39,9 @@ const Chatbot = () => {
     }, [messages]);
 
 
+    // ตั้งข้อความทักทายครั้งเดียวตอน mount
+    // อ่านจาก i18n ตรง ๆ ไม่ใช้ t จาก hook จะได้ไม่ต้องใส่ใน deps
+    // ไม่งั้นพอสลับภาษา effect จะรันใหม่แล้วล้างบทสนทนาที่คุยไว้ทิ้ง
     useEffect(() => {
         setIsLoading(true);
 
@@ -45,7 +50,7 @@ const Chatbot = () => {
                 {
                     id: idRef.current++,
                     role: "ai",
-                    content: "สวัสดีครับ มีอะไรให้ช่วยมั้ย :)",
+                    content: i18n.t("home:chatbot.greeting"),
                 },
             ]);
             setIsLoading(false);
@@ -85,12 +90,12 @@ const Chatbot = () => {
 
             const replyText = replyObj.parts
                 ? replyObj.parts.map((p: { text: string }) => p.text).join(' ')
-                : replyObj.text || 'ไม่มีข้อความ';
+                : replyObj.text || t("chatbot.noContent");
 
             addMessage({ role: "ai", content: replyText });
 
         } catch (error) {
-            addMessage({ role: "ai", content: "เกิดข้อผิดพลาดในการติดต่อ API" });
+            addMessage({ role: "ai", content: t("chatbot.error") });
             console.log(error)
         } finally {
             setIsLoading(false);
@@ -107,8 +112,8 @@ const Chatbot = () => {
                             className="w-8 h-8 bg-gray-300 rounded-full"
                         />
                         <div>
-                            <CardTitle>Ai Chat Bot</CardTitle>
-                            <CardDescription>model from Gemini</CardDescription>
+                            <CardTitle>{t("chatbot.title")}</CardTitle>
+                            <CardDescription>{t("chatbot.model")}</CardDescription>
                         </div>
                     </div>
                 </div>
@@ -141,7 +146,7 @@ const Chatbot = () => {
                 ))}
                 {isLoading && (
                     <div className="flex justify-start text-gray-500 text-sm">
-                        AI is typing...
+                        {t("chatbot.typing")}
                     </div>
                 )}
             </div>
@@ -153,7 +158,7 @@ const Chatbot = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     disabled={isLoading}
-                    placeholder="Type your message..."
+                    placeholder={t("chatbot.inputPlaceholder")}
                     className="w-full h-10 p-4 rounded-lg border focus:outline-none placeholder:text-sm"
                 />
                 <Button

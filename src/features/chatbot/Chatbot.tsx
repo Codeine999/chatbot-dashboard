@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -46,7 +47,6 @@ import { useLockedSidebar } from "./hooks/useLockedSidebar";
 import type {
   AdminChatMessage,
   AiProviderName,
-  ChatSuggestion,
 } from "./type";
 
 type ModelSelection = {
@@ -59,31 +59,12 @@ type PendingMessage = {
   content: string;
 };
 
-const suggestions: ChatSuggestion[] = [
-  {
-    icon: FileText,
-    title: "สรุปเนื้อหา",
-    description: "สรุปเอกสารหรือบทความให้เข้าใจง่าย",
-    prompt: "ช่วยสรุปเนื้อหานี้ให้เข้าใจง่ายหน่อย",
-  },
-  {
-    icon: Code2,
-    title: "เขียนโค้ด",
-    description: "ช่วยเขียนโค้ดหรือแก้ไขบัค",
-    prompt: "ช่วยเขียนโค้ดให้หน่อย",
-  },
-  {
-    icon: ChartNoAxesCombined,
-    title: "วิเคราะห์ข้อมูล",
-    description: "วิเคราะห์ข้อมูลและสร้าง insight",
-    prompt: "ช่วยวิเคราะห์ข้อมูลชุดนี้ให้หน่อย",
-  },
-  {
-    icon: Lightbulb,
-    title: "แนะนำไอเดีย",
-    description: "ช่วยระดมความคิดสร้างสรรค์",
-    prompt: "ช่วยระดมไอเดียให้หน่อย",
-  },
+// prompt ถูกส่งไปให้ AI จริง จึงต้องแปลด้วย ไม่ใช่แค่ป้ายบนปุ่ม
+const suggestions = [
+  { icon: FileText, key: "summarize" },
+  { icon: Code2, key: "code" },
+  { icon: ChartNoAxesCombined, key: "analyze" },
+  { icon: Lightbulb, key: "ideas" },
 ];
 
 const createPendingId = () =>
@@ -119,6 +100,7 @@ const ChatComposer = ({
   onChange,
   onSend,
 }: ChatComposerProps) => {
+  const { t } = useTranslation("chat");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -137,9 +119,7 @@ const ChatComposer = ({
           rows={1}
           disabled={!aiEnabled}
           placeholder={
-            aiEnabled
-              ? "Message your AI assistant"
-              : "AI access is disabled for this account"
+            aiEnabled ? t("composer.placeholder") : t("composer.disabled")
           }
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={(event) => {
@@ -153,7 +133,7 @@ const ChatComposer = ({
 
         <div className="mt-1 flex items-center justify-between gap-3 px-1">
           <p className="truncate text-[11px] text-mini">
-            Enter to send · Shift + Enter for a new line
+            {t("composer.hint")}
           </p>
           <Button
             type="button"
@@ -161,7 +141,7 @@ const ChatComposer = ({
             onClick={onSend}
             disabled={disabled || !value.trim()}
             className="size-10 rounded-full transition-all duration-200 enabled:hover:-translate-y-0.5 enabled:hover:shadow-md"
-            aria-label="Send message"
+            aria-label={t("composer.send")}
           >
             {isThinking ? (
               <LoaderCircle className="size-4 animate-spin" />
@@ -173,7 +153,7 @@ const ChatComposer = ({
       </div>
 
       <p className="mt-2 text-center text-[11px] text-mini">
-        AI can make mistakes. Please verify important information.
+        {t("composer.disclaimer")}
       </p>
     </div>
   );
@@ -230,7 +210,10 @@ const PendingUserMessage = ({ message }: { message: PendingMessage }) => (
   </motion.div>
 );
 
-const ThinkingRow = () => (
+const ThinkingRow = () => {
+  const { t } = useTranslation("chat");
+
+  return (
   <motion.div
     initial={{ opacity: 0, y: 6 }}
     animate={{ opacity: 1, y: 0 }}
@@ -239,8 +222,8 @@ const ThinkingRow = () => (
     <div className="flex size-8 shrink-0 items-center justify-center rounded-full border bg-card text-primary shadow-xs">
       <Sparkles className="size-4" />
     </div>
-    <div className="flex items-center gap-2 text-xs" aria-label="AI is thinking">
-      <span>AI is thinking</span>
+    <div className="flex items-center gap-2 text-xs" aria-label={t("thinking")}>
+      <span>{t("thinking")}</span>
       <span className="flex items-center gap-1 pt-1">
         {[0, 1, 2].map((index) => (
           <span
@@ -253,8 +236,10 @@ const ThinkingRow = () => (
     </div>
   </motion.div>
 );
+};
 
 const Chatbot = () => {
+  const { t } = useTranslation("chat");
   const user = useAuthUser();
   const [activeRoomId, setActiveRoomId] = useState<string>();
   const [input, setInput] = useState("");
@@ -280,7 +265,7 @@ const Chatbot = () => {
   const isThinking = sendMessageMutation.isPending;
   const aiEnabled = settingQuery.data?.enabled ?? true;
   const hasConversation = messages.length > 0 || Boolean(pendingMessage);
-  const displayName = user?.firstname || user?.username || "Admin";
+  const displayName = user?.firstname || user?.username || t("defaultName");
 
   const modelOptions = useMemo(
     () =>
@@ -376,7 +361,7 @@ const Chatbot = () => {
     : undefined;
   // Publishing the model is a back-office setting change, not a chat option.
   const canChangeModel = setting?.role === "dev" || setting?.role === "owner";
-  const selectedModelLabel = setting?.model ?? "Loading model…";
+  const selectedModelLabel = setting?.model ?? t("header.loadingModel");
   const usage = usageQuery.data;
 
   return (
@@ -388,7 +373,7 @@ const Chatbot = () => {
           side="left"
           className="w-[19rem] gap-0 p-0 [&>button]:hidden"
         >
-          <SheetTitle className="sr-only">Chat history</SheetTitle>
+          <SheetTitle className="sr-only">{t("header.history")}</SheetTitle>
           <ChatHistorySidebar {...sidebarProps} mobile />
         </SheetContent>
       </Sheet>
@@ -402,7 +387,7 @@ const Chatbot = () => {
               size="icon"
               onClick={() => setMobileHistoryOpen(true)}
               className="size-9 rounded-full"
-              aria-label="Open chat history"
+              aria-label={t("header.openHistory")}
             >
               <Menu className="size-4" />
             </Button>
@@ -413,7 +398,7 @@ const Chatbot = () => {
               onClick={startNewChat}
               disabled={isThinking}
               className="size-9 rounded-full"
-              aria-label="New chat"
+              aria-label={t("header.newChat")}
             >
               <Plus className="size-4" />
             </Button>
@@ -445,7 +430,7 @@ const Chatbot = () => {
                 className="w-72 rounded-xl p-1.5"
               >
                 <DropdownMenuLabel className="text-xs font-normal text-mini">
-                  เปลี่ยนโมเดลที่ใช้ตอบ — มีผลกับแอดมินทุกคน
+                  {t("header.changeModelNote")}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
@@ -479,7 +464,7 @@ const Chatbot = () => {
                         </p>
                         <p className="mt-0.5 text-[11px] text-mini">
                           {option.providerLabel}
-                          {!option.available ? " · API key unavailable" : ""}
+                          {!option.available ? t("header.apiKeyUnavailable") : ""}
                         </p>
                       </div>
                     </DropdownMenuRadioItem>
@@ -490,7 +475,7 @@ const Chatbot = () => {
           ) : (
             <div
               className="flex h-8 max-w-[48vw] items-center gap-1.5 rounded-full border bg-card/75 px-3 text-xs font-medium text-normal shadow-xs backdrop-blur-md sm:max-w-none"
-              title="โมเดลตั้งค่าโดย owner หรือ dev"
+              title={t("header.modelLockedNote")}
             >
               <Sparkles className="size-3.5 text-primary" />
               <span className="truncate">{selectedModelLabel}</span>
@@ -499,8 +484,12 @@ const Chatbot = () => {
 
           {usage && (
             <p className="absolute right-4 hidden text-[11px] text-mini sm:block">
-              {usage.usedCredit}
-              {usage.limitCredit ? ` / ${usage.limitCredit}` : ""} credits
+              {usage.limitCredit
+                ? t("header.creditsWithLimit", {
+                    used: usage.usedCredit,
+                    limit: usage.limitCredit,
+                  })
+                : t("header.credits", { used: usage.usedCredit })}
             </p>
           )}
         </header>
@@ -520,7 +509,7 @@ const Chatbot = () => {
           ) : activeRoomId && messagesQuery.isError ? (
             <div className="flex min-h-full flex-col items-center justify-center px-6 text-center">
               <p className="text-sm text-destructive">
-                โหลดข้อความในห้องนี้ไม่สำเร็จ
+                {t("messages.loadError")}
               </p>
               <Button
                 type="button"
@@ -530,7 +519,7 @@ const Chatbot = () => {
                 className="mt-3 gap-1.5"
               >
                 <RefreshCw className="size-3.5" />
-                Retry
+                {t("messages.retry")}
               </Button>
             </div>
           ) : !hasConversation ? (
@@ -545,26 +534,29 @@ const Chatbot = () => {
                   <Sparkles className="size-6" />
                 </div>
                 <h1 className="mt-5 text-3xl font-semibold tracking-tight text-normal sm:text-4xl">
-                  Hello, {displayName} <span aria-hidden>👋</span>
+                  {t("greeting", { name: displayName })}{" "}
+                  <span aria-hidden>👋</span>
                 </h1>
                 <p className="mt-2 text-sm text-mini sm:text-base">
-                  How can I help you today?
+                  {t("greetingSub")}
                 </p>
               </div>
 
               <div className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {suggestions.map(({ icon: Icon, title, description, prompt }) => (
+                {suggestions.map(({ icon: Icon, key }) => (
                   <button
-                    key={title}
+                    key={key}
                     type="button"
                     disabled={isThinking || !aiEnabled}
-                    onClick={() => void sendMessage(prompt)}
+                    onClick={() => void sendMessage(t(`suggestion.${key}.prompt`))}
                     className="group rounded-2xl border bg-card/70 p-4 text-left shadow-xs backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/25 hover:bg-card hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
                   >
                     <Icon className="size-5 text-primary transition-transform duration-200 group-hover:scale-110" />
-                    <p className="mt-5 text-sm font-medium text-normal">{title}</p>
+                    <p className="mt-5 text-sm font-medium text-normal">
+                      {t(`suggestion.${key}.title`)}
+                    </p>
                     <p className="mt-1 text-xs leading-relaxed text-mini">
-                      {description}
+                      {t(`suggestion.${key}.description`)}
                     </p>
                   </button>
                 ))}
@@ -583,10 +575,10 @@ const Chatbot = () => {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-normal">
-                        ประวัติแชทแยกตามบัญชี
+                        {t("privacy.title")}
                       </p>
                       <p className="mt-1 text-xs leading-relaxed text-mini">
-                        แอดมินคนอื่นจะไม่เห็นห้องของคุณ ส่วน owner/dev สามารถตรวจสอบเพื่อ audit ได้
+                        {t("privacy.body")}
                       </p>
                     </div>
                     <Button
@@ -594,7 +586,7 @@ const Chatbot = () => {
                       size="icon"
                       onClick={() => setShowPrivacy(false)}
                       className="size-8 rounded-full"
-                      aria-label="Dismiss privacy notice"
+                      aria-label={t("privacy.dismiss")}
                     >
                       <X className="size-4 text-mini" />
                     </Button>

@@ -1,0 +1,122 @@
+{
+  "page": {
+    "title": "Rich Menu",
+    "subtitle": "Design the shortcut menu of your LINE Official Account and publish it from one place",
+    "saveDraft": "Save draft",
+    "publish": "Publish to LINE",
+    "publishing": "Publishing",
+    "savedAt": "Draft saved at {{time}}",
+    "unsaved": "Unsaved changes"
+  },
+  "list": {
+    "title": "All menus",
+    "create": "Create rich menu",
+    "searchPlaceholder": "Search menus",
+    "empty": "No menu matches your search",
+    "newName": "New rich menu",
+    "copySuffix": "copy",
+    "updated": "Updated {{date}}",
+    "notPublished": "Not on LINE yet",
+    "actions": "Menu options",
+    "duplicate": "Duplicate",
+    "delete": "Delete menu"
+  },
+  "filter": {
+    "all": "All",
+    "draft": "Draft",
+    "line": "LINE"
+  },
+  "status": {
+    "active": "Active",
+    "published": "On LINE",
+    "draft": "Draft"
+  },
+  "builder": {
+    "namePlaceholder": "Name this menu",
+    "upload": "Upload image",
+    "replace": "Replace image",
+    "remove": "Remove image",
+    "imageSpec": "PNG or JPEG · {{width}} × {{height}} px · up to {{size}} MB",
+    "layout": "Layout",
+    "ready": "Ready to publish",
+    "issues": "{{total}} to fix",
+    "hint": "Tap an area on the preview to set what it does",
+    "areaLabel": "Area {{index}}"
+  },
+  "layout": {
+    "grid6": "6 tiles",
+    "grid3": "3 tiles",
+    "split2": "2 tiles",
+    "single": "Full width"
+  },
+  "preview": {
+    "fallbackName": "LINE Official Account",
+    "subtitle": "Always here to help",
+    "greeting": "Hi there, welcome! What can we help you with today?",
+    "time": "10:00",
+    "today": "Today",
+    "inputPlaceholder": "Type a message..."
+  },
+  "area": {
+    "title": "Area action",
+    "empty": "Select an area on the preview to set what it does",
+    "namePlaceholder": "Area name",
+    "size": "{{width}} × {{height}} px",
+    "ratio": "Ratio {{ratio}}",
+    "actionType": "Action type",
+    "data": "Postback data",
+    "dataPlaceholder": "action=contact_admin",
+    "message": "Message sent",
+    "messagePlaceholder": "Show me the latest promotions",
+    "uri": "Destination link",
+    "uriPlaceholder": "https://example.com",
+    "showInChat": "Show text in chat",
+    "showInChatHint": "This text appears in the chat room when a customer taps the area",
+    "displayText": "Display text",
+    "displayTextPlaceholder": "I want to contact an admin",
+    "bounds": "Position and size",
+    "noneHint": "This area is not tappable — use it for image-only sections"
+  },
+  "action": {
+    "postback": "Send data to the system",
+    "message": "Send a message as the customer",
+    "uri": "Open a link",
+    "none": "Do nothing"
+  },
+  "issue": {
+    "data": "Postback data is still empty",
+    "text": "Message text is still empty",
+    "uri": "Destination link is still empty",
+    "uriFormat": "The link must start with http:// or https://"
+  },
+  "publish": {
+    "title": "Publishing",
+    "chatBarText": "Chat bar label",
+    "chatBarPlaceholder": "Menu",
+    "target": "Publish to",
+    "targetAll": "Everyone",
+    "targetTest": "Test user",
+    "testUserId": "Test user ID",
+    "testUserIdPlaceholder": "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "ready": "Every area is filled in and ready to publish",
+    "note": "This menu is already on LINE — publishing again creates a new rich menu ID",
+    "step": {
+      "validate": "Validate menu structure",
+      "create": "Create the menu on LINE",
+      "upload": "Upload the image",
+      "default": "Set as the default menu"
+    }
+  },
+  "toast": {
+    "created": "New menu created",
+    "duplicated": "Menu duplicated",
+    "deleted": "Menu deleted",
+    "deleteActive": "Cannot delete — this menu is live on LINE",
+    "draftSaved": "Draft saved",
+    "published": "Published to LINE",
+    "hasIssues": "Some areas are incomplete — fix them before publishing",
+    "needTestUserId": "Enter the test user ID first",
+    "imageType": "Only PNG and JPEG files are supported",
+    "imageTooLarge": "The file is larger than {{size}} MB"
+  }
+}
