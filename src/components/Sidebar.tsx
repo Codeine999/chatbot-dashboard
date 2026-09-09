@@ -72,7 +72,7 @@ const navGroups: NavGroup[] = [
     items: [
       { titleKey: "item.home", url: "/", icon: Home },
       { titleKey: "item.richMenu", url: "/rich-menu/setting", icon: LayoutGrid },
-      { titleKey: "item.product", url: "/product", icon: Inbox },
+      { titleKey: "item.product", url: "/", icon: Inbox },
       { titleKey: "item.order", url: "/order", icon: Calendar },
       { titleKey: "item.users", url: "/users", icon: UsersRound },
     ],
