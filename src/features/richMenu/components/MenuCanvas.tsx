@@ -6,6 +6,8 @@ import {
   ChevronLeft,
   CircleAlert,
   ImageUp,
+  Link2,
+  Loader2,
   Menu,
   Search,
   Send,
@@ -25,25 +27,26 @@ import { cn } from "@/lib/utils";
 
 import {
   CANVAS_ASPECT_RATIO,
-  RICH_MENU_CANVAS,
   RICH_MENU_IMAGE_TYPES,
-  RICH_MENU_MAX_IMAGE_MB,
-  RICH_MENU_TEMPLATES,
+  RICH_MENU_LAYOUTS,
   boundsToPercent,
-  getAreaIssueKey,
+  cellBounds,
+  getCellIssueKey,
 } from "../layout";
-import type { RichMenu, RichMenuArea, RichMenuTemplateId } from "../type";
+import type { RichMenu, RichMenuCell } from "../type";
 
-/** สัญลักษณ์เล็ก ๆ ของเลย์เอาต์ วาดด้วย grid แทนไอคอน จะได้ตรงกับจำนวนช่องจริง */
-const LayoutGlyph = ({ cols, rows }: { cols: number; rows: number }) => (
+export type CanvasCell = RichMenuCell & { missingReply?: boolean };
+
+/** สัญลักษณ์เล็ก ๆ ของผัง วาดด้วย grid แทนไอคอน จะได้ตรงกับจำนวนช่องจริง */
+const LayoutGlyph = ({ columns, rows }: { columns: number; rows: number }) => (
   <span
     className="grid h-3 w-[18px] gap-[2px]"
     style={{
-      gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+      gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
       gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
     }}
   >
-    {Array.from({ length: cols * rows }).map((_, index) => (
+    {Array.from({ length: columns * rows }).map((_, index) => (
       <span key={index} className="rounded-[1px] bg-current" />
     ))}
   </span>
@@ -53,70 +56,88 @@ const LayoutPicker = ({
   value,
   onChange,
 }: {
-  value: RichMenuTemplateId;
-  onChange: (value: RichMenuTemplateId) => void;
+  value: number;
+  onChange: (cells: number) => void;
 }) => {
   const { t } = useTranslation("richMenu");
 
   return (
     <div className="flex items-center gap-1 rounded-lg bg-muted/60 p-1">
-      {RICH_MENU_TEMPLATES.map((template) => (
-        <Tooltip key={template.id}>
+      {RICH_MENU_LAYOUTS.map((layout) => (
+        <Tooltip key={layout.cells}>
           <TooltipTrigger asChild>
             <button
               type="button"
-              onClick={() => onChange(template.id)}
-              aria-label={t(`layout.${template.id}`)}
-              aria-pressed={template.id === value}
+              onClick={() => onChange(layout.cells)}
+              aria-label={t("layout.cells", { count: layout.cells })}
+              aria-pressed={layout.cells === value}
               className={cn(
                 "flex size-8 cursor-pointer items-center justify-center rounded-md transition-colors",
                 "outline-none focus-visible:ring-[2px] focus-visible:ring-ring/50",
-                template.id === value
+                layout.cells === value
                   ? "bg-background text-primary shadow-sm"
                   : "text-mini hover:text-normal"
               )}
             >
-              <LayoutGlyph cols={template.cols} rows={template.rows} />
+              <LayoutGlyph columns={layout.columns} rows={layout.rows} />
             </button>
           </TooltipTrigger>
-          <TooltipContent>{t(`layout.${template.id}`)}</TooltipContent>
+          <TooltipContent>
+            {t("layout.cells", { count: layout.cells })}
+          </TooltipContent>
         </Tooltip>
       ))}
     </div>
   );
 };
 
-const AreaTile = ({
-  area,
+/**
+ * ช่องหนึ่งช่องบนตัวอย่าง
+ *
+ * รูปที่เห็นมาจากภาพรวมที่ backend ประกอบแล้ว ช่องนี้จึงวาดแค่กรอบทับ ไม่ได้
+ * วางรูปของตัวเองซ้อน — ที่เห็นบนจอจึงเป็นสิ่งเดียวกับที่จะขึ้นไปอยู่บน LINE
+ */
+const CellTile = ({
+  cell,
+  cells,
   hasImage,
   isSelected,
   onSelect,
 }: {
-  area: RichMenuArea;
+  cell: CanvasCell;
+  cells: number;
   hasImage: boolean;
   isSelected: boolean;
   onSelect: () => void;
 }) => {
-  const hasIssue = Boolean(getAreaIssueKey(area));
+  const hasIssue =
+    Boolean(getCellIssueKey(cell.button, Boolean(cell.image))) ||
+    Boolean(cell.missingReply);
 
   return (
     <button
       type="button"
       onClick={onSelect}
-      aria-label={area.label}
+      aria-label={cell.label}
       aria-pressed={isSelected}
-      style={boundsToPercent(area.bounds)}
+      style={boundsToPercent(cellBounds(cell.index, cells))}
       className={cn(
         "absolute flex cursor-pointer items-center justify-center overflow-hidden p-1 text-center transition-colors outline-none",
         "ring-1 ring-inset ring-black/8 dark:ring-white/10",
-        hasImage ? "hover:bg-primary/15" : "bg-background/55 hover:bg-background/80",
+        cell.image || hasImage
+          ? "hover:bg-primary/15"
+          : "bg-background/55 hover:bg-background/80",
         isSelected && "z-10 bg-primary/12 ring-2 ring-primary hover:bg-primary/15"
       )}
     >
-      {hasImage ? null : (
+      {cell.image ? null : (
         <span className="line-clamp-2 text-[11px] leading-tight font-medium text-normal/75">
-          {area.label}
+          {cell.label}
         </span>
+      )}
+
+      {cell.button.kind === "uri" && (
+        <Link2 className="absolute left-1 top-1 size-3 text-primary/70" />
       )}
 
       {hasIssue && (
@@ -124,14 +145,17 @@ const AreaTile = ({
       )}
 
       {isSelected &&
-        ["left-[3px] top-[3px]", "right-[3px] top-[3px]", "left-[3px] bottom-[3px]", "right-[3px] bottom-[3px]"].map(
-          (position) => (
-            <span
-              key={position}
-              className={cn("absolute size-1.5 rounded-[1px] bg-primary", position)}
-            />
-          )
-        )}
+        [
+          "left-[3px] top-[3px]",
+          "right-[3px] top-[3px]",
+          "left-[3px] bottom-[3px]",
+          "right-[3px] bottom-[3px]",
+        ].map((position) => (
+          <span
+            key={position}
+            className={cn("absolute size-1.5 rounded-[1px] bg-primary", position)}
+          />
+        ))}
     </button>
   );
 };
@@ -139,12 +163,16 @@ const AreaTile = ({
 /** โครงเครื่องแบบ iPhone ที่มี Dynamic Island — ให้เห็นสัดส่วนจริงตอนเมนูไปอยู่ในห้องแชท */
 const PhonePreview = ({
   menu,
-  selectedAreaId,
-  onSelectArea,
+  cells,
+  cellList,
+  selectedCell,
+  onSelectCell,
 }: {
   menu: RichMenu;
-  selectedAreaId: string;
-  onSelectArea: (id: string) => void;
+  cells: number;
+  cellList: CanvasCell[];
+  selectedCell: number;
+  onSelectCell: (index: number) => void;
 }) => {
   const { t } = useTranslation("richMenu");
   const { data: brandInfo } = useCompanyBrandInfo();
@@ -167,8 +195,7 @@ const PhonePreview = ({
     <div className="flex justify-center rounded-2xl bg-muted/25 px-4 py-8">
       {/* ตัวเครื่องเป็นสีเข้มทั้งสองธีม จะได้อ่านเป็นมือถือ ไม่ใช่การ์ดอีกใบซ้อนกัน */}
       <div className="w-full max-w-[22rem] rounded-[3rem] bg-neutral-800 p-[10px] shadow-[0_24px_60px_rgba(15,17,45,0.22)] dark:bg-neutral-700">
-        {/* ล็อกสัดส่วนจอไว้ให้สูงเท่าเครื่องจริง ห้องแชทจะได้ยืดกินที่ที่เหลือ
-            ไม่ใช่ปล่อยให้ rich menu กินความสูงเกือบครึ่งจอเหมือนตอนสูงตามเนื้อหา */}
+        {/* ล็อกสัดส่วนจอไว้ให้สูงเท่าเครื่องจริง ห้องแชทจะได้ยืดกินที่ที่เหลือ */}
         <div className="relative flex aspect-[9/18] flex-col overflow-hidden rounded-[2.4rem] bg-background">
           <div className="relative flex h-12 shrink-0 items-center justify-between bg-background px-6 pt-1">
             <span className="text-[12px] font-semibold tracking-tight text-normal">
@@ -195,7 +222,9 @@ const PhonePreview = ({
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[12.5px] font-medium text-normal">{accountName}</p>
+              <p className="truncate text-[12.5px] font-medium text-normal">
+                {accountName}
+              </p>
               <p className="truncate text-[10px] text-mini">{t("preview.subtitle")}</p>
             </div>
 
@@ -211,19 +240,8 @@ const PhonePreview = ({
               </span>
             </div>
 
-            {/* เว้นขอบขวาไว้ ฟองข้อความจะได้ไม่ยาวชนขอบจอเหมือนข้อความของเราเอง */}
-            <div className="flex items-start gap-2 pr-8">
-              <div className="mt-0.5 size-6 shrink-0 overflow-hidden rounded-full bg-primary/10">
-                {avatar}
-              </div>
-
-              <div className="min-w-0">
-                <p className="w-fit rounded-2xl rounded-tl-md bg-background px-3 py-2 text-[12px] leading-relaxed text-normal shadow-sm">
-                  {t("preview.greeting")}
-                </p>
-                <p className="mt-1 text-[10px] text-mini">{t("preview.time")}</p>
-              </div>
-            </div>
+            {/* ตัวอย่างบทสนทนาจริง: ลูกค้ากดปุ่ม ข้อความบนปุ่มขึ้นในแชท แล้วบอทตอบ */}
+            <PreviewConversation cell={cellList[selectedCell]} avatar={avatar} />
           </div>
 
           <div
@@ -238,13 +256,14 @@ const PhonePreview = ({
               />
             )}
 
-            {menu.areas.map((area) => (
-              <AreaTile
-                key={area.id}
-                area={area}
+            {cellList.map((cell) => (
+              <CellTile
+                key={cell.index}
+                cell={cell}
+                cells={cells}
                 hasImage={Boolean(menu.image)}
-                isSelected={area.id === selectedAreaId}
-                onSelect={() => onSelectArea(area.id)}
+                isSelected={cell.index === selectedCell}
+                onSelect={() => onSelectCell(cell.index)}
               />
             ))}
           </div>
@@ -267,35 +286,90 @@ const PhonePreview = ({
   );
 };
 
+/** ให้เห็นว่ากดปุ่มที่เลือกอยู่แล้วบทสนทนาจะออกมาหน้าตาแบบไหน */
+const PreviewConversation = ({
+  cell,
+  avatar,
+}: {
+  cell?: CanvasCell & { replyText?: string };
+  avatar: React.ReactNode;
+}) => {
+  const { t } = useTranslation("richMenu");
+
+  if (!cell || cell.button.kind !== "reply") {
+    return (
+      <div className="flex items-start gap-2 pr-8">
+        <div className="mt-0.5 size-6 shrink-0 overflow-hidden rounded-full bg-primary/10">
+          {avatar}
+        </div>
+        <p className="w-fit rounded-2xl rounded-tl-md bg-background px-3 py-2 text-[12px] leading-relaxed text-normal shadow-sm">
+          {t("preview.greeting")}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* ข้อความที่ลูกค้า "พูด" คือ label ของปุ่ม เพราะ LINE echo ลงห้องแชทให้ */}
+      <div className="flex justify-end pl-8">
+        <p className="w-fit rounded-2xl rounded-tr-md bg-emerald-500 px-3 py-2 text-[12px] leading-relaxed text-white shadow-sm">
+          {cell.label}
+        </p>
+      </div>
+
+      <div className="flex items-start gap-2 pr-8">
+        <div className="mt-0.5 size-6 shrink-0 overflow-hidden rounded-full bg-primary/10">
+          {avatar}
+        </div>
+        <p className="w-fit whitespace-pre-wrap rounded-2xl rounded-tl-md bg-background px-3 py-2 text-[12px] leading-relaxed text-normal shadow-sm">
+          {cell.replyText?.trim() || t("preview.noReply")}
+        </p>
+      </div>
+    </>
+  );
+};
+
 export const MenuCanvas = ({
   menu,
-  selectedAreaId,
+  cells,
+  cellList,
+  selectedCell,
   issueCount,
-  onSelectArea,
+  uploading,
+  onSelectCell,
   onRename,
-  onApplyTemplate,
-  onPickImage,
-  onRemoveImage,
+  onApplyLayout,
+  onPickCellImage,
+  onRemoveCellImage,
 }: {
   menu: RichMenu;
-  selectedAreaId: string;
+  cells: number;
+  cellList: (CanvasCell & { replyText?: string })[];
+  selectedCell: number;
   issueCount: number;
-  onSelectArea: (id: string) => void;
+  uploading: boolean;
+  onSelectCell: (index: number) => void;
   onRename: (name: string) => void;
-  onApplyTemplate: (template: RichMenuTemplateId) => void;
-  onPickImage: (file: File) => void;
-  onRemoveImage: () => void;
+  onApplyLayout: (cells: number) => void;
+  onPickCellImage: (index: number, file: File) => void;
+  onRemoveCellImage: (index: number) => void;
 }) => {
   const { t } = useTranslation("richMenu");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const current = cellList[selectedCell];
 
   return (
     <Card className="flex flex-col gap-4 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <Input
-            value={menu.name}
-            onChange={(event) => onRename(event.target.value)}
+            defaultValue={menu.name}
+            key={menu.id}
+            onBlur={(event) => {
+              const next = event.target.value.trim();
+              if (next && next !== menu.name) onRename(next);
+            }}
             placeholder={t("builder.namePlaceholder")}
             className="h-8 border-0 bg-transparent px-0 text-lg font-semibold text-normal shadow-none focus-visible:ring-0 md:text-lg"
           />
@@ -324,17 +398,25 @@ export const MenuCanvas = ({
           <Button
             variant="outline"
             size="sm"
+            disabled={uploading}
             onClick={() => fileInputRef.current?.click()}
           >
-            <ImageUp className="size-4" />
-            {menu.image ? t("builder.replace") : t("builder.upload")}
+            {uploading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <ImageUp className="size-4" />
+            )}
+            {current?.image
+              ? t("builder.replaceCell", { index: selectedCell + 1 })
+              : t("builder.uploadCell", { index: selectedCell + 1 })}
           </Button>
 
-          {menu.image && (
+          {current?.image && (
             <Button
               variant="ghost"
               size="sm"
-              onClick={onRemoveImage}
+              disabled={uploading}
+              onClick={() => onRemoveCellImage(selectedCell)}
               className="text-mini"
             >
               <Trash2 className="size-4" />
@@ -342,13 +424,7 @@ export const MenuCanvas = ({
             </Button>
           )}
 
-          <p className="text-[11px] text-mini">
-            {t("builder.imageSpec", {
-              width: RICH_MENU_CANVAS.width,
-              height: RICH_MENU_CANVAS.height,
-              size: RICH_MENU_MAX_IMAGE_MB,
-            })}
-          </p>
+          <p className="text-[11px] text-mini">{t("builder.cellImageSpec")}</p>
 
           <input
             ref={fileInputRef}
@@ -357,20 +433,22 @@ export const MenuCanvas = ({
             className="hidden"
             onChange={(event) => {
               const file = event.target.files?.[0];
-              if (file) onPickImage(file);
+              if (file) onPickCellImage(selectedCell, file);
               // เคลียร์ค่าไว้ เผื่อผู้ใช้เลือกไฟล์เดิมซ้ำ onChange จะได้ยังยิง
               event.target.value = "";
             }}
           />
         </div>
 
-        <LayoutPicker value={menu.template} onChange={onApplyTemplate} />
+        <LayoutPicker value={cells} onChange={onApplyLayout} />
       </div>
 
       <PhonePreview
         menu={menu}
-        selectedAreaId={selectedAreaId}
-        onSelectArea={onSelectArea}
+        cells={cells}
+        cellList={cellList}
+        selectedCell={selectedCell}
+        onSelectCell={onSelectCell}
       />
     </Card>
   );

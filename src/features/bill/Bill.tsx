@@ -50,7 +50,7 @@ const formatCredits = (value: string | undefined, isLoading: boolean) => {
 
   const credits = Number(value);
   return Number.isFinite(credits)
-    ? formatNumber(credits, { maximumFractionDigits: 6 })
+    ? formatNumber(credits, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     : "—";
 };
 

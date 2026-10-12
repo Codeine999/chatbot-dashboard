@@ -14,6 +14,7 @@ export type SeriesDef = {
 
 export type MetricDef = {
   id: AnalyticsMetric;
+  /** เส้นที่ analytics.service ดึงข้อมูลของ metric นี้มาจริง */
   endpoint: string;
   titleKey: string;
   descriptionKey: string;
@@ -22,6 +23,8 @@ export type MetricDef = {
   series: SeriesDef[];
   /** ยอดบนหัวการ์ด metric ที่เป็น "ระดับ" ใช้ค่าล่าสุด ไม่ใช่ผลรวม */
   aggregate: "sum" | "latest";
+  /** แสดงป้าย % เทียบกับช่วงก่อนหน้าข้างยอดบนหัวการ์ดไหม ไม่ระบุ = แสดง */
+  showDelta?: boolean;
   unitKey: string;
   formatValue: (value: number) => string;
   formatAxis: (value: number) => string;
@@ -42,15 +45,31 @@ export const METRICS: Record<AnalyticsMetric, MetricDef> = {
     icon: MessageSquare,
     form: "bar",
     aggregate: "sum",
+    // ปริมาณแชทดูแค่ยอดในช่วงที่เลือก ไม่ต้องเทียบกับช่วงก่อนหน้า
+    showDelta: false,
     unitKey: "metric.chat.unit",
     formatValue: formatFull,
     formatAxis: formatCompact,
+    /* แยกตามผู้ส่งตามที่ /admin/analytics/chat คืนมา (user / ai / admin / system)
+     * system เป็นข้อความที่ระบบสร้างเอง ไม่ได้นับเป็นบทสนทนา จึงไม่ขึ้นกราฟ */
     series: [
       {
-        key: "messages",
-        labelKey: "metric.chat.series.messages",
+        key: "user",
+        labelKey: "metric.chat.series.user",
         color: ACCENT,
-        aliases: ["messages", "message", "count", "volume", "value", "total"],
+        aliases: ["user"],
+      },
+      {
+        key: "ai",
+        labelKey: "metric.chat.series.ai",
+        color: "var(--token-ai)",
+        aliases: ["ai", "bot"],
+      },
+      {
+        key: "admin",
+        labelKey: "metric.chat.series.admin",
+        color: "var(--token-admin)",
+        aliases: ["admin"],
       },
     ],
   },

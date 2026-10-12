@@ -20,10 +20,13 @@
     "usageOverall": "Over All",
     "usageGraph": "Usage Graph",
     "bill": "Bill",
+    "adminList": "Admin List",
     "setting": "Setting",
     "settingOverall": "Over All",
     "settingSelectMenu": "Select Menu",
-    "aiWorkflow": "Ai Work Flow"
+    "settingAi": "AI Setting",
+    "aiWorkflow": "Ai Work Flow",
+    "internalCustomerChat": "Customer chat test"
   },
   "brand": {
     "fallbackName": "Dashboard",

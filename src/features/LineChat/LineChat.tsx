@@ -15,6 +15,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BotModeSelect } from "./components/BotModeSelect";
 import { Textarea } from "@/components/ui/textarea";
 import {
   useConversationMessages,
@@ -126,7 +127,10 @@ const INITIAL_VISIBLE_CONVERSATIONS = 12;
 const LOAD_MORE_CONVERSATIONS = 10;
 
 type ChannelId = "all" | "line" | "messenger" | "tiktok";
-type QuickFilterId = "all" | "unread";
+type QuickFilterId = "all" | "unread" | "waiting";
+
+/** สถานะที่บอทส่งต่อมาให้แอดมินตอบเอง — ต้องมีคนลงมือ จึงต้องเด่นกว่าแชทอื่น */
+const WAITING_ADMIN = "waiting_admin";
 
 const CHANNELS: { id: ChannelId; labelKey: string; soon?: boolean }[] = [
   { id: "all", labelKey: "line.channel.all" },
@@ -138,6 +142,7 @@ const CHANNELS: { id: ChannelId; labelKey: string; soon?: boolean }[] = [
 const QUICK_FILTERS: { id: QuickFilterId; labelKey: string; soon?: boolean }[] = [
   { id: "all", labelKey: "line.quickFilter.all" },
   { id: "unread", labelKey: "line.quickFilter.unread" },
+  { id: "waiting", labelKey: "line.quickFilter.waiting" },
 ];
 
 function SoonBadge() {
@@ -189,9 +194,11 @@ function ChannelTabs({
 
 function QuickFilterChips({
   value,
+  waitingCount,
   onChange,
 }: {
   value: QuickFilterId;
+  waitingCount: number;
   onChange: (id: QuickFilterId) => void;
 }) {
   const { t } = useTranslation("chat");
@@ -214,10 +221,39 @@ function QuickFilterChips({
             }`}
           >
             {t(item.labelKey)}
+            {/* จำนวนที่รอแอดมินโชว์เฉพาะเมื่อมี เพื่อให้เห็นภาระงานโดยไม่ต้องกดเข้าไป */}
+            {item.id === "waiting" && waitingCount > 0 && (
+              <span className="ml-1.5 rounded-full bg-orange-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+                {waitingCount}
+              </span>
+            )}
           </button>
         </div>
       ))}
     </div>
+  );
+}
+
+/** ป้ายสถานะ: waiting_admin เป็นสีส้มพร้อมจุดกะพริบ สถานะอื่นเป็นป้ายเทากลาง ๆ เหมือนเดิม */
+function ConversationStatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation("chat");
+
+  if (status !== WAITING_ADMIN) {
+    return (
+      <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-mini">
+        {t(`line.status.${status}`, { defaultValue: status })}
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700 ring-1 ring-inset ring-orange-200 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-500/30">
+      <span className="relative flex size-2">
+        <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500 opacity-60" />
+        <span className="relative inline-flex size-2 rounded-full bg-orange-500" />
+      </span>
+      {t("line.status.waiting_admin")}
+    </span>
   );
 }
 
@@ -236,7 +272,8 @@ export const LineChat = () => {
   const preservingScrollRef = useRef(false);
 
   const conversationsQuery = useConversations();
-  const conversations = conversationsQuery.data ?? [];
+  // ห่อด้วย useMemo ไม่งั้น `?? []` สร้าง array ใหม่ทุก render แล้ว useMemo ที่อ้างถึงคำนวณซ้ำทุกครั้ง
+  const conversations = useMemo(() => conversationsQuery.data ?? [], [conversationsQuery.data]);
 
   const notificationsQuery = useNotifications();
   const markConversationNotificationsAsRead =
@@ -267,12 +304,22 @@ export const LineChat = () => {
   const sortedConversations = useMemo(() => {
     const direction = isNewestFirst ? 1 : -1;
 
+    // backend เรียง waiting_admin ไว้บนสุดอยู่แล้ว ถ้าเรียงตามเวลาอย่างเดียวจะทำลายลำดับนั้น
+    // จึงแยกกลุ่มก่อน แล้วปุ่มสลับใหม่/เก่าสุดมีผลเฉพาะภายในแต่ละกลุ่ม
+    const priority = (status: string) => (status === WAITING_ADMIN ? 0 : 1);
+
     return [...conversations].sort(
       (a, b) =>
+        priority(a.status) - priority(b.status) ||
         direction *
-        (new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime())
+          (new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime())
     );
   }, [conversations, isNewestFirst]);
+
+  const waitingCount = useMemo(
+    () => conversations.filter((conversation) => conversation.status === WAITING_ADMIN).length,
+    [conversations]
+  );
 
   const filteredConversations = useMemo(() => {
     // only LINE is connected today, so "all" and "line" resolve to the same list
@@ -281,7 +328,9 @@ export const LineChat = () => {
     const byQuickFilter =
       quickFilter === "unread"
         ? byChannel.filter((conversation) => conversation.unreadCount > 0)
-        : byChannel;
+        : quickFilter === "waiting"
+          ? byChannel.filter((conversation) => conversation.status === WAITING_ADMIN)
+          : byChannel;
 
     const keyword = search.trim().toLowerCase();
     if (!keyword) return byQuickFilter;
@@ -469,7 +518,11 @@ export const LineChat = () => {
                 </div>
 
                 <div className="mt-3">
-                  <QuickFilterChips value={quickFilter} onChange={setQuickFilter} />
+                  <QuickFilterChips
+                    value={quickFilter}
+                    waitingCount={waitingCount}
+                    onChange={setQuickFilter}
+                  />
                 </div>
               </>
             )}
@@ -504,6 +557,7 @@ export const LineChat = () => {
               const hasReadNotification = readNotificationConversationIds.has(
                 conversation.id
               );
+              const isWaitingAdmin = conversation.status === WAITING_ADMIN;
               const notificationBg = isActive
                 ? "bg-primary/10 text-primary"
                 : hasUnreadNotification
@@ -522,7 +576,9 @@ export const LineChat = () => {
                     onClick={() => handleSelectConversation(conversation.id)}
                     className={`w-full text-left transition-all duration-200 ${
                       notificationBg
-                    } ${isInboxOpen ? "px-4 py-3.5" : "px-2 py-3.5"}`}
+                    } ${isInboxOpen ? "px-4 py-3.5" : "px-2 py-3.5"} ${
+                      isWaitingAdmin ? "shadow-[inset_3px_0_0_0_var(--color-orange-500)]" : ""
+                    }`}
                   >
                     <div className={`flex items-center ${isInboxOpen ? "gap-3" : "justify-center"}`}>
                       <div className="relative">
@@ -531,6 +587,12 @@ export const LineChat = () => {
                           src={conversation.lineMember?.pictureUrl}
                           size="md"
                         />
+                        {isWaitingAdmin && (
+                          <span className="absolute -left-0.5 -top-0.5 flex size-3">
+                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500 opacity-60" />
+                            <span className="relative inline-flex size-3 rounded-full border-2 border-background bg-orange-500" />
+                          </span>
+                        )}
                         {!isInboxOpen && conversation.unreadCount > 0 && (
                           <span className="absolute -right-1 -top-1 h-4 min-w-4 rounded-full bg-primary px-1 text-[10px] font-semibold leading-4 text-primary-foreground">
                             {conversation.unreadCount}
@@ -552,7 +614,14 @@ export const LineChat = () => {
                                 {formatTime(conversation.lastMessageAt)}
                               </span>
                             </div>
-                            <p className="mt-1 truncate text-xs text-mini">{preview}</p>
+                            <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-mini">
+                              {isWaitingAdmin && (
+                                <span className="shrink-0 rounded bg-orange-100 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">
+                                  {t("line.status.waiting_admin_short")}
+                                </span>
+                              )}
+                              <span className="truncate">{preview}</span>
+                            </p>
                           </div>
                           {conversation.unreadCount > 0 && (
                             <span className="rounded-full bg-primary px-1.5 text-[11px] font-semibold leading-5 text-primary-foreground">
@@ -606,9 +675,8 @@ export const LineChat = () => {
                       {selectedConversation.lineMember?.lineUserId ?? "-"}
                     </p>
                   </div>
-                  <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-mini">
-                    {selectedConversation.status}
-                  </span>
+                  <ConversationStatusBadge status={selectedConversation.status} />
+                  <BotModeSelect conversation={selectedConversation} messages={messages} />
                 </div>
               ) : (
                 <p className="font-semibold text-normal">{t("line.selectConversation")}</p>

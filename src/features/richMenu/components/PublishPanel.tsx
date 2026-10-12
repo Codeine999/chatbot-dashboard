@@ -7,10 +7,10 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 import { CHAT_BAR_TEXT_MAX, PUBLISH_STEPS } from "../layout";
-import { Segmented } from "./Segmented";
-import type { PublishTarget, RichMenu, RichMenuArea } from "../type";
+import type { RichMenu } from "../type";
 
-type MenuIssue = { area: RichMenuArea; issueKey: string };
+/** index === -1 คือปัญหาของทั้งเมนู ไม่ได้เจาะจงช่องไหน */
+type MenuIssue = { index: number; issueKey: string };
 
 const PublishSteps = ({
   publishing,
@@ -65,25 +65,17 @@ const PublishSteps = ({
 export const PublishPanel = ({
   menu,
   issues,
-  target,
-  testUserId,
   publishing,
   publishStep,
   onChatBarTextChange,
-  onTargetChange,
-  onTestUserIdChange,
-  onSelectArea,
+  onSelectCell,
 }: {
   menu: RichMenu;
   issues: MenuIssue[];
-  target: PublishTarget;
-  testUserId: string;
   publishing: boolean;
   publishStep: number;
   onChatBarTextChange: (value: string) => void;
-  onTargetChange: (value: PublishTarget) => void;
-  onTestUserIdChange: (value: string) => void;
-  onSelectArea: (id: string) => void;
+  onSelectCell: (index: number) => void;
 }) => {
   const { t } = useTranslation("richMenu");
 
@@ -109,44 +101,24 @@ export const PublishPanel = ({
         />
       </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-[11px] font-medium text-mini">{t("publish.target")}</Label>
-        <Segmented
-          value={target}
-          onChange={onTargetChange}
-          options={[
-            { value: "all", label: t("publish.targetAll") },
-            { value: "test", label: t("publish.targetTest") },
-          ]}
-        />
-      </div>
-
-      {target === "test" && (
-        <div className="space-y-1.5">
-          <Label className="text-[11px] font-medium text-mini">
-            {t("publish.testUserId")}
-          </Label>
-          <Input
-            value={testUserId}
-            onChange={(event) => onTestUserIdChange(event.target.value)}
-            placeholder={t("publish.testUserIdPlaceholder")}
-            className="h-9 font-mono text-[12px]"
-          />
-        </div>
-      )}
-
       {issues.length ? (
         <div className="space-y-1.5 rounded-xl border border-destructive/20 bg-destructive/5 p-3">
-          {issues.map(({ area, issueKey }) => (
+          {issues.map(({ index, issueKey }) => (
             <button
-              key={area.id}
+              key={`${index}-${issueKey}`}
               type="button"
-              onClick={() => onSelectArea(area.id)}
-              className="flex w-full cursor-pointer items-start gap-2 text-left text-[11px] text-destructive outline-none hover:underline"
+              disabled={index < 0}
+              onClick={() => onSelectCell(index)}
+              className="flex w-full items-start gap-2 text-left text-[11px] text-destructive outline-none enabled:cursor-pointer enabled:hover:underline"
             >
               <CircleAlert className="mt-px size-3.5 shrink-0" />
               <span className="min-w-0">
-                <span className="font-medium">{area.label}</span> — {t(issueKey)}
+                {index >= 0 && (
+                  <span className="font-medium">
+                    {t("cell.number", { index: index + 1 })} —{" "}
+                  </span>
+                )}
+                {t(issueKey)}
               </span>
             </button>
           ))}
@@ -164,6 +136,18 @@ export const PublishPanel = ({
 
       {menu.source === "line" && (
         <p className="text-[11px] leading-relaxed text-mini">{t("publish.note")}</p>
+      )}
+
+      {menu.needsRepublish && (
+        <p className="text-[11px] leading-relaxed text-amber-600 dark:text-amber-400">
+          {t("publish.needsRepublish")}
+        </p>
+      )}
+
+      {menu.lastPublishError && (
+        <p className="rounded-lg bg-destructive/5 px-2.5 py-2 text-[11px] leading-relaxed text-destructive">
+          {menu.lastPublishError}
+        </p>
       )}
     </Card>
   );

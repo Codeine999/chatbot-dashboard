@@ -3,7 +3,7 @@ import { FlaskConical, TrendingDown, TrendingUp, TriangleAlert } from "lucide-re
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAnalytics } from "../hooks/useAnalytics";
-import { bucketDelta, formatFull } from "../lib/format";
+import { bucketDelta } from "../lib/format";
 import { GRANULARITY_OPTIONS, GRANULARITY_UNIT_KEY, METRICS } from "../lib/metrics";
 import type {
   AnalyticsMetric,
@@ -118,7 +118,7 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day" }: Pro
   const { data, isPending, isFetching } = useAnalytics(metricId, granularity);
 
   const points = data?.points ?? [];
-  // ข้อมูลจริงที่เป็นศูนย์ทั้งช่วง ต้องบอกให้ชัดว่า "ไม่มีความเคลื่อนไหว" ไม่ใช่กราฟพัง
+  // ศูนย์ทั้งช่วงคือข้อมูลจริง ยังวาดกราฟตามปกติ แล้วบอกเพิ่มใต้กราฟว่าไม่มีความเคลื่อนไหว
   const isQuiet = Boolean(data) && !data?.isSample && points.every((point) => point.total === 0);
   const windowKey =
     GRANULARITY_OPTIONS.find((option) => option.value === granularity)?.windowKey ?? "";
@@ -155,9 +155,11 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day" }: Pro
               {metric.formatValue(data?.headline ?? 0)}
             </p>
             <p className="pb-1.5 text-xs font-medium text-mini">{t(metric.unitKey)}</p>
-            <div className="ml-auto pb-1">
-              <DeltaBadge points={points} granularity={granularity} />
-            </div>
+            {metric.showDelta !== false && (
+              <div className="ml-auto pb-1">
+                <DeltaBadge points={points} granularity={granularity} />
+              </div>
+            )}
           </>
         )}
       </div>
@@ -166,15 +168,12 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day" }: Pro
         <Skeleton className="h-[190px] w-full rounded-xl" />
       ) : (
         <div className={isFetching ? "opacity-60 transition-opacity" : "transition-opacity"}>
-          {isQuiet ? (
-            <div className="flex h-[190px] flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed">
-              <p className="text-sm font-medium text-normal">{t("chart.noActivity")}</p>
-              <p className="text-xs text-mini">
-                {t("chart.noActivityHint", { window: window.toLowerCase() })}
-              </p>
-            </div>
-          ) : (
-            <MetricChart metric={metric} points={points} />
+          <MetricChart metric={metric} points={points} />
+
+          {isQuiet && (
+            <p className="mt-1 text-center text-xs text-mini">
+              {t("chart.noActivityHint", { window: window.toLowerCase() })}
+            </p>
           )}
         </div>
       )}

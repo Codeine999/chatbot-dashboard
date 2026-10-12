@@ -1,0 +1,28 @@
+{
+  "title": "Admin accounts",
+  "subtitle": "Everyone who can sign in to this workspace",
+  "refresh": "Refresh",
+  "searchPlaceholder": "Search by name, username, email, or phone...",
+  "loadFailed": "Could not load admin accounts",
+  "empty": "No admin matches your filters",
+  "count": "Showing {{count}} of {{total}} accounts",
+  "filter": {
+    "allRoles": "All roles"
+  },
+  "role": {
+    "dev": "Developer",
+    "owner": "Owner",
+    "admin": "Admin"
+  },
+  "ai": {
+    "on": "AI enabled",
+    "off": "AI off"
+  },
+  "table": {
+    "admin": "Admin",
+    "contact": "Contact",
+    "role": "Role",
+    "aiAccess": "AI access",
+    "joined": "Joined"
+  }
+}

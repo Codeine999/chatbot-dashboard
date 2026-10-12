@@ -1,7 +1,7 @@
 {
   "page": {
     "title": "Rich Menu",
-    "subtitle": "Design the shortcut menu of your LINE Official Account and publish it from one place",
+    "subtitle": "Design the LINE Official Account shortcut menu, choose what each button answers, and publish from one place",
     "saveDraft": "Save draft",
     "publish": "Publish to LINE",
     "publishing": "Publishing",
@@ -10,15 +10,13 @@
   },
   "list": {
     "title": "All menus",
-    "create": "Create rich menu",
+    "create": "New rich menu",
     "searchPlaceholder": "Search menus",
-    "empty": "No menu matches your search",
+    "empty": "No menus yet — create your first one",
     "newName": "New rich menu",
-    "copySuffix": "copy",
     "updated": "Updated {{date}}",
     "notPublished": "Not on LINE yet",
     "actions": "Menu options",
-    "duplicate": "Duplicate",
     "delete": "Delete menu"
   },
   "filter": {
@@ -33,61 +31,91 @@
   },
   "builder": {
     "namePlaceholder": "Name this menu",
-    "upload": "Upload image",
-    "replace": "Replace image",
+    "uploadCell": "Upload image for cell {{index}}",
+    "replaceCell": "Replace image for cell {{index}}",
     "remove": "Remove image",
-    "imageSpec": "PNG or JPEG · {{width}} × {{height}} px · up to {{size}} MB",
-    "layout": "Layout",
+    "cellImageSpec": "PNG or JPEG · resized to fit the cell and merged into one image for you",
     "ready": "Ready to publish",
     "issues": "{{total}} to fix",
-    "hint": "Tap an area on the preview to set what it does",
-    "areaLabel": "Area {{index}}"
+    "hint": "Pick how many cells, upload an image per cell, then choose what each one answers"
   },
   "layout": {
-    "grid6": "6 tiles",
-    "grid3": "3 tiles",
-    "split2": "2 tiles",
-    "single": "Full width"
+    "cells": "{{count}} cells"
   },
   "preview": {
     "fallbackName": "LINE Official Account",
-    "subtitle": "Always here to help",
-    "greeting": "Hi there, welcome! What can we help you with today?",
+    "subtitle": "Here to help",
+    "greeting": "Hello and welcome! How can we help you today?",
+    "noReply": "This button has no answer written yet",
     "time": "10:00",
     "today": "Today",
     "inputPlaceholder": "Type a message..."
   },
-  "area": {
-    "title": "Area action",
-    "empty": "Select an area on the preview to set what it does",
-    "namePlaceholder": "Area name",
+  "cell": {
+    "title": "Cell behaviour",
+    "empty": "Select a cell in the preview to choose what it answers",
+    "number": "Cell {{index}}",
     "size": "{{width}} × {{height}} px",
     "ratio": "Ratio {{ratio}}",
-    "actionType": "Action type",
-    "data": "Postback data",
-    "dataPlaceholder": "action=contact_admin",
-    "message": "Message sent",
-    "messagePlaceholder": "Show me the latest promotions",
+    "hasImage": "Image uploaded",
+    "noImage": "No image uploaded yet",
+    "action": "When a customer taps this cell",
+    "actionHint": "Choose an answer, send a message, run a system action, or open a link when this cell is tapped",
+    "actionNone": "Nothing (image only)",
+    "actionUri": "Open a link",
+    "actionMessage": "Send a message into chat",
+    "message": "Message sent as the customer",
+    "messagePlaceholder": "e.g. Show me the latest promotions",
+    "messageHint": "LINE sends this as if the customer typed it, then the normal message router handles it",
+    "systemDisplayText": "Text shown in the chat",
+    "systemHint": "Sends the {{intent}} postback directly, so the system does not have to infer intent from wording",
+    "system": {
+      "REGISTER": {
+        "label": "System action: Register",
+        "displayText": "Sign up"
+      },
+      "CONTACT_ADMIN": {
+        "label": "System action: Contact admin",
+        "displayText": "Contact an admin"
+      }
+    },
+    "linkLabel": "Open link",
+    "emptyLabel": "Cell {{index}}",
+    "missingReply": "The answer this button points at was deleted or turned off",
     "uri": "Destination link",
-    "uriPlaceholder": "https://example.com",
-    "showInChat": "Show text in chat",
-    "showInChatHint": "This text appears in the chat room when a customer taps the area",
-    "displayText": "Display text",
-    "displayTextPlaceholder": "I want to contact an admin",
-    "bounds": "Position and size",
-    "noneHint": "This area is not tappable — use it for image-only sections"
+    "uriPlaceholder": "https://example.com"
   },
-  "action": {
-    "postback": "Send data to the system",
-    "message": "Send a message as the customer",
-    "uri": "Open a link",
-    "none": "Do nothing"
+  "reply": {
+    "title": "Answer library",
+    "hint": "What each button answers. Edit the wording any time without republishing the menu",
+    "create": "Add answer",
+    "label": "Button caption",
+    "labelPlaceholder": "e.g. Sign up",
+    "labelHint": "Customers read this on the button, and it appears in the chat when they tap it",
+    "key": "Mapping key",
+    "keyHint": "Leave blank to generate one — it cannot be changed later, because published buttons carry this value",
+    "keyInvalid": "Use only a-z, 0-9, hyphen and underscore",
+    "text": "What the bot replies",
+    "textPlaceholder": "Type the answer sent when a customer taps this button",
+    "activeLabel": "Active",
+    "inactive": "Off",
+    "edit": "Edit answer",
+    "delete": "Delete answer",
+    "inUse": "Cannot delete while a button still points at this answer",
+    "usedBy": "Used by: {{names}}",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading the answer library",
+    "emptyState": "No answers yet. Add one first, then bind it to a cell on the menu."
   },
   "issue": {
-    "data": "Postback data is still empty",
-    "text": "Message text is still empty",
-    "uri": "Destination link is still empty",
-    "uriFormat": "The link must start with http:// or https://"
+    "uri": "Destination link is empty",
+    "uriFormat": "The link must start with http:// or https://",
+    "message": "Enter the message to send into the chat",
+    "displayText": "Enter the text to show in the chat",
+    "emptyCell": "This cell has neither an image nor an action",
+    "noImage": "No cell image has been uploaded yet",
+    "noButton": "No cell is tappable yet"
   },
   "publish": {
     "title": "Publishing",
@@ -98,25 +126,28 @@
     "targetTest": "Test user",
     "testUserId": "Test user ID",
     "testUserIdPlaceholder": "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "ready": "Every area is filled in and ready to publish",
-    "note": "This menu is already on LINE — publishing again creates a new rich menu ID",
+    "ready": "Every cell is ready to publish",
+    "note": "This menu is already on LINE. Publishing again creates a new rich menu ID.",
+    "needsRepublish": "Edited since the last publish — customers still see the old menu until you publish again",
     "step": {
-      "validate": "Validate menu structure",
-      "create": "Create the menu on LINE",
+      "validate": "Validate the menu",
+      "create": "Create it on LINE",
       "upload": "Upload the image",
       "default": "Set as the default menu"
     }
   },
   "toast": {
-    "created": "New menu created",
-    "duplicated": "Menu duplicated",
+    "created": "Menu created",
     "deleted": "Menu deleted",
-    "deleteActive": "Cannot delete — this menu is live on LINE",
+    "deleteActive": "Cannot delete: this menu is live on LINE",
     "draftSaved": "Draft saved",
     "published": "Published to LINE",
-    "hasIssues": "Some areas are incomplete — fix them before publishing",
-    "needTestUserId": "Enter the test user ID first",
+    "hasIssues": "Some cells are incomplete — fix them before publishing",
+    "needTestUserId": "Enter a test user ID first",
     "imageType": "Only PNG and JPEG files are supported",
-    "imageTooLarge": "The file is larger than {{size}} MB"
+    "imageTooLarge": "File is larger than {{size}} MB",
+    "replyCreated": "Answer added",
+    "replyUpdated": "Answer saved",
+    "replyDeleted": "Answer deleted"
   }
 }

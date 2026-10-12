@@ -49,3 +49,13 @@ export type LineChatHistory = {
   sentStatus: string;
   createdAt: string;
 };
+
+/**
+ * โหมดการตอบอัตโนมัติของบอทในหนึ่งห้องแชท
+ * - auto:   บอทตอบเอง
+ * - admin:  แอดมินเพิ่งตอบ บอทถูกพักไว้ชั่วคราวและกลับมาเองเมื่อครบเวลา
+ * - paused: แอดมินสั่งพักบอทเอง (backend ยังไม่มี endpoint รองรับ)
+ */
+export type BotMode = "auto" | "admin" | "paused";
+
+export type ResumeBotResponse = { status: string };

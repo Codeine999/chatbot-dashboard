@@ -20,6 +20,7 @@ import {
 import KnowledgeStatsCards from "./components/KnowledgeStats";
 import KnowledgeTable from "./components/KnowledgeTable";
 import KnowledgeEditPanel from "./components/KnowledgeEditPanel";
+import MicroKnowledgeTab from "./components/MicroKnowledgeTab";
 import {
   useDeleteKnowledge,
   useKnowledgeCategories,
@@ -27,11 +28,13 @@ import {
   useKnowledgeStats,
   useSaveKnowledge,
 } from "./hooks/useKnowledge";
+import { useMicroKnowledgeStats } from "./hooks/useMicroKnowledge";
 import type { KnowledgeDraft, KnowledgeItem } from "./type/knowledge.type";
+import type { MicroKnowledgeItem } from "./type/microKnowledge.type";
 import { useTranslation } from "react-i18next";
 
 // เก็บเป็น key ของแท็บ ไม่ใช่ข้อความ เพราะ state `tab` เอาไปเทียบกันด้วย
-const TABS = ["entries", "retrieval", "import", "settings"] as const;
+const TABS = ["entries", "micro", "import", "settings"] as const;
 
 type Tab = (typeof TABS)[number];
 
@@ -51,6 +54,7 @@ export const AiAnswer = () => {
   } = useKnowledgeCategories();
   const categoryOptions = categoryList?.data ?? [];
   const stats = useKnowledgeStats();
+  const microStats = useMicroKnowledgeStats();
   const saveKnowledge = useSaveKnowledge();
   const deleteKnowledge = useDeleteKnowledge();
 
@@ -64,6 +68,8 @@ export const AiAnswer = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editing, setEditing] = useState<KnowledgeItem | undefined>();
   const [panelOpen, setPanelOpen] = useState(false);
+  const [microEditing, setMicroEditing] = useState<MicroKnowledgeItem | undefined>();
+  const [microPanelOpen, setMicroPanelOpen] = useState(false);
 
   const items = useMemo(() => data ?? [], [data]);
 
@@ -99,6 +105,15 @@ export const AiAnswer = () => {
     setEditing(item);
     setPanelOpen(true);
   };
+
+  const openMicroEditor = (item?: MicroKnowledgeItem) => {
+    setMicroEditing(item);
+    setMicroPanelOpen(true);
+  };
+
+  /** ปุ่ม Add ด้านบนใช้ร่วมกันทั้งสองแท็บ จึงเปิดฟอร์มให้ตรงกับแท็บที่เปิดอยู่ */
+  const handleAdd = () =>
+    tab === "micro" ? openMicroEditor(undefined) : openEditor(undefined);
 
   const handlePublish = (draft: KnowledgeDraft) => {
     saveKnowledge.mutate(
@@ -142,9 +157,9 @@ export const AiAnswer = () => {
             {t("bulkImport")}
           </Button>
 
-          <Button className="gap-1.5" onClick={() => openEditor(undefined)}>
+          <Button className="gap-1.5" onClick={handleAdd}>
             <Plus className="h-4 w-4" />
-            {t("add")}
+            {tab === "micro" ? t("micro.add") : t("add")}
           </Button>
         </div>
       </div>
@@ -168,6 +183,28 @@ export const AiAnswer = () => {
             ))}
           </div>
         );
+
+        if (tab === "micro") {
+          return (
+            <>
+              <div className="mt-5">
+                <KnowledgeStatsCards stats={microStats} />
+              </div>
+              <div className="mt-6">{tabsBar}</div>
+              <div className="mt-4">
+                <MicroKnowledgeTab
+                  categories={categoryOptions}
+                  isCategoriesLoading={isCategoriesLoading}
+                  isCategoriesError={isCategoriesError}
+                  editing={microEditing}
+                  panelOpen={microPanelOpen}
+                  onOpenEditor={openMicroEditor}
+                  onClosePanel={() => setMicroPanelOpen(false)}
+                />
+              </div>
+            </>
+          );
+        }
 
         if (tab !== TABS[0]) {
           return (

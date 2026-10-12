@@ -62,7 +62,7 @@ export type AnswerPatternListResponse =
 /** ข้อมูลที่ฟอร์มแก้ไขได้ ไม่รวม field ที่ระบบกำหนดเอง */
 export type KnowledgeDraft = Omit<KnowledgeItem, "id" | "updatedAt">;
 
-/** Body ของ PATCH /api/admin/answer-patterns/:id — ทุก field เป็น optional */
+/** Body ของ PATCH /api/admin/knowledge-patterns/:id — ทุก field เป็น optional */
 export type UpdateAnswerPatternPayload = {
   title?: string;
   description?: string | null;

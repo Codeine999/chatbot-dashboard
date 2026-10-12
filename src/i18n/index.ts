@@ -10,6 +10,7 @@ import {
 } from "./config";
 
 import enAdminTool from "./locales/en/adminTool.json";
+import enAdmins from "./locales/en/admins.json";
 import enAuth from "./locales/en/auth.json";
 import enBill from "./locales/en/bill.json";
 import enChat from "./locales/en/chat.json";
@@ -25,6 +26,7 @@ import enUsage from "./locales/en/usage.json";
 import enUsers from "./locales/en/users.json";
 
 import thAdminTool from "./locales/th/adminTool.json";
+import thAdmins from "./locales/th/admins.json";
 import thAuth from "./locales/th/auth.json";
 import thBill from "./locales/th/bill.json";
 import thChat from "./locales/th/chat.json";
@@ -45,6 +47,7 @@ export const DEFAULT_NAMESPACE = "common";
 export const resources = {
   en: {
     adminTool: enAdminTool,
+    admins: enAdmins,
     auth: enAuth,
     bill: enBill,
     chat: enChat,
@@ -61,6 +64,7 @@ export const resources = {
   },
   th: {
     adminTool: thAdminTool,
+    admins: thAdmins,
     auth: thAuth,
     bill: thBill,
     chat: thChat,
@@ -85,7 +89,7 @@ i18n
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: [...SUPPORTED_LANGUAGES],
     defaultNS: DEFAULT_NAMESPACE,
-    ns: ["adminTool", "auth", "bill", "chat", "common", "home", "knowledge", "nav", "order", "product", "richMenu", "settings", "usage", "users"],
+    ns: ["adminTool", "admins", "auth", "bill", "chat", "common", "home", "knowledge", "nav", "order", "product", "richMenu", "settings", "usage", "users"],
 
     // "en-US" ที่ browser ส่งมาต้องถูกยุบเหลือ "en" ไม่งั้นหา resource ไม่เจอ
     load: "languageOnly",

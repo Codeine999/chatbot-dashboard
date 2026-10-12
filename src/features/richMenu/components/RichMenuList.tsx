@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Copy, MoreHorizontal, Plus, Search, Trash2 } from "lucide-react";
+import { MoreHorizontal, Plus, Search, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -43,13 +43,11 @@ const MenuRow = ({
   menu,
   isSelected,
   onSelect,
-  onDuplicate,
   onDelete,
 }: {
   menu: RichMenu;
   isSelected: boolean;
   onSelect: () => void;
-  onDuplicate: () => void;
   onDelete: () => void;
 }) => {
   const { t } = useTranslation("richMenu");
@@ -97,10 +95,6 @@ const MenuRow = ({
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-40">
-          <DropdownMenuItem onSelect={onDuplicate}>
-            <Copy className="size-4" />
-            {t("list.duplicate")}
-          </DropdownMenuItem>
           <DropdownMenuItem variant="destructive" onSelect={onDelete}>
             <Trash2 className="size-4" />
             {t("list.delete")}
@@ -121,19 +115,17 @@ export const RichMenuList = ({
   onFilterChange,
   onSelect,
   onCreate,
-  onDuplicate,
   onDelete,
 }: {
   menus: RichMenu[];
   counts: Record<RichMenuFilter, number>;
-  selectedMenuId: string;
+  selectedMenuId?: string;
   search: string;
   filter: RichMenuFilter;
   onSearchChange: (value: string) => void;
   onFilterChange: (value: RichMenuFilter) => void;
   onSelect: (id: string) => void;
   onCreate: () => void;
-  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
 }) => {
   const { t } = useTranslation("richMenu");
@@ -179,7 +171,6 @@ export const RichMenuList = ({
               menu={menu}
               isSelected={menu.id === selectedMenuId}
               onSelect={() => onSelect(menu.id)}
-              onDuplicate={() => onDuplicate(menu.id)}
               onDelete={() => onDelete(menu.id)}
             />
           ))

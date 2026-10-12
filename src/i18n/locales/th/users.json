@@ -1,19 +1,67 @@
 {
-  "add": "เพิ่มผู้ใช้ +",
-  "searchPlaceholder": "ค้นหา...",
-  "loadFailed": "ไม่สามารถโหลดข้อมูลผู้ใช้ได้",
-  "loading": "กำลังโหลดข้อมูลผู้ใช้...",
-  "empty": "ไม่พบข้อมูลผู้ใช้",
-  "table": {
-    "picture": "รูปภาพ",
-    "username": "ชื่อผู้ใช้",
-    "firstName": "ชื่อ",
-    "lastName": "นามสกุล",
-    "phone": "เบอร์โทรศัพท์",
-    "bank": "ธนาคาร",
-    "bankNo": "เลขบัญชี",
-    "status": "สถานะ",
-    "action": "จัดการ"
+  "title": "ผู้ใช้",
+  "subtitle": "จัดการลูกค้าและผู้ใช้ LINE ของคุณ",
+  "add": "เพิ่มผู้ใช้",
+  "searchPlaceholder": "ค้นหาด้วยชื่อ ชื่อผู้ใช้ หรือเบอร์โทร...",
+  "loadFailed": "โหลดรายชื่อผู้ใช้ไม่สำเร็จ",
+  "empty": "ไม่พบผู้ใช้",
+  "avatarAlt": "ผู้ใช้",
+  "tab": {
+    "registered": "ผู้ใช้ที่สมัครแล้ว",
+    "line": "ผู้ใช้ LINE (ยังไม่สมัคร)"
   },
-  "avatarAlt": "ผู้ใช้"
+  "stats": {
+    "registered": "ผู้ใช้ที่สมัครแล้ว",
+    "active": "ผู้ใช้ที่ใช้งานอยู่",
+    "inactive": "ผู้ใช้ที่ไม่ได้ใช้งาน",
+    "lineUsers": "ผู้ใช้ LINE",
+    "registeredHint": "{{percent}}% ของผู้ติดต่อทั้งหมด",
+    "lineUsersHint": "ยังไม่ได้สมัครสมาชิก"
+  },
+  "filter": {
+    "allPlans": "ทุกแพ็กเกจ",
+    "allStatuses": "ทุกสถานะ"
+  },
+  "plan": {
+    "starter": "Starter",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "status": {
+    "pending": "รออนุมัติ",
+    "active": "ใช้งานอยู่",
+    "paused": "พักชั่วคราว",
+    "inactive": "ไม่ได้ใช้งาน"
+  },
+  "sort": {
+    "newest": "ใหม่สุด",
+    "oldest": "เก่าสุด",
+    "lastActive": "ใช้งานล่าสุด",
+    "name": "ชื่อ"
+  },
+  "table": {
+    "user": "ผู้ใช้",
+    "contact": "ช่องทางติดต่อ",
+    "plan": "แพ็กเกจ",
+    "status": "สถานะ",
+    "joined": "วันที่สมัคร",
+    "lastActive": "ใช้งานล่าสุด",
+    "messages": "ข้อความ",
+    "firstSeen": "ทักครั้งแรก",
+    "action": "จัดการ",
+    "selectAll": "เลือกผู้ใช้ทั้งหมด",
+    "selectOne": "เลือก {{name}}",
+    "moreActions": "ตัวเลือกเพิ่มเติมของ {{name}}"
+  },
+  "actions": {
+    "message": "ส่งข้อความ",
+    "edit": "แก้ไขผู้ใช้",
+    "delete": "ลบผู้ใช้",
+    "register": "สมัครเป็นลูกค้า"
+  },
+  "pagination": {
+    "showing": "แสดง {{from}}–{{to}} จาก {{total}} รายการ",
+    "previous": "หน้าก่อนหน้า",
+    "next": "หน้าถัดไป"
+  }
 }

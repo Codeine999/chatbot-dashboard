@@ -1,5 +1,9 @@
 import { api } from "@/api/api";
-import type { LineChatHistory, LineConversation } from "../types/lineChat.type";
+import type {
+  LineChatHistory,
+  LineConversation,
+  ResumeBotResponse,
+} from "../types/lineChat.type";
 
 type ListResponse<T> =
   | T[]
@@ -67,6 +71,18 @@ export const lineChatApi = {
     const res = await api.post<LineChatHistory>(
       `/line/conversations/${conversationId}/messages`,
       { text }
+    );
+
+    return res.data;
+  },
+
+  /**
+   * ปลดการพักบอทของห้องนี้ทันที แทนที่จะรอให้ Redis mute หมดอายุเอง
+   * backend ยังล้าง context ของห้องและตั้งสถานะกลับเป็น open ให้ด้วย (ไม่ลบข้อมูลสมัครสมาชิก)
+   */
+  resumeBot: async (conversationId: string): Promise<ResumeBotResponse> => {
+    const res = await api.post<ResumeBotResponse>(
+      `/line/conversations/${conversationId}/resume-bot`
     );
 
     return res.data;

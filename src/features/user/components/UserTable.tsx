@@ -1,3 +1,14 @@
+import { useTranslation } from "react-i18next";
+import { MessageSquareText, MoreHorizontal, Phone, SquarePen, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -6,149 +17,231 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { formatDate, formatTime } from "@/i18n/format";
+import { LineMark, PlanBadge, StatusBadge, UserAvatar } from "./UserVisuals";
+import type { RegisteredUser } from "../type";
 
-import {
-  MessageSquareText,
-  SquarePen,
-  Trash2,
-} from "lucide-react";
+const COLUMN_COUNT = 8;
 
-import { Card } from "@/components/ui/card";
-import type { UserItem } from "../type";
-import { useTranslation } from "react-i18next";
+/**
+ * วันที่บรรทัดบน เวลาบรรทัดล่าง ใช้ทั้งคอลัมน์ Joined และ Last Active
+ * ค่าว่างเกิดได้จริง เช่น สมาชิกที่ยังไม่เคยคุยผ่าน LINE จึงแสดงขีดแทน
+ */
+export const DateTimeCell = ({ iso }: { iso?: string | null }) => {
+  if (!iso) return <span className="text-sm text-mini">-</span>;
 
-type UserTableProps = {
-  users: UserItem[];
-  isLoading?: boolean;
+  return (
+    <div className="whitespace-nowrap">
+      <p className="text-sm text-normal">{formatDate(iso)}</p>
+      <p className="text-xs text-mini">{formatTime(iso)}</p>
+    </div>
+  );
 };
 
-const getUserId = (user: UserItem, index: number) => user.uuid ?? user.id ?? user._id ?? index;
-const getFirstName = (user: UserItem) => user.firstName ?? user.firstname ?? user.first_name ?? user.name ?? "-";
-const getLastName = (user: UserItem) => user.lastName ?? user.lastname ?? user.last_name ?? "-";
-const getImage = (user: UserItem) => user.image ?? user.avatar ?? user.profileImage;
-const getInitial = (user: UserItem) => (user.username ?? getFirstName(user)).charAt(0).toUpperCase() || "?";
-const getStatus = (user: UserItem) => user.statusaccount ?? user.statusAccount ?? user.status ?? "-";
-
-const UserTable = ({ users, isLoading = false }: UserTableProps) => {
+export const RowActions = ({
+  onEdit,
+  onMessage,
+  onDelete,
+  label,
+}: {
+  onEdit: () => void;
+  onMessage: () => void;
+  onDelete: () => void;
+  label: string;
+}) => {
   const { t } = useTranslation("users");
 
   return (
-    <Card className="mt-3 overflow-hidden">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" aria-label={label}>
+          <MoreHorizontal className="size-4 text-mini" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={onMessage}>
+          <MessageSquareText className="mr-2 size-4" />
+          {t("actions.message")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onEdit}>
+          <SquarePen className="mr-2 size-4" />
+          {t("actions.edit")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onDelete} className="text-red-600">
+          <Trash2 className="mr-2 size-4" />
+          {t("actions.delete")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
-      <Table className="min-w-[1100px] table-fixed">
-        <TableHeader className="h-[55px]">
-          <TableRow>
-            <TableHead className="w-[90px] px-6 text-mini font-medium">
-              {t("table.picture")}
+export const TableStateRow = ({
+  columnCount,
+  children,
+}: {
+  columnCount: number;
+  children: React.ReactNode;
+}) => (
+  <TableRow className="hover:bg-transparent">
+    <TableCell colSpan={columnCount} className="py-14 text-center">
+      {children}
+    </TableCell>
+  </TableRow>
+);
+
+const LoadingRows = ({ columnCount }: { columnCount: number }) => (
+  <>
+    {Array.from({ length: 8 }, (_, row) => (
+      <TableRow key={row} className="hover:bg-transparent">
+        {Array.from({ length: columnCount }, (_, column) => (
+          <TableCell key={column} className="py-3.5">
+            <Skeleton className="h-5 w-full" />
+          </TableCell>
+        ))}
+      </TableRow>
+    ))}
+  </>
+);
+
+type Props = {
+  users: RegisteredUser[];
+  selectedIds: string[];
+  isLoading: boolean;
+  isError: boolean;
+  onRetry: () => void;
+  onToggleSelect: (id: string) => void;
+  onToggleSelectAll: () => void;
+  onEdit: (user: RegisteredUser) => void;
+  onMessage: (user: RegisteredUser) => void;
+  onDelete: (user: RegisteredUser) => void;
+};
+
+const UserTable = ({
+  users,
+  selectedIds,
+  isLoading,
+  isError,
+  onRetry,
+  onToggleSelect,
+  onToggleSelectAll,
+  onEdit,
+  onMessage,
+  onDelete,
+}: Props) => {
+  const { t } = useTranslation("users");
+  const allSelected = users.length > 0 && selectedIds.length === users.length;
+
+  return (
+    <div className="overflow-x-auto">
+      <Table className="min-w-[980px]">
+        <TableHeader>
+          <TableRow className="hover:bg-transparent">
+            <TableHead className="w-12 pl-4">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={onToggleSelectAll}
+                aria-label={t("table.selectAll")}
+              />
             </TableHead>
-            <TableHead className="w-[140px] px-4 text-mini font-medium">
-              {t("table.username")}
-            </TableHead>
-            <TableHead className="w-[140px] px-6 text-mini font-medium">
-              {t("table.firstName")}
-            </TableHead>
-            <TableHead className="w-[140px] px-[6px] text-mini font-medium">
-              {t("table.lastName")}
-            </TableHead>
-            <TableHead className="w-[130px] text-center text-mini font-medium">
-              {t("table.phone")}
-            </TableHead>
-            <TableHead className="w-[150px] text-center text-mini font-medium">
-              {t("table.bank")}
-            </TableHead>
-            <TableHead className="w-[150px] text-center text-mini font-medium">
-              {t("table.bankNo")}
-            </TableHead>
-            <TableHead className="w-[120px] text-center text-mini font-medium">
-              {t("table.status")}
-            </TableHead>
-            <TableHead className="w-[120px] text-center text-mini font-medium">
-              {t("table.action")}
-            </TableHead>
+            <TableHead>{t("table.user")}</TableHead>
+            <TableHead>{t("table.contact")}</TableHead>
+            <TableHead>{t("table.plan")}</TableHead>
+            <TableHead>{t("table.status")}</TableHead>
+            <TableHead>{t("table.joined")}</TableHead>
+            <TableHead>{t("table.lastActive")}</TableHead>
+            <TableHead className="w-20 pr-4 text-right">{t("table.action")}</TableHead>
           </TableRow>
         </TableHeader>
-      </Table>
 
-      <div className="lg:h-[600px] h-[550px] overflow-auto">
-        <Table className="table-fixed">
-          <TableBody>
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center text-sm text-mini">
-                  {t("loading")}
-                </TableCell>
-              </TableRow>
-            )}
+        <TableBody>
+          {isLoading && <LoadingRows columnCount={COLUMN_COUNT} />}
 
-            {!isLoading && users.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={9} className="h-24 text-center text-sm text-mini">
-                  {t("empty")}
-                </TableCell>
-              </TableRow>
-            )}
+          {!isLoading && isError && (
+            <TableStateRow columnCount={COLUMN_COUNT}>
+              <p className="text-sm text-destructive">{t("loadFailed")}</p>
+              <Button variant="outline" size="sm" className="mt-3" onClick={onRetry}>
+                {t("common:actions.retry")}
+              </Button>
+            </TableStateRow>
+          )}
 
-            {!isLoading && users.map((items, index) => (
-              <TableRow key={getUserId(items, index)}>
-                <TableCell className="w-[90px] px-6 py-2.5">
-                  {getImage(items) ? (
-                    <img
-                      src={getImage(items)}
-                      alt={items.username ?? t("avatarAlt")}
-                      className="w-[34px] h-[34px] object-cover rounded-full"
-                    />
-                  ) : (
-                    <div className="w-[34px] h-[34px] rounded-full bg-muted flex items-center justify-center text-xs font-medium text-mini">
-                      {getInitial(items)}
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell className="w-[140px] text-sm px-4 font-normal text-normal">
-                  {items.username ?? "-"}
-                </TableCell>
-                <TableCell className="w-[140px] text-sm px-6 font-normal text-normal">
-                  {getFirstName(items)}
-                </TableCell>
-                <TableCell className="w-[140px] text-sm text-left font-normal text-normal">
-                  {getLastName(items)}
-                </TableCell>
-                <TableCell className="w-[130px] text-center font-normal text-normal">
-                  {items.phone ?? "-"}
-                </TableCell>
-                <TableCell className="w-[150px] text-center font-normal text-normal">
-                  {items.bankname ?? "-"}
-                </TableCell>
-                <TableCell className="w-[150px] text-center font-normal text-normal">
-                  {items.banknumber ?? "-"}
-                </TableCell>
-                <TableCell className="w-[120px] text-center text-yellow-500 font-semibold capitalize">
-                  {getStatus(items)}
-                </TableCell>
-                <TableCell className="w-[110px]">
-                  <div className="flex justify-center items-center">
+          {!isLoading && !isError && users.length === 0 && (
+            <TableStateRow columnCount={COLUMN_COUNT}>
+              <p className="text-sm text-mini">{t("empty")}</p>
+            </TableStateRow>
+          )}
 
-                    <Button variant="ghost" className="text-slate-400  -mx-2">
-                      <MessageSquareText className="!w-4.5 !h-4.5" />
-                    </Button>
+          {!isLoading && !isError && users.map((user) => (
+            <TableRow key={user.id} className="[&>td]:py-4">
+              <TableCell className="pl-4">
+                <Checkbox
+                  checked={selectedIds.includes(user.id)}
+                  onCheckedChange={() => onToggleSelect(user.id)}
+                  aria-label={t("table.selectOne", { name: user.name })}
+                />
+              </TableCell>
 
-                    <Button variant="ghost" className="text-yellow-500">
-                      <SquarePen className="!w-4.5 !h-4.5" />
-                    </Button>
-
-                    <Button variant="ghost" className="text-red-400 -mx-2">
-                      <Trash2 className="!w-4.5 !h-4.5" />
-                    </Button>
-
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <UserAvatar name={user.name} src={user.avatar} />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-normal">
+                      {user.name}
+                    </p>
+                    <p className="truncate text-xs text-mini">@{user.username}</p>
                   </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </Card>
-  )
-}
+                </div>
+              </TableCell>
+
+              <TableCell>
+                <div className="flex items-center gap-2 text-sm text-normal">
+                  <Phone className="size-3.5 shrink-0 text-mini" />
+                  {user.phone ?? <span className="text-mini">-</span>}
+                </div>
+                <div className="mt-1 flex items-center gap-2 text-sm text-normal">
+                  <LineMark />
+                  {/* โชว์ชื่อที่แสดงบน LINE เท่านั้น userId ดิบไม่มีประโยชน์กับแอดมิน */}
+                  <span className="truncate">
+                    {user.lineName ?? <span className="text-mini">-</span>}
+                  </span>
+                </div>
+              </TableCell>
+
+              <TableCell>
+                {user.plan ? (
+                  <PlanBadge plan={user.plan} />
+                ) : (
+                  <span className="text-sm text-mini">-</span>
+                )}
+              </TableCell>
+
+              <TableCell>
+                <StatusBadge status={user.status} />
+              </TableCell>
+
+              <TableCell>
+                <DateTimeCell iso={user.joinedAt} />
+              </TableCell>
+
+              <TableCell>
+                <DateTimeCell iso={user.lastActiveAt} />
+              </TableCell>
+
+              <TableCell className="pr-4 text-right">
+                <RowActions
+                  label={t("table.moreActions", { name: user.name })}
+                  onEdit={() => onEdit(user)}
+                  onMessage={() => onMessage(user)}
+                  onDelete={() => onDelete(user)}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
 
 export default UserTable;

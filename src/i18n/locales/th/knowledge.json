@@ -5,11 +5,37 @@
   "add": "เพิ่มความรู้",
   "tab": {
     "entries": "รายการความรู้",
-    "retrieval": "ทดสอบการค้นหา",
+    "micro": "Micro Knowledge",
     "import": "นำเข้า / ซิงก์",
     "settings": "ตั้งค่า"
   },
-  "tabTodo": "ยังไม่ได้ทำแท็บนี้ — ใช้ช่อง Retrieval Preview ในการ์ดขวาทดสอบได้ก่อน",
+  "tabTodo": "ยังไม่ได้ทำแท็บนี้",
+  "micro": {
+    "add": "เพิ่ม Micro Knowledge",
+    "searchPlaceholder": "ค้นหา micro knowledge...",
+    "emptyPanel": {
+      "title": "เลือกรายการเพื่อดูรายละเอียด",
+      "hint": "คลิกแถวในตาราง หรือกดเพิ่ม Micro Knowledge เพื่อสร้างใหม่"
+    },
+    "table": {
+      "entityTopic": "เอนทิตี / หัวข้อ",
+      "language": "ภาษา",
+      "noValue": "—",
+      "loading": "กำลังโหลด micro knowledge...",
+      "error": "โหลด Micro Knowledge ไม่สำเร็จ"
+    },
+    "panel": {
+      "editTitle": "แก้ไข Micro Knowledge",
+      "newTitle": "เพิ่ม Micro Knowledge",
+      "titlePlaceholder": "ข้อเท็จจริงเดียว เช่น ราคาสินค้า A",
+      "answerPlaceholder": "คำตอบที่ต้องการให้ AI ตอบ",
+      "entityKey": "Entity Key",
+      "entityKeyHint": "สินค้า/เอนทิตีที่ความรู้ชิ้นนี้พูดถึง",
+      "topicKey": "Topic Key",
+      "topicKeyHint": "หัวข้อย่อยของเอนทิตีนั้น เช่น price, warranty",
+      "language": "ภาษา"
+    }
+  },
   "filter": {
     "searchPlaceholder": "ค้นหารายการ...",
     "allCategories": "ทุกหมวดหมู่",

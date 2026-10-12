@@ -16,5 +16,70 @@
   "language": {
     "title": "ภาษา",
     "subtitle": "เลือกภาษาที่ใช้แสดงผลในระบบ"
+  },
+  "aiSetting": {
+    "title": "ตั้งค่า AI",
+    "subtitle": "ตั้งค่าการทำงานของ AI RAG โมเดล โทนการตอบ และข้อความสำรอง",
+    "cancel": "ยกเลิก",
+    "save": "บันทึกการเปลี่ยนแปลง",
+    "model": {
+      "title": "โมเดล AI",
+      "subtitle": "เลือกโมเดลที่ใช้กับฝั่งลูกค้าและฝั่งแอดมิน",
+      "userModel": "โมเดลฝั่งลูกค้า",
+      "userModelHint": "โมเดลที่ใช้คุยกับลูกค้า เช่น แชท Line",
+      "adminModel": "โมเดลฝั่งแอดมิน",
+      "adminModelHint": "โมเดลที่ใช้กับเครื่องมือและงานหลังบ้าน"
+    },
+    "config": {
+      "title": "การตั้งค่า AI",
+      "subtitle": "กำหนดวิธีตอบ ขอบเขตงาน และบุคลิกของ AI",
+      "ownerPrompt": "Owner Prompt",
+      "ownerPromptPlaceholder": "ข้อมูลเพิ่มเติมเกี่ยวกับธุรกิจสำหรับให้ AI ใช้",
+      "ownerPromptHint": "บริบทหรือคำสั่งเพิ่มเติมเฉพาะของเจ้าของธุรกิจ",
+      "tone": "โทนการตอบ",
+      "toneHint": "กำหนดโทนการสื่อสารของคำตอบ AI",
+      "responseStyle": "รูปแบบคำตอบ",
+      "responseStyleHint": "ควบคุมความยาวและรูปแบบของคำตอบ",
+      "emojiLevel": "ระดับการใช้อิโมจิ",
+      "emojiLevelHint": "ความถี่ที่ AI ใช้อิโมจิในคำตอบ",
+      "skills": "Skills (Skill Object Array)",
+      "skillsHint": "กำหนดสิ่งที่ AI ช่วยได้ เพิ่ม ลบ หรือจัดลำดับใหม่ได้",
+      "fallback": "ข้อความสำรอง",
+      "fallbackPlaceholder": "ข้อความที่ส่งเมื่อ AI ตอบไม่ได้",
+      "fallbackHint": "ข้อความที่ใช้เมื่อ AI ไม่สามารถตอบคำถามได้"
+    },
+    "skills": {
+      "add": "เพิ่ม Skill",
+      "remove": "ลบ skill",
+      "namePlaceholder": "ชื่อ skill",
+      "promptPlaceholder": "สิ่งที่ AI ต้องทำสำหรับ skill นี้"
+    },
+    "tone": {
+      "friendly": "เป็นกันเอง",
+      "professional": "มืออาชีพ",
+      "casual": "สบาย ๆ",
+      "formal": "ทางการ",
+      "playful": "ขี้เล่น"
+    },
+    "targetLength": {
+      "short": "กระชับ",
+      "medium": "ปานกลาง",
+      "adaptive": "ปรับตามคำถาม"
+    },
+    "emojiLevel": {
+      "none": "ไม่ใช้",
+      "light": "เล็กน้อย",
+      "normal": "ปกติ"
+    }
+  },
+  "dialog": {
+    "title": "ตั้งค่า",
+    "subtitle": "ภาษาและการแสดงผลของแดชบอร์ด",
+    "theme": {
+      "title": "ธีม",
+      "subtitle": "สลับระหว่างโหมดสว่างและโหมดมืด",
+      "light": "สว่าง",
+      "dark": "มืด"
+    }
   }
 }

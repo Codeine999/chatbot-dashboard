@@ -38,6 +38,7 @@ import {
   Receipt,
   Workflow,
   LayoutGrid,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -48,6 +49,8 @@ import { useCompanyBrandInfo } from "@/features/company/hooks/useCompany";
 import { resolveImageUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "@/features/auth/store/auth.store";
+import type { AdminRole } from "@/features/auth/types/auth.type";
 
 
 type NavItem = {
@@ -55,6 +58,8 @@ type NavItem = {
   titleKey: string;
   url: string;
   icon: LucideIcon;
+  /** ถ้าระบุไว้ เมนูจะขึ้นเฉพาะ role ที่อยู่ในลิสต์ ไม่ระบุ = เห็นทุก role */
+  roles?: AdminRole[];
   /** ป้ายเล็กท้ายเมนู เช่น AI / Beta — เป็นชื่อเฉพาะ ไม่ต้องแปล */
   badge?: string;
   /** ถ้ามี children เมนูจะกลายเป็น dropdown แทนการลิงก์ตรง */
@@ -82,6 +87,7 @@ const navGroups: NavGroup[] = [
     items: [
       { titleKey: "item.lineChat", url: "/chat/line", icon: MessageCircle },
       { titleKey: "item.answer", url: "/ai-answer", icon: Search },
+      { titleKey: "item.internalCustomerChat", url: "/ai/internal-customer-chat", icon: MessageCircle },
       { titleKey: "item.aiChatbot", url: "/ai-chat", icon: MessagesSquare, badge: "AI" },
     ],
   },
@@ -99,6 +105,12 @@ const navGroups: NavGroup[] = [
         ],
       },
       { titleKey: "item.bill", url: "/bill", icon: Receipt },
+      {
+        titleKey: "item.adminList",
+        url: "/admin-list",
+        icon: ShieldCheck,
+        roles: ["admin", "owner", "dev"],
+      },
     ],
   },
   {
@@ -111,6 +123,7 @@ const navGroups: NavGroup[] = [
         children: [
           { titleKey: "item.settingOverall", url: "/setting/admin/over-all" },
           { titleKey: "item.settingSelectMenu", url: "/setting/admin/select-menu" },
+          { titleKey: "item.settingAi", url: "/setting/admin/ai-setting" },
         ],
       },
     ],
@@ -146,6 +159,7 @@ const SidebarNavigation = () => {
   const isCollapsed = state === "collapsed"
   const { data: brandInfo } = useCompanyBrandInfo();
   const { t } = useTranslation("nav");
+  const user = useAuthUser();
 
   const handleClose = () => {
     if (isMobile) {
@@ -202,7 +216,9 @@ const SidebarNavigation = () => {
 
             <SidebarGroupContent>
               <SidebarMenu className="gap-0.5">
-                {group.items.map((item) => {
+                {group.items
+                  .filter((item) => !item.roles || (user && item.roles.includes(user.role)))
+                  .map((item) => {
                   const isItemActive =
                     item.url === "/"
                       ? location.pathname === "/"

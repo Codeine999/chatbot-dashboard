@@ -45,13 +45,15 @@
       "description": "ข้อความ LINE ที่ดูแล",
       "unit": "ข้อความ",
       "series": {
-        "messages": "ข้อความ"
+        "user": "ลูกค้า",
+        "ai": "AI",
+        "admin": "แอดมิน"
       }
     },
     "creditUsage": {
       "title": "การใช้โทเคน",
       "description": "เครดิตที่ใช้ แยกตามประเภท",
-      "unit": "โทเคน",
+      "unit": "เครดิต",
       "series": {
         "aiChat": "แชท AI",
         "lineSend": "ส่ง LINE",

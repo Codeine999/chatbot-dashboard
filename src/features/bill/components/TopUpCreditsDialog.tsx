@@ -49,7 +49,7 @@ const paymentMethods: {
 const CUSTOM_ID = "custom";
 
 const formatCredits = (value: number) =>
-  formatNumber(value, { maximumFractionDigits: 6 });
+  formatNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 type Props = {
   open: boolean;

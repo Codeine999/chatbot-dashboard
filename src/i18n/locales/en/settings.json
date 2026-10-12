@@ -16,5 +16,70 @@
   "language": {
     "title": "Language",
     "subtitle": "Choose the language used across the dashboard"
+  },
+  "aiSetting": {
+    "title": "AI Setting",
+    "subtitle": "Configure AI RAG behavior, models, tone, and fallback responses.",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "model": {
+      "title": "AI Model",
+      "subtitle": "Choose which model is used for user-facing and admin-facing flows.",
+      "userModel": "User Model",
+      "userModelHint": "Model used for customer-facing conversations (Line chat, etc.).",
+      "adminModel": "Admin Model",
+      "adminModelHint": "Model used for internal tools and admin operations."
+    },
+    "config": {
+      "title": "AI Configuration",
+      "subtitle": "Define how the AI responds, what it can do, and its personality.",
+      "ownerPrompt": "Owner Prompt",
+      "ownerPromptPlaceholder": "Extra context about your business for the AI",
+      "ownerPromptHint": "Additional context or instructions specific to the business owner.",
+      "tone": "Tone",
+      "toneHint": "Set the communication tone for AI responses.",
+      "responseStyle": "Response Style",
+      "responseStyleHint": "Control the length and style of responses.",
+      "emojiLevel": "Emoji Level",
+      "emojiLevelHint": "How often the AI may use emoji in its replies.",
+      "skills": "Skills (Skill Object Array)",
+      "skillsHint": "Define what the AI can help with. You can add, remove, or reorder skills.",
+      "fallback": "Fallback Response",
+      "fallbackPlaceholder": "Message sent when the AI has no answer",
+      "fallbackHint": "Message used when the AI cannot answer a question."
+    },
+    "skills": {
+      "add": "Add Skill",
+      "remove": "Remove skill",
+      "namePlaceholder": "Skill name",
+      "promptPlaceholder": "What the AI should do for this skill"
+    },
+    "tone": {
+      "friendly": "Friendly",
+      "professional": "Professional",
+      "casual": "Casual",
+      "formal": "Formal",
+      "playful": "Playful"
+    },
+    "targetLength": {
+      "short": "Concise",
+      "medium": "Balanced",
+      "adaptive": "Adaptive"
+    },
+    "emojiLevel": {
+      "none": "None",
+      "light": "Light",
+      "normal": "Normal"
+    }
+  },
+  "dialog": {
+    "title": "Settings",
+    "subtitle": "Language and appearance for this dashboard.",
+    "theme": {
+      "title": "Appearance",
+      "subtitle": "Switch between light and dark mode",
+      "light": "Light",
+      "dark": "Dark"
+    }
   }
 }

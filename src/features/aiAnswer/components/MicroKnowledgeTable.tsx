@@ -1,0 +1,247 @@
+import { useTranslation } from "react-i18next";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { formatRelativeTime } from "@/lib/time";
+import { categoryTone, truncate } from "../utils/table";
+import type { MicroKnowledgeItem } from "../type/microKnowledge.type";
+
+type Props = {
+  items: MicroKnowledgeItem[];
+  selectedIds: string[];
+  /** ตอนเปิดการ์ดรายละเอียด ตารางเหลือที่น้อยลง จึงซ่อนคอลัมน์ที่สำคัญน้อยสุด */
+  compact?: boolean;
+  activeId?: string;
+  isLoading: boolean;
+  isError: boolean;
+  onRetry: () => void;
+  onToggleSelect: (id: string) => void;
+  onToggleSelectAll: () => void;
+  onEdit: (item: MicroKnowledgeItem) => void;
+  onDelete: (id: string) => void;
+};
+
+const MicroKnowledgeTable = ({
+  items,
+  selectedIds,
+  compact = false,
+  activeId,
+  isLoading,
+  isError,
+  onRetry,
+  onToggleSelect,
+  onToggleSelectAll,
+  onEdit,
+  onDelete,
+}: Props) => {
+  const { t } = useTranslation("knowledge");
+  const allSelected = items.length > 0 && selectedIds.length === items.length;
+  const columnCount = compact ? 11 : 12;
+
+  return (
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-10">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={onToggleSelectAll}
+                aria-label={t("table.selectAll")}
+              />
+            </TableHead>
+            <TableHead>{t("table.title")}</TableHead>
+            <TableHead>{t("table.category")}</TableHead>
+            <TableHead>{t("table.intentKey")}</TableHead>
+            <TableHead className="whitespace-nowrap">{t("micro.table.entityTopic")}</TableHead>
+            <TableHead>{t("table.keywords")}</TableHead>
+            {!compact && (
+              <TableHead className="text-center whitespace-nowrap">
+                {t("table.examples")}
+              </TableHead>
+            )}
+            <TableHead className="text-center">{t("micro.table.language")}</TableHead>
+            <TableHead className="text-center">{t("table.priority")}</TableHead>
+            <TableHead>{t("table.status")}</TableHead>
+            <TableHead>{t("table.updatedAt")}</TableHead>
+            <TableHead className="w-24 text-right">{t("table.actions")}</TableHead>
+          </TableRow>
+        </TableHeader>
+
+        <TableBody>
+          {isLoading && (
+            <TableRow>
+              <TableCell colSpan={columnCount} className="py-10 text-center text-sm text-mini">
+                {t("micro.table.loading")}
+              </TableCell>
+            </TableRow>
+          )}
+
+          {!isLoading && isError && (
+            <TableRow>
+              <TableCell colSpan={columnCount} className="py-10 text-center">
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-sm text-destructive">{t("micro.table.error")}</p>
+                  <Button variant="outline" size="sm" onClick={onRetry}>
+                    {t("common:actions.retry")}
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+
+          {!isLoading && !isError && items.length === 0 && (
+            <TableRow>
+              <TableCell colSpan={columnCount} className="py-10 text-center text-sm text-mini">
+                {t("table.empty")}
+              </TableCell>
+            </TableRow>
+          )}
+
+          {!isError && items.map((item) => (
+            <TableRow
+              key={item.id}
+              onClick={() => onEdit(item)}
+              className={`cursor-pointer ${activeId === item.id ? "bg-hover" : ""}`}
+            >
+              <TableCell onClick={(event) => event.stopPropagation()}>
+                <Checkbox
+                  checked={selectedIds.includes(item.id)}
+                  onCheckedChange={() => onToggleSelect(item.id)}
+                  aria-label={`Select ${item.title}`}
+                />
+              </TableCell>
+
+              <TableCell>
+                <p className="text-sm font-medium text-normal">{item.title}</p>
+                <p className="text-xs text-mini">
+                  {truncate(item.description || item.answer)}
+                </p>
+              </TableCell>
+
+              <TableCell>
+                {item.category ? (
+                  <span
+                    className={`rounded-md px-2 py-0.5 text-xs font-medium ${categoryTone(
+                      item.category
+                    )}`}
+                  >
+                    {item.category}
+                  </span>
+                ) : (
+                  <span className="text-xs text-mini">{t("micro.table.noValue")}</span>
+                )}
+              </TableCell>
+
+              <TableCell className="max-w-[150px] truncate text-xs text-normal">
+                {item.intentKey || (
+                  <span className="text-mini">{t("micro.table.noValue")}</span>
+                )}
+              </TableCell>
+
+              <TableCell className="whitespace-nowrap text-xs">
+                <p className="text-normal">
+                  {item.entityKey || (
+                    <span className="text-mini">{t("micro.table.noValue")}</span>
+                  )}
+                </p>
+                <p className="text-mini">
+                  {item.topicKey || t("micro.table.noValue")}
+                </p>
+              </TableCell>
+
+              <TableCell>
+                <div className="flex flex-nowrap items-center gap-1">
+                  {item.keywords.slice(0, 1).map((keyword) => (
+                    <span
+                      key={keyword}
+                      className="whitespace-nowrap rounded-md bg-hover px-1.5 py-0.5 text-xs text-normal"
+                    >
+                      {keyword}
+                    </span>
+                  ))}
+                  {item.keywords.length > 1 && (
+                    <span className="text-xs text-mini">
+                      +{item.keywords.length - 1}
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+
+              {!compact && (
+                <TableCell className="text-center text-sm text-normal">
+                  {item.questionExamples.length}
+                </TableCell>
+              )}
+
+              <TableCell className="text-center text-xs uppercase text-mini">
+                {item.language}
+              </TableCell>
+
+              <TableCell className="text-center text-sm text-normal">
+                {item.priority}
+              </TableCell>
+
+              <TableCell>
+                <span
+                  className={`rounded-md px-2 py-0.5 text-xs font-medium ${
+                    item.active
+                      ? "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400"
+                      : "bg-slate-100 text-slate-600 dark:bg-slate-500/10 dark:text-slate-300"
+                  }`}
+                >
+                  {item.active ? t("table.active") : t("table.inactive")}
+                </span>
+              </TableCell>
+
+              <TableCell className="whitespace-nowrap text-xs text-mini">
+                {formatRelativeTime(item.updatedAt)}
+              </TableCell>
+
+              <TableCell onClick={(event) => event.stopPropagation()}>
+                <div className="flex items-center justify-end gap-1">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" aria-label={t("table.moreActions")}>
+                        <MoreVertical className="h-4 w-4 text-mini" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => onEdit(item)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        {t("table.edit")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => onDelete(item.id)}
+                        className="text-red-600"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        {t("table.delete")}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
+export default MicroKnowledgeTable;

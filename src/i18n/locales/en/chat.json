@@ -93,7 +93,8 @@
     },
     "quickFilter": {
       "all": "All",
-      "unread": "Unread"
+      "unread": "Unread",
+      "waiting": "Needs admin"
     },
     "soon": "Soon",
     "preview": {
@@ -106,6 +107,56 @@
       "imageUnavailable": "Image message unavailable",
       "sticker": "Sticker {{packageId}} / {{stickerId}}",
       "postback": "Postback event"
+    },
+    "status": {
+      "waiting_admin": "Waiting for admin",
+      "waiting_admin_short": "Needs reply",
+      "open": "Open"
+    },
+    "bot": {
+      "title": "Auto-reply",
+      "minutesShort": "{{minutes}} min",
+      "resumed": "AI auto-reply is back on",
+      "resumeFailed": "Could not resume AI auto-reply",
+      "mode": {
+        "auto": {
+          "label": "AI auto-reply",
+          "hint": "The bot answers customer messages by itself.",
+          "resumeHint": "Hand this chat back to the AI now."
+        },
+        "admin": {
+          "label": "Admin handling",
+          "hint": "Turns on automatically when you reply. The bot stays quiet for 10 minutes.",
+          "activeHint": "You replied, so the bot is quiet. It resumes in about {{minutes}} min."
+        },
+        "paused": {
+          "label": "Paused",
+          "hint": "Stop the bot in this chat until you turn it back on."
+        }
+      }
     }
+  },
+  "customerTest": {
+    "title": "Customer chat test",
+    "subtitle": "Test conversations from the customer perspective using LINE or Webapp.",
+    "newChat": "New chat",
+    "channel": "Message channel",
+    "channelHint": "Choose a channel to test",
+    "lineHint": "Simulate a LINE customer",
+    "webappHint": "Simulate a website customer",
+    "customerId": "Test customer ID",
+    "identityHint": "Each channel has its own identity and conversation. Start a new chat to change the ID.",
+    "apiNote": "This page calls the test API. A supporting backend is required to receive replies.",
+    "customerView": "Customer view",
+    "empty": "Start a test conversation",
+    "emptyHint": "Send a message below as a customer using the selected channel.",
+    "you": "You (customer)",
+    "assistant": "AI / Store",
+    "sending": "Sending and waiting for a reply…",
+    "placeholder": "Type a customer message…",
+    "enterHint": "Enter to send · Shift + Enter for a new line",
+    "send": "Send message",
+    "invalidResponse": "The API returned an unsupported reply format (reply).",
+    "sendError": "Unable to send. Please try again."
   }
 }

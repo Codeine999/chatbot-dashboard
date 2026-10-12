@@ -1,21 +1,23 @@
-import { CANVAS_ASPECT_RATIO, boundsToPercent } from "../layout";
+import { CANVAS_ASPECT_RATIO, boundsToPercent, cellBounds } from "../layout";
 import type { RichMenu } from "../type";
 import { cn } from "@/lib/utils";
 
-/** ภาพย่อของเมนู — ใช้ภาพจริงถ้ามี ถ้ายังไม่มีก็วาดเป็นผังช่องแทน */
+/** ภาพย่อของเมนู — ใช้ภาพที่ backend ประกอบไว้ถ้ามี ถ้ายังไม่มีก็วาดเป็นผังช่องแทน */
 export const MenuThumbnail = ({
   menu,
-  highlightAreaId,
+  highlightIndex,
   className,
 }: {
   menu: RichMenu;
-  highlightAreaId?: string;
+  highlightIndex?: number;
   className?: string;
 }) => {
   // มีภาพแล้วก็ไม่ต้องวาดผังทับ เหลือไว้แค่กรอบของช่องที่กำลังเลือก
-  const areas = menu.image
-    ? menu.areas.filter((area) => area.id === highlightAreaId)
-    : menu.areas;
+  const indexes = menu.image
+    ? menu.cellList
+        .filter((cell) => cell.index === highlightIndex)
+        .map((cell) => cell.index)
+    : menu.cellList.map((cell) => cell.index);
 
   return (
     <div
@@ -26,16 +28,16 @@ export const MenuThumbnail = ({
         <img src={menu.image} alt="" className="size-full object-cover" />
       ) : null}
 
-      {areas.map((area) => (
+      {indexes.map((index) => (
         <span
-          key={area.id}
+          key={index}
           className={cn("absolute", menu.image ? "p-0" : "p-[4%]")}
-          style={boundsToPercent(area.bounds)}
+          style={boundsToPercent(cellBounds(index, menu.cells))}
         >
           <span
             className={cn(
               "block size-full rounded-[2px]",
-              area.id === highlightAreaId
+              index === highlightIndex
                 ? menu.image
                   ? "bg-primary/25 ring-1 ring-inset ring-primary"
                   : "bg-primary"

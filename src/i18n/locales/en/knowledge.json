@@ -5,11 +5,37 @@
   "add": "Add Knowledge",
   "tab": {
     "entries": "Knowledge Entries",
-    "retrieval": "Retrieval Test",
+    "micro": "Micro Knowledge",
     "import": "Import / Sync",
     "settings": "Settings"
   },
-  "tabTodo": "This tab isn't built yet — use the Retrieval Preview in the right-hand card to test for now.",
+  "tabTodo": "This tab isn't built yet.",
+  "micro": {
+    "add": "Add Micro Knowledge",
+    "searchPlaceholder": "Search micro knowledge...",
+    "emptyPanel": {
+      "title": "Select a micro knowledge item to see details",
+      "hint": "Click a row in the table, or press Add Micro Knowledge to create one."
+    },
+    "table": {
+      "entityTopic": "Entity / Topic",
+      "language": "Language",
+      "noValue": "—",
+      "loading": "Loading micro knowledge...",
+      "error": "Could not load Micro Knowledge"
+    },
+    "panel": {
+      "editTitle": "Edit Micro Knowledge",
+      "newTitle": "New Micro Knowledge",
+      "titlePlaceholder": "One single fact, e.g. Product A price",
+      "answerPlaceholder": "The exact answer the AI should give",
+      "entityKey": "Entity Key",
+      "entityKeyHint": "Which product or entity this fact is about",
+      "topicKey": "Topic Key",
+      "topicKeyHint": "Which topic of that entity, e.g. price, warranty",
+      "language": "Language"
+    }
+  },
   "filter": {
     "searchPlaceholder": "Search entries...",
     "allCategories": "All Categories",

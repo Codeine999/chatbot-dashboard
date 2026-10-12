@@ -12,17 +12,17 @@ import type {
 } from "../type/knowledge.type";
 
 export const ANSWER_PATTERN_ENDPOINTS = {
-  list: "/admin/answer-patterns",
-  count: "/admin/answer-patterns/count",
-  create: "/admin/answer-patterns",
-  update: (id: string) => `/admin/answer-patterns/${id}`,
-  remove: (id: string) => `/admin/answer-patterns/${id}`,
-  retrieve: "/admin/answer-patterns/retrieve",
+  list: "/admin/knowledge-patterns",
+  count: "/admin/knowledge-patterns/count",
+  create: "/admin/knowledge-patterns",
+  update: (id: string) => `/admin/knowledge-patterns/${id}`,
+  remove: (id: string) => `/admin/knowledge-patterns/${id}`,
+  retrieve: "/admin/knowledge-patterns/retrieve",
   categories: "/admin/knowledge/categories",
   removeCategory: (id: string) => `/admin/knowledge/categories/${id}`,
 } as const;
 
-const toStringArray = (value: string[] | string | null | undefined): string[] => {
+export const toStringArray = (value: string[] | string | null | undefined): string[] => {
   if (Array.isArray(value)) {
     return value.filter((item): item is string => typeof item === "string" && item.trim() !== "");
   }

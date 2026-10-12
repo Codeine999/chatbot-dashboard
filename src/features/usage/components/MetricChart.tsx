@@ -144,7 +144,7 @@ export const MetricChart = ({ metric, points }: Props) => {
       width={52}
       tickMargin={4}
       tickFormatter={metric.formatAxis}
-      domain={isLine ? ["auto", "auto"] : undefined}
+      domain={isLine ? ["auto", "auto"] : [0, (max: number) => (max > 0 ? max : 1)]}
     />,
     <ChartTooltip
       key="tooltip"

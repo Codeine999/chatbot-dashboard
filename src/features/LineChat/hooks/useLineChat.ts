@@ -5,6 +5,9 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { toast } from "sonner";
+import i18n from "@/i18n";
+import { getApiErrorMessage } from "@/api/api";
 import { lineChatApi } from "../services/lineChat.service";
 import type { LineChatHistory } from "../types/lineChat.type";
 
@@ -131,6 +134,22 @@ export function useSendLineMessage(conversationId?: string) {
         }
       );
       queryClient.invalidateQueries({ queryKey: ["line-conversations"] });
+    },
+  });
+}
+
+export function useResumeBot() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (conversationId: string) => lineChatApi.resumeBot(conversationId),
+    onSuccess: () => {
+      // สถานะห้อง (open) เปลี่ยนที่ backend จึงต้องโหลดรายการห้องใหม่ทันที ไม่รอ poll รอบถัดไป
+      queryClient.invalidateQueries({ queryKey: ["line-conversations"] });
+      toast.success(i18n.t("chat:line.bot.resumed"));
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, i18n.t("chat:line.bot.resumeFailed")));
     },
   });
 }

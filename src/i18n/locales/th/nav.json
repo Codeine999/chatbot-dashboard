@@ -20,10 +20,13 @@
     "usageOverall": "ภาพรวมการใช้งาน",
     "usageGraph": "กราฟการใช้งาน",
     "bill": "ค่าใช้จ่าย",
+    "adminList": "รายชื่อแอดมิน",
     "setting": "ตั้งค่า",
     "settingOverall": "ตั้งค่าทั่วไป",
     "settingSelectMenu": "เลือกเมนู",
-    "aiWorkflow": "AI Work Flow"
+    "settingAi": "ตั้งค่า AI",
+    "aiWorkflow": "AI Work Flow",
+    "internalCustomerChat": "ทดสอบแชทลูกค้า"
   },
   "brand": {
     "fallbackName": "Dashboard",

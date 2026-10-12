@@ -9,8 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { LogOut, Moon, Sun, Settings, User, Bell } from "lucide-react";
-import { useTheme } from "@/components/context/themeProvider";
+import { LogOut, Settings, User, Bell } from "lucide-react";
 import { SidebarTrigger } from "./ui/sidebar";
 import { useAuthUser } from "@/features/auth/store/auth.store";
 import { useLogout } from "@/features/auth/hooks/useAuth";
@@ -26,7 +25,8 @@ import {
 } from "@/features/notifications/hooks/useNotifications";
 import type { AdminNotification } from "@/features/notifications/types/notification.type";
 import { useTranslation } from "react-i18next";
-import { LanguageToggle } from "@/components/LanguageToggle";
+import { useState } from "react";
+import { SettingsDialog } from "@/features/setting/components/SettingsDialog";
 
 const getInitials = (firstname = "", lastname = "", username = "") => {
   const initials = `${firstname.charAt(0)}${lastname.charAt(0)}`.trim();
@@ -35,7 +35,7 @@ const getInitials = (firstname = "", lastname = "", username = "") => {
 
 const Navbar = () => {
   const { t } = useTranslation("nav");
-  const { theme, setTheme } = useTheme();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const user = useAuthUser();
   const logout = useLogout();
   const navigate = useNavigate();
@@ -48,14 +48,6 @@ const Navbar = () => {
 
   const notifications = notificationsQuery.data ?? [];
   const unreadCount = unreadCountQuery.data ?? 0;
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-
-    document.body.classList.remove(theme);
-    document.body.classList.add(newTheme);
-  };
 
   const handleNotificationClick = (notification: AdminNotification) => {
     if (!notification.isRead) markAsRead.mutate(notification.id);
@@ -139,19 +131,6 @@ const Navbar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <LanguageToggle />
-
-          <Button variant="nav" size="icon" onClick={toggleTheme}>
-            <Sun className={`!w-10 !h-5 transition-all duration-300
-              ${theme === "dark" ? "rotate-0 scale-0" : "rotate-0 scale-100"}`}
-            />
-            <Moon
-              className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300
-                ${theme === "light" ? "rotate-90 scale-0" : "rotate-0 scale-100"}`}
-            />
-            <span className="sr-only">{t("theme.toggle")}</span>
-          </Button>
-
           <div className="mx-6">
             <DropdownMenu>
               <DropdownMenuTrigger>
@@ -172,7 +151,7 @@ const Navbar = () => {
                   <User className="!w-5 !h-5 mr-2" />
                   {t("user.profile")}
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                   <Settings className="!w-5 !h-5 mr-2" />
                   {t("user.setting")}
                 </DropdownMenuItem>
@@ -186,6 +165,8 @@ const Navbar = () => {
         </div>
 
       </div>
+
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </nav>
   );
 };

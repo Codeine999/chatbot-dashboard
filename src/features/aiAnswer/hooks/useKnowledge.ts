@@ -14,7 +14,7 @@ import type {
 } from "../type/knowledge.type";
 
 export const knowledgeKeys = {
-  all: ["answer-patterns"] as const,
+  all: ["knowledge-patterns"] as const,
   list: () => [...knowledgeKeys.all, "list"] as const,
   count: () => [...knowledgeKeys.all, "count"] as const,
   categories: () => [...knowledgeKeys.all, "categories"] as const,

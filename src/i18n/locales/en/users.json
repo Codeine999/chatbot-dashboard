@@ -1,19 +1,67 @@
 {
-  "add": "Add User +",
-  "searchPlaceholder": "Search...",
+  "title": "Users",
+  "subtitle": "Manage your customers and LINE users",
+  "add": "Add User",
+  "searchPlaceholder": "Search by name, username, or phone...",
   "loadFailed": "Failed to load users",
-  "loading": "Loading users...",
   "empty": "No users found",
-  "table": {
-    "picture": "Picture",
-    "username": "Username",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "phone": "Phone",
-    "bank": "Bank",
-    "bankNo": "Bank No.",
-    "status": "Status",
-    "action": "Action"
+  "avatarAlt": "user",
+  "tab": {
+    "registered": "Registered Users",
+    "line": "LINE Users (Not Registered)"
   },
-  "avatarAlt": "user"
+  "stats": {
+    "registered": "Registered Users",
+    "active": "Active Users",
+    "inactive": "Inactive Users",
+    "lineUsers": "LINE Users",
+    "registeredHint": "{{percent}}% of all contacts",
+    "lineUsersHint": "Not registered yet"
+  },
+  "filter": {
+    "allPlans": "All Plans",
+    "allStatuses": "All Status"
+  },
+  "plan": {
+    "starter": "Starter",
+    "pro": "Pro",
+    "business": "Business"
+  },
+  "status": {
+    "pending": "Pending",
+    "active": "Active",
+    "paused": "Paused",
+    "inactive": "Inactive"
+  },
+  "sort": {
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "lastActive": "Last Active",
+    "name": "Name"
+  },
+  "table": {
+    "user": "User",
+    "contact": "Contact",
+    "plan": "Plan",
+    "status": "Status",
+    "joined": "Joined",
+    "lastActive": "Last Active",
+    "messages": "Messages",
+    "firstSeen": "First Seen",
+    "action": "Action",
+    "selectAll": "Select all users",
+    "selectOne": "Select {{name}}",
+    "moreActions": "More actions for {{name}}"
+  },
+  "actions": {
+    "message": "Send message",
+    "edit": "Edit user",
+    "delete": "Delete user",
+    "register": "Register as customer"
+  },
+  "pagination": {
+    "showing": "Showing {{from}}–{{to}} of {{total}} users",
+    "previous": "Previous page",
+    "next": "Next page"
+  }
 }

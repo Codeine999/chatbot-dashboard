@@ -45,13 +45,15 @@
       "description": "LINE messages handled",
       "unit": "messages",
       "series": {
-        "messages": "Messages"
+        "user": "Customer",
+        "ai": "AI",
+        "admin": "Admin"
       }
     },
     "creditUsage": {
       "title": "Token spending",
       "description": "Credits burned by type",
-      "unit": "tokens",
+      "unit": "credits",
       "series": {
         "aiChat": "AI chat",
         "lineSend": "LINE send",

@@ -17,11 +17,15 @@ import { LineChat } from "./features/LineChat/LineChat";
 import { RichMenuSetting } from "./features/richMenu/RichMenuSetting";
 import { OwnerRegister } from "./features/auth/register/OwnerRegister";
 import { Bill } from "./features/bill/Bill";
+import { AdminList } from "./features/adminList/AdminList";
 import { OverallSetting } from "./features/setting/overallSetting/OverAllSetting";
 import { SelectMenu } from "./features/setting/selectMenu/SelectMenu";
+import { AiSetting } from "./features/setting/aiSetting/AiSetting";
 import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
 import GuestRoute from "@/features/auth/components/GuestRoute";
 
+
+import InternalCustomerChat from "./features/internalCustomerChat/InternalCustomerChat";
 
 function App() {
 
@@ -48,12 +52,15 @@ function App() {
           <Route path="/ai-answer" element={<AiAnswer />} />
 
           <Route path="/ai-chat" element={<Chatbot />} />
+          <Route path="/ai/internal-customer-chat" element={<InternalCustomerChat />} />
 
           <Route path="/usage" element={<Usage />} />
           <Route path="/usage/Graph" element={<UsageGraph />} />
           <Route path="/bill" element={<Bill />} />
+          <Route path="/admin-list" element={<AdminList />} />
           <Route path="/setting/admin/over-all" element={<OverallSetting />} />
           <Route path="/setting/admin/select-menu" element={<SelectMenu />} />
+          <Route path="/setting/admin/ai-setting" element={<AiSetting />} />
         </Route>
       </Route>
 
