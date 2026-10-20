@@ -2,8 +2,6 @@ import type { AiSettingForm } from "../type";
 
 /** ค่าเริ่มต้นของฟอร์ม ใช้ไปก่อนจนกว่าจะต่อ GET /api/admin/ai-settings */
 export const aiSettingMock: AiSettingForm = {
-  userModel: { provider: "GEMINI", model: "gemini-3.1-flash-lite" },
-  adminModel: { provider: "OPENAI", model: "gpt-5-mini" },
   ownerPrompt:
     "You are representing our hotel brand. Focus on providing helpful, accurate, and professional information.",
   tone: "Friendly",

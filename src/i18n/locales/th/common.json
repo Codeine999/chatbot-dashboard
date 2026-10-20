@@ -15,7 +15,23 @@
     "view": "ดู",
     "export": "ส่งออก",
     "more": "เพิ่มอีก",
-    "upload": "อัปโหลด"
+    "upload": "อัปโหลด",
+    "decrease": "ลดจำนวน",
+    "increase": "เพิ่มจำนวน",
+    "removeItem": "ลบ {{name}}"
+  },
+  "pagination": {
+    "label": "เลือกหน้า",
+    "showing": "แสดง {{from}} ถึง {{to}} จากทั้งหมด {{total}} รายการ",
+    "rowsPerPage": "แถวต่อหน้า",
+    "previous": "หน้าก่อนหน้า",
+    "next": "หน้าถัดไป"
+  },
+  "combobox": {
+    "search": "ค้นหาหรือพิมพ์เพื่อเพิ่มใหม่...",
+    "typeToCreate": "พิมพ์ชื่อเพื่อเพิ่มตัวเลือกใหม่",
+    "create": "เพิ่ม \"{{value}}\"",
+    "clear": "ล้างค่าที่เลือก"
   },
   "state": {
     "loading": "กำลังโหลด...",

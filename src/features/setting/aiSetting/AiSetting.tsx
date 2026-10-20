@@ -41,12 +41,7 @@ export const AiSetting = () => {
         </div>
       </div>
 
-      <AiModelCard
-        userModel={form.userModel}
-        adminModel={form.adminModel}
-        onChangeUserModel={(value) => set("userModel", value)}
-        onChangeAdminModel={(value) => set("adminModel", value)}
-      />
+      <AiModelCard />
 
       <AiConfigCard
         ownerPrompt={form.ownerPrompt}

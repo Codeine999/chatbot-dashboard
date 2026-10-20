@@ -172,45 +172,15 @@ export const ordernotic = [
   },
 ]
 
-export const orderList = [
-  {
-    orderID: "KmakO-02",
-    name: "Codine",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Pending",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-03",
-    name: "Codeins",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Paid",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-04",
-    name: "Codeine4",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Paid",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-05",
-    name: "Codeine5",
-    detail: "Officia duis officia cillum aute voluptat",
-    status: "Pending",
-    time: "12:16"
-  },
-  {
-    orderID: "KmakO-06",
-    name: "Codeine6",
-    detail: "Officia duis officia cillum aute voluptate laborum Lorem",
-    status: "Cancel",
-    time: "12:16"
-  },
-  
-]
+export type OrderListItem = {
+  orderID: string;
+  name: string;
+  detail: string;
+  status: "Pending" | "Paid" | "Cancel";
+  time: string;
+};
 
+export const orderList: OrderListItem[] = [];
 
 export const orderdetail = [
   { 

@@ -1,9 +1,8 @@
 import { Navigate, Routes, Route } from "react-router-dom";
 import Layout from "@/layout"
 import Home from "@/features/Home"
-import Product from "@/features/product/Product";
-import AddProduct from "@/features/product/Add-product";
-import EditProduct from "@/features/product/Edit-product";
+import ProductList from "@/features/product/ProductList";
+import ProductFormPage from "@/features/product/ProductFormPage";
 import Order from "@/features/order/Order";
 import Login from "@/features/auth/Login";
 import ResetPassword from "@/features/auth/ResetPassword";
@@ -38,9 +37,9 @@ function App() {
 
           <Route path="/rich-menu/setting" element={<RichMenuSetting />} />
 
-          <Route path="/product" element={<Product />} />
-          <Route path="/product/add-product" element={<AddProduct />} />
-          <Route path="/product/edit-product/:id" element={<EditProduct />} />
+          <Route path="/product" element={<ProductList />} />
+          <Route path="/product/add" element={<ProductFormPage />} />
+          <Route path="/product/:id/edit" element={<ProductFormPage />} />
 
           <Route path="/order" element={<Order />} />
           <Route path="/order/confirm/:id" element={<OrderConfirm />} />

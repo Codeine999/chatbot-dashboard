@@ -9,9 +9,9 @@ export const creditPackagesMock: CreditPackage[] = [
 export const billingSummaryMock: BillingSummary = {
   currentBalanceCredits: 125430,
   totalSpentAllTime: 24560,
-  thisMonthSpent: 3240,
+  thisMonthSpent: 0,
   thisMonthRangeLabel: "May 1 - May 31, 2026",
-  upcomingInvoiceAmount: 1560,
+  upcomingInvoiceAmount: 0,
   upcomingInvoiceDueLabel: "Due on Jun 1, 2026",
 };
 

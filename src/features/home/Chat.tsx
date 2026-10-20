@@ -21,6 +21,7 @@ import { getAiChatbot } from "./services/aiChatbotApi";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
+import UserAvatar from "@/components/common/UserAvatar";
 
 const Chatbot = () => {
     const { t } = useTranslation("home");
@@ -125,7 +126,7 @@ const Chatbot = () => {
             </div>
 
 
-            <div ref={scrollRef} className="p-6 flex flex-col space-y-3 h-[190px] overflow-y-auto">
+            <div ref={scrollRef} className="p-6 flex flex-col space-y-3 h-[280px] overflow-y-auto">
 
                 {messages.map((msg) => (
                     <motion.div
@@ -135,12 +136,15 @@ const Chatbot = () => {
                         transition={{ duration: 0.3 }}
                         className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                     >
-                        <div
-                            className={`p-2.5 text-sm rounded-lg max-w-[70%] ${msg.role === "user" ? "bg-gray-700 text-white"
-                                : "bg-gray-100"}
-                            `}
-                        >
-                            {msg.content}
+                        <div className="flex max-w-[80%] items-start gap-2">
+                            <div
+                                className={`p-2.5 text-sm rounded-lg ${msg.role === "user" ? "bg-gray-700 text-white"
+                                    : "bg-gray-100"}
+                                `}
+                            >
+                                {msg.content}
+                            </div>
+                            {msg.role === "user" && <UserAvatar className="size-7 shrink-0" />}
                         </div>
                     </motion.div>
                 ))}

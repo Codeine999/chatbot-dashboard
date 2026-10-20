@@ -3,9 +3,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUp,
+  ArrowUpRight,
   ChartNoAxesCombined,
   ChevronDown,
+  Check,
   Code2,
+  Coins,
+  Copy,
   FileText,
   Lightbulb,
   LoaderCircle,
@@ -31,6 +35,7 @@ import {
   SheetContent,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { IconTile, type IconTileTone } from "@/components/common/IconTile";
 import { useAuthUser } from "@/features/auth/store/auth.store";
 import ChatHistorySidebar from "./components/ChatHistorySidebar";
 import {
@@ -60,12 +65,18 @@ type PendingMessage = {
 };
 
 // prompt ถูกส่งไปให้ AI จริง จึงต้องแปลด้วย ไม่ใช่แค่ป้ายบนปุ่ม
-const suggestions = [
-  { icon: FileText, key: "summarize" },
-  { icon: Code2, key: "code" },
-  { icon: ChartNoAxesCombined, key: "analyze" },
-  { icon: Lightbulb, key: "ideas" },
+const suggestions: { icon: typeof FileText; key: string; tone: IconTileTone }[] = [
+  { icon: FileText, key: "summarize", tone: "primary" },
+//  { icon: Code2, key: "code", tone: "info" },
+  { icon: ChartNoAxesCombined, key: "analyze", tone: "success" },
+  { icon: Lightbulb, key: "ideas", tone: "warning" },
 ];
+
+const formatTime = (value?: string) =>
+  new Date(value ?? Date.now()).toLocaleTimeString("th-TH", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
 const createPendingId = () =>
   `pending-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -112,7 +123,7 @@ const ChatComposer = ({
 
   return (
     <div className="mx-auto w-full max-w-[900px] px-4 pb-3 pt-2 sm:px-6">
-      <div className="rounded-[1.5rem] border bg-card/90 p-2.5 shadow-[0_12px_35px_rgba(38,35,70,0.10)] backdrop-blur-xl transition-shadow duration-300 focus-within:shadow-[0_16px_42px_rgba(79,57,246,0.13)] dark:bg-card/95">
+      <div className="rounded-3xl border bg-card p-3 shadow-[0_12px_35px_rgba(38,35,70,0.08)] backdrop-blur-xl transition-shadow duration-300 focus-within:shadow-[0_16px_42px_rgba(79,57,246,0.13)] dark:bg-card/95">
         <textarea
           ref={textareaRef}
           value={value}
@@ -159,7 +170,49 @@ const ChatComposer = ({
   );
 };
 
+const CopyButton = ({ text }: { text: string }) => {
+  const { t } = useTranslation("chat");
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard may be blocked; nothing to recover
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={() => void copy()}
+      aria-label={t("messages.copy")}
+      className="rounded-lg p-1.5 text-mini transition hover:bg-hover hover:text-normal"
+    >
+      {copied ? <Check className="size-4 text-primary" /> : <Copy className="size-4" />}
+    </button>
+  );
+};
+
+const UserBubble = ({ content, createdAt }: { content: string; createdAt?: string }) => (
+  <div className="flex max-w-[82%] flex-col items-end sm:max-w-[75%]">
+    <div className="rounded-2xl bg-primary/10 px-5 py-3.5 text-[15px] leading-7 text-normal">
+      <p className="whitespace-pre-wrap">{content}</p>
+    </div>
+    <p className="mt-1.5 text-xs text-mini">{formatTime(createdAt)}</p>
+  </div>
+);
+
+const AssistantAvatar = () => (
+  <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/30">
+    <Sparkles className="size-4" />
+  </div>
+);
+
 const MessageRow = ({ message }: { message: AdminChatMessage }) => {
+  const { t } = useTranslation("chat");
   const isAssistant = message.role === "ASSISTANT";
   const reduceMotion = useReducedMotion();
 
@@ -174,24 +227,29 @@ const MessageRow = ({ message }: { message: AdminChatMessage }) => {
     >
       {isAssistant ? (
         <div className="flex w-full items-start gap-3.5">
-          <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border bg-card text-primary shadow-xs">
-            <Sparkles className="size-4" />
-          </div>
-          <div className="min-w-0 max-w-[44rem] pt-0.5">
-            <p className="whitespace-pre-wrap text-[15px] leading-7 text-normal">
+          <AssistantAvatar />
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm font-semibold text-normal">
+                {t("messages.assistant")}
+              </span>
+              {message.model && (
+                <span className="rounded-md bg-hover px-2 py-0.5 text-xs text-mini">
+                  {message.model}
+                </span>
+              )}
+              <span className="text-xs text-mini">{formatTime(message.createdAt)}</span>
+            </div>
+            <p className="mt-3 whitespace-pre-wrap text-[15px] leading-7 text-normal">
               {message.content}
             </p>
-            {(message.provider || message.model) && (
-              <p className="mt-2 text-[10px] uppercase tracking-wide text-mini/75">
-                {[message.provider, message.model].filter(Boolean).join(" · ")}
-              </p>
-            )}
+            <div className="mt-2 -ml-1.5">
+              <CopyButton text={message.content} />
+            </div>
           </div>
         </div>
       ) : (
-        <div className="max-w-[82%] rounded-[1.25rem] rounded-br-md bg-muted px-4 py-2.5 text-[15px] leading-6 text-normal sm:max-w-[75%]">
-          <p className="whitespace-pre-wrap">{message.content}</p>
-        </div>
+        <UserBubble content={message.content} createdAt={message.createdAt} />
       )}
     </motion.div>
   );
@@ -204,9 +262,7 @@ const PendingUserMessage = ({ message }: { message: PendingMessage }) => (
     animate={{ opacity: 1, y: 0 }}
     className="flex justify-end"
   >
-    <div className="max-w-[82%] rounded-[1.25rem] rounded-br-md bg-muted px-4 py-2.5 text-[15px] leading-6 text-normal sm:max-w-[75%]">
-      <p className="whitespace-pre-wrap">{message.content}</p>
-    </div>
+    <UserBubble content={message.content} />
   </motion.div>
 );
 
@@ -219,9 +275,7 @@ const ThinkingRow = () => {
     animate={{ opacity: 1, y: 0 }}
     className="flex items-center gap-3.5 text-mini"
   >
-    <div className="flex size-8 shrink-0 items-center justify-center rounded-full border bg-card text-primary shadow-xs">
-      <Sparkles className="size-4" />
-    </div>
+    <AssistantAvatar />
     <div className="flex items-center gap-2 text-xs" aria-label={t("thinking")}>
       <span>{t("thinking")}</span>
       <span className="flex items-center gap-1 pt-1">
@@ -363,6 +417,7 @@ const Chatbot = () => {
   const canChangeModel = setting?.role === "dev" || setting?.role === "owner";
   const selectedModelLabel = setting?.model ?? t("header.loadingModel");
   const usage = usageQuery.data;
+  const activeRoom = rooms.find((room) => room.id === activeRoomId);
 
   return (
     <div className="-mx-4 flex h-[calc(100svh-4rem)] min-h-[38rem] overflow-hidden md:-mx-6 xl:-mx-10">
@@ -379,8 +434,9 @@ const Chatbot = () => {
       </Sheet>
 
       <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background/30 transition-colors duration-300">
-        <header className="relative flex h-13 shrink-0 items-center justify-center border-b border-border/40 px-3 sm:px-4">
-          <div className="absolute left-2 flex items-center gap-1 lg:hidden">
+        <header className="grid h-16 shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-1">
+          <div className="flex items-center gap-1 lg:hidden">
             <Button
               type="button"
               variant="ghost"
@@ -403,6 +459,12 @@ const Chatbot = () => {
               <Plus className="size-4" />
             </Button>
           </div>
+          {activeRoom && (
+            <h2 className="hidden truncate text-sm font-semibold text-normal lg:block">
+              {activeRoom.title}
+            </h2>
+          )}
+          </div>
 
           {canChangeModel ? (
             <DropdownMenu>
@@ -414,7 +476,7 @@ const Chatbot = () => {
                     modelOptions.length === 0 ||
                     updateModelMutation.isPending
                   }
-                  className="h-8 max-w-[48vw] gap-1.5 rounded-full border bg-card/75 px-3 text-xs font-medium text-normal shadow-xs backdrop-blur-md sm:max-w-none"
+                  className="h-10 max-w-[48vw] gap-2 rounded-full border bg-card px-4 text-sm font-medium text-normal shadow-xs hover:bg-hover sm:max-w-none"
                 >
                   {updateModelMutation.isPending ? (
                     <LoaderCircle className="size-3.5 animate-spin text-primary" />
@@ -474,7 +536,7 @@ const Chatbot = () => {
             </DropdownMenu>
           ) : (
             <div
-              className="flex h-8 max-w-[48vw] items-center gap-1.5 rounded-full border bg-card/75 px-3 text-xs font-medium text-normal shadow-xs backdrop-blur-md sm:max-w-none"
+              className="flex h-10 max-w-[48vw] items-center gap-2 rounded-full border bg-card px-4 text-sm font-medium text-normal shadow-xs sm:max-w-none"
               title={t("header.modelLockedNote")}
             >
               <Sparkles className="size-3.5 text-primary" />
@@ -482,16 +544,19 @@ const Chatbot = () => {
             </div>
           )}
 
-          {usage && (
-            <p className="absolute right-4 hidden text-[11px] text-mini sm:block">
-              {usage.limitCredit
-                ? t("header.creditsWithLimit", {
-                    used: usage.usedCredit,
-                    limit: usage.limitCredit,
-                  })
-                : t("header.credits", { used: usage.usedCredit })}
-            </p>
-          )}
+          <div className="flex justify-end">
+            {usage && (
+              <p className="hidden h-10 items-center gap-2 rounded-full border bg-card px-4 text-sm text-mini shadow-xs sm:flex">
+                <Coins className="size-4 text-amber-500" />
+                {usage.limitCredit
+                  ? t("header.creditsWithLimit", {
+                      used: usage.usedCredit,
+                      limit: usage.limitCredit,
+                    })
+                  : t("header.credits", { used: usage.usedCredit })}
+              </p>
+            )}
+          </div>
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
@@ -530,12 +595,16 @@ const Chatbot = () => {
               className="mx-auto flex min-h-full w-full max-w-[920px] flex-col justify-center px-4 py-8 sm:px-6"
             >
               <div className="flex flex-col items-center text-center">
-                <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <Sparkles className="size-6" />
+                <div className="flex size-[11.5rem] items-center justify-center rounded-full border border-primary/10 bg-primary/[0.03]">
+                  <div className="flex size-[8rem] items-center justify-center rounded-full border border-primary/15 bg-primary/5">
+                    <div className="flex size-[5rem] items-center justify-center rounded-3xl bg-primary text-primary-foreground shadow-xl shadow-primary/30">
+                      <Sparkles className="size-9" />
+                    </div>
+                  </div>
                 </div>
-                <h1 className="mt-5 text-3xl font-semibold tracking-tight text-normal sm:text-4xl">
-                  {t("greeting", { name: displayName })}{" "}
-                  <span aria-hidden>👋</span>
+                <h1 className="mt-6 text-4xl font-bold tracking-tight text-normal sm:text-5xl">
+                  {t("greetingPrefix")}{" "}
+                  <span className="text-primary">{displayName}</span>
                 </h1>
                 <p className="mt-2 text-sm text-mini sm:text-base">
                   {t("greetingSub")}
@@ -543,16 +612,17 @@ const Chatbot = () => {
               </div>
 
               <div className="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {suggestions.map(({ icon: Icon, key }) => (
+                {suggestions.map(({ icon, key, tone }) => (
                   <button
                     key={key}
                     type="button"
                     disabled={isThinking || !aiEnabled}
                     onClick={() => void sendMessage(t(`suggestion.${key}.prompt`))}
-                    className="group rounded-2xl border bg-card/70 p-4 text-left shadow-xs backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/25 hover:bg-card hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
+                    className="group relative flex flex-col items-center rounded-2xl border bg-card p-5 text-center shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/25 hover:shadow-md disabled:pointer-events-none disabled:opacity-50"
                   >
-                    <Icon className="size-5 text-primary transition-transform duration-200 group-hover:scale-110" />
-                    <p className="mt-5 text-sm font-medium text-normal">
+                    <ArrowUpRight className="absolute right-4 top-4 size-4 text-mini/70" />
+                    <IconTile icon={icon} tone={tone} size="sm" className="size-12" />
+                    <p className="mt-5 text-sm font-semibold text-normal">
                       {t(`suggestion.${key}.title`)}
                     </p>
                     <p className="mt-1 text-xs leading-relaxed text-mini">
@@ -568,11 +638,9 @@ const Chatbot = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="mt-5 flex items-start gap-3 rounded-2xl border bg-card/60 p-4 backdrop-blur-sm"
+                    className="mt-6 flex items-center gap-3 rounded-2xl border bg-card p-4"
                   >
-                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                      <ShieldCheck className="size-4.5" />
-                    </div>
+                    <IconTile icon={ShieldCheck} tone="primary" size="sm" />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-normal">
                         {t("privacy.title")}

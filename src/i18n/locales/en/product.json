@@ -1,51 +1,212 @@
 {
-  "title": "Products",
-  "add": "Add Product +",
-  "summary": {
-    "totalProducts": "Total Product",
-    "totalStock": "Total Stock",
-    "available": "Available Product",
-    "unavailable": "Unavailable Product"
+  "title": "Inventory",
+  "subtitle": "Manage your store's products, prices and stock",
+  "tabTodo": "This section is under development",
+  "actions": {
+    "bulkImport": "Bulk import",
+    "add": "Add product",
+    "edit": "Edit product",
+    "duplicate": "Duplicate",
+    "delete": "Delete product",
+    "copySku": "Copy SKU"
   },
-  "table": {
-    "picture": "Picture",
-    "name": "Name",
-    "status": "Status",
-    "price": "Price",
-    "stock": "Stock",
-    "action": "Action"
+  "tab": {
+    "products": "Products",
+    "categories": "Categories",
+    "import": "Import / Sync",
+    "settings": "Settings"
+  },
+  "stats": {
+    "total": "Total products",
+    "totalHint": "All SKUs in your store",
+    "active": "On sale",
+    "activeHint": "{{percent}}% of all products",
+    "lowStock": "Low stock",
+    "viewLowStock": "View low-stock items"
   },
   "status": {
-    "available": "available",
-    "unavailable": "unavailable"
+    "DRAFT": "Draft",
+    "ACTIVE": "On sale",
+    "ARCHIVED": "Archived"
   },
-  "breadcrumb": {
-    "products": "Products",
-    "add": "Add Product",
-    "edit": "Edit Product"
+  "stockLevel": {
+    "low": "Low",
+    "out": "Out",
+    "untracked": "Not tracked"
+  },
+  "unit": {
+    "piece_one": "{{value}} pc",
+    "piece_other": "{{value}} pcs"
+  },
+  "filter": {
+    "searchPlaceholder": "Search product name or SKU...",
+    "category": "Filter by category",
+    "status": "Filter by status",
+    "stock": "Filter by stock",
+    "allCategories": "All categories",
+    "allStatuses": "All statuses",
+    "stockValue": "Stock: {{value}}",
+    "stockOption": {
+      "all": "All",
+      "in": "In stock",
+      "low": "Low",
+      "out": "Out of stock"
+    }
+  },
+  "table": {
+    "selectAll": "Select all on this page",
+    "selectRow": "Select {{name}}",
+    "product": "Product",
+    "category": "Category",
+    "price": "Price",
+    "stock": "Stock",
+    "status": "Status",
+    "error": "Couldn't load products",
+    "noMatch": "No products match these filters"
+  },
+  "detail": {
+    "title": "Product details",
+    "close": "Close product details",
+    "imageN": "View image {{index}}",
+    "moreImages_one": "View {{count}} more image",
+    "moreImages_other": "View {{count}} more images",
+    "category": "Category",
+    "brand": "Brand",
+    "stockLeft": "In stock",
+    "warranty": "Warranty",
+    "warrantyYears_one": "{{count}} year",
+    "warrantyYears_other": "{{count}} years",
+    "warrantyMonths_one": "{{count}} month",
+    "warrantyMonths_other": "{{count}} months",
+    "quickStock": "Quick stock adjust",
+    "save": "Save",
+    "saving": "Saving...",
+    "description": "Description",
+    "noDescription": "No description yet",
+    "tags": "Tags",
+    "moreTags_one": "Show {{count}} more tag",
+    "moreTags_other": "Show {{count}} more tags",
+    "emptyTitle": "Select a product to see details",
+    "emptyHint": "Click a row in the table to see price and stock, and adjust stock right away"
+  },
+  "empty": {
+    "title": "Your inventory is empty",
+    "description": "Start by adding your first product, or import all your products from an existing file",
+    "manual": "Add manually",
+    "manualHint": "Enter products one at a time",
+    "file": "Import from file",
+    "fileHint": "Supports CSV and Excel, with a template",
+    "sync": "Sync from an existing store",
+    "syncHint": "Connect an online store to pull in products"
+  },
+  "confirmDelete": {
+    "title": "Delete this product?",
+    "description": "\"{{name}}\" will be removed from your inventory and storefront. This can't be undone.",
+    "confirm": "Delete product"
   },
   "form": {
-    "addTitle": "Add New Product",
-    "editTitle": "Edit Product {{name}}",
-    "description": "Fill in product information below.",
-    "name": "Name",
-    "namePlaceholder": "Product name",
-    "category": "Category",
-    "categoryPlaceholder": "Category",
-    "price": "Price",
-    "pricePlaceholder": "Price",
-    "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Product description...",
-    "orderItems": "Order Items",
-    "size": "Size",
-    "quantity": "Quantity",
-    "sku": "SKU",
-    "moreItem": "More Item",
-    "uploadImages": "Upload Images",
-    "save": "Save Product"
+    "addTitle": "Add new product",
+    "addSubtitle": "Fill in the product details, then save to put it on sale",
+    "editTitle": "Edit product",
+    "editSubtitle": "Update the product details, then save your changes",
+    "back": "Back to inventory",
+    "cancel": "Cancel",
+    "saveDraft": "Save draft",
+    "savePublish": "Save and publish",
+    "saving": "Saving...",
+    "loadFailed": "Couldn't load this product, or it has been deleted",
+    "basic": {
+      "title": "Basic information",
+      "name": "Product name",
+      "namePlaceholder": "e.g. AMD Ryzen 5 7600X",
+      "sku": "SKU",
+      "skuPlaceholder": "e.g. CPU-R5-7600X",
+      "barcode": "Barcode",
+      "barcodePlaceholder": "Scan or type the code",
+      "description": "Product description",
+      "descriptionPlaceholder": "Describe the product's highlights and specs"
+    },
+    "images": {
+      "title": "Product images",
+      "drop": "Drag images here, or",
+      "browse": "browse files",
+      "hint": "PNG, JPG up to {{size}} MB · max {{max}} images",
+      "primary": "Main image",
+      "setPrimary": "Set as main image",
+      "remove": "Remove image {{index}}",
+      "add": "Add image"
+    },
+    "pricing": {
+      "title": "Pricing and stock",
+      "price": "Selling price",
+      "compareAtPrice": "Regular price",
+      "compareAtPriceHint": "Shown as a struck-through price",
+      "costPrice": "Cost",
+      "costPriceHint": "Visible to admins only",
+      "stock": "Stock quantity",
+      "trackStock": "Track stock automatically",
+      "trackStockHint": "Deduct stock on orders and alert when running low",
+      "lowStockThreshold": "Alert when fewer than",
+      "unit": "pcs"
+    },
+    "status": {
+      "title": "Status"
+    },
+    "statusHint": {
+      "DRAFT": "Not shown on the storefront yet",
+      "ACTIVE": "Shown on the storefront right after saving"
+    },
+    "category": {
+      "title": "Organization",
+      "category": "Category",
+      "categoryPlaceholder": "Select a category",
+      "brand": "Brand",
+      "brandPlaceholder": "Select a brand",
+      "tags": "Tags",
+      "tagsPlaceholder": "Add a tag and press Enter"
+    },
+    "display": {
+      "title": "Visibility",
+      "showOnStorefront": "Show on storefront",
+      "showOnStorefrontHint": "When the status is on sale",
+      "featured": "Featured product",
+      "featuredHint": "Pin to the top of its category"
+    }
   },
-  "export": {
-    "pdf": "PDF",
-    "excel": "Excel"
+  "validation": {
+    "nameRequired": "Enter a product name",
+    "skuInvalid": "SKU can only contain A-Z, 0-9 and . _ -",
+    "skuTaken": "Another product already uses this SKU",
+    "categoryRequired": "Select a category",
+    "priceRequired": "Enter a selling price",
+    "priceInvalid": "Enter a number with up to 2 decimal places",
+    "compareAtTooLow": "Regular price must be higher than the selling price",
+    "stockRequired": "Enter a stock quantity",
+    "stockInvalid": "Enter a whole number, 0 or more",
+    "thresholdInvalid": "Enter a whole number, 0 or more",
+    "image": {
+      "type": "Only PNG and JPG files are supported",
+      "size": "Some files are larger than {{size}} MB",
+      "limit": "You can add up to {{max}} images"
+    }
+  },
+  "error": {
+    "NOT_FOUND": "This product wasn't found. It may have been deleted.",
+    "SKU_TAKEN": "Another product already uses this SKU",
+    "VERSION_CONFLICT": "This was changed elsewhere. The latest data has been loaded, please try again."
+  },
+  "toast": {
+    "published": "Product saved and published",
+    "draftSaved": "Draft saved",
+    "updated": "Changes saved",
+    "saveFailed": "Couldn't save the product",
+    "stockUpdated": "Stock updated",
+    "stockFailed": "Couldn't update stock",
+    "duplicated": "Duplicate created as a draft",
+    "duplicateFailed": "Couldn't duplicate the product",
+    "deleted": "Product deleted",
+    "deleteFailed": "Couldn't delete the product",
+    "skuCopied": "SKU copied",
+    "copyFailed": "Couldn't copy"
   }
 }

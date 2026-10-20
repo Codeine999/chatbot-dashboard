@@ -15,7 +15,23 @@
     "view": "View",
     "export": "Export",
     "more": "More",
-    "upload": "Upload"
+    "upload": "Upload",
+    "decrease": "Decrease",
+    "increase": "Increase",
+    "removeItem": "Remove {{name}}"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "showing": "Showing {{from}} to {{to}} of {{total}} entries",
+    "rowsPerPage": "Rows per page",
+    "previous": "Previous page",
+    "next": "Next page"
+  },
+  "combobox": {
+    "search": "Search or type to add...",
+    "typeToCreate": "Type a name to add a new option",
+    "create": "Add \"{{value}}\"",
+    "clear": "Clear selection"
   },
   "state": {
     "loading": "Loading...",

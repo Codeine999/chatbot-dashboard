@@ -7,7 +7,7 @@ export type ChatSuggestion = {
   prompt: string;
 };
 
-export type AiProviderName = "GEMINI" | "OPENAI" | "ANTHROPIC";
+export type AiProviderName = "GEMINI" | "OPENAI" | "ANTHROPIC" | "OPENROUTER";
 
 export type AiProviderCatalogItem = {
   provider: AiProviderName;

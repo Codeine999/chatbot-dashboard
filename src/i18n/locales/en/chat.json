@@ -49,13 +49,27 @@
   },
   "messages": {
     "loadError": "Could not load messages in this room",
-    "retry": "Retry"
+    "retry": "Retry",
+    "copy": "Copy",
+    "assistant": "AI assistant"
   },
   "sidebar": {
     "recent": "Recent chats",
     "loading": "Loading chats",
     "error": "Could not load chat history",
-    "empty": "No conversations yet"
+    "empty": "No conversations yet",
+    "newChat": "New chat",
+    "search": "Search chats",
+    "noResult": "No chats found",
+    "options": "Options",
+    "delete": "Delete chat",
+    "showMore": "Show more",
+    "group": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7": "Previous 7 days",
+      "older": "Older"
+    }
   },
   "error": {
     "createRoom": "Cannot create a new chat",
@@ -138,25 +152,35 @@
   },
   "customerTest": {
     "title": "Customer chat test",
-    "subtitle": "Test conversations from the customer perspective using LINE or Webapp.",
+    "subtitle": "Type as a customer and see replies from the same bot that answers on LINE",
     "newChat": "New chat",
-    "channel": "Message channel",
-    "channelHint": "Choose a channel to test",
-    "lineHint": "Simulate a LINE customer",
-    "webappHint": "Simulate a website customer",
-    "customerId": "Test customer ID",
-    "identityHint": "Each channel has its own identity and conversation. Start a new chat to change the ID.",
-    "apiNote": "This page calls the test API. A supporting backend is required to receive replies.",
+    "creditNote": "Every message spends real AI credit, like one from LINE, but nothing is sent to the customer or saved to the LINE chat history",
     "customerView": "Customer view",
-    "empty": "Start a test conversation",
-    "emptyHint": "Send a message below as a customer using the selected channel.",
+    "viewHint": "Simulates a customer talking to the bot",
+    "empty": "Start testing a conversation",
+    "emptyHint": "Type below to send a message as the customer",
     "you": "You (customer)",
-    "assistant": "AI / Store",
-    "sending": "Sending and waiting for a reply…",
-    "placeholder": "Type a customer message…",
+    "assistant": "Bot",
+    "starting": "Starting session…",
+    "sending": "Typing…",
+    "placeholder": "Type the customer's message…",
+    "aiDisabled": "AI is disabled for this account. Please contact the owner",
     "enterHint": "Enter to send · Shift + Enter for a new line",
-    "send": "Send message",
-    "invalidResponse": "The API returned an unsupported reply format (reply).",
-    "sendError": "Unable to send. Please try again."
-  }
+    "send": "Send",
+    "retry": "Retry",
+    "sendError": "Could not send the message. Please try again",
+    "startError": "Could not start the test session",
+    "noReply": "The bot did not reply (check AI credit)",
+    "newTopic": "New topic started",
+    "sessionExpired": "The session expired. A new conversation was started",
+    "debug": {
+      "title": "What the bot remembers",
+      "hint": "Use this to debug replies",
+      "workflow": "Workflow",
+      "noWorkflow": "Not in any flow",
+      "context": "Context ({{count}})",
+      "noContext": "No context yet"
+    }
+  },
+  "greetingPrefix": "Hello,"
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { orderList } from "@/data/order.data";
+import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,7 @@ import {
   ChevronLeft,
   ChevronDown,
   SquareMousePointer,
+  ShoppingBag,
 } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import { getOrder } from "../home/services/getOrder";
@@ -179,6 +181,9 @@ const Order = () => {
 
         {/* Scrollable Order List */}
         <div className="flex-1 overflow-y-auto">
+          {orderList.length === 0 && (
+            <EmptyState icon={ShoppingBag} title={t("list.empty")} />
+          )}
           {orderList.map(item => (
             <Link key={item.orderID} to={`/order/confirm/${item.orderID}`}>
               <div className="flex justify-center items-center gap-2 p-4 -my-[1.2px] hover:bg-[#f1f3f9]">
@@ -289,7 +294,7 @@ const Order = () => {
 
         <div className="block md:hidden">
           <div className="flex justify-between -mt-1 p-2 px-4">
-            <p className="text-sm">{t("list.showing", { from: 1, total: 88 })}</p>
+            <p className="text-sm">{t("list.showing", { from: filteredOrder.length ? 1 : 0, total: filteredOrder.length })}</p>
           </div>
         </div>
       </Card>

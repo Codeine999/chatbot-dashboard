@@ -89,8 +89,13 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 
 function FormLabel({
   className,
+  required = false,
+  children,
   ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
+}: React.ComponentProps<typeof LabelPrimitive.Root> & {
+  /** แสดงดอกจันสีแดงท้าย label */
+  required?: boolean
+}) {
   const { error, formItemId } = useFormField()
 
   return (
@@ -100,7 +105,14 @@ function FormLabel({
       className={cn("data-[error=true]:text-destructive", className)}
       htmlFor={formItemId}
       {...props}
-    />
+    >
+      {children}
+      {required && (
+        <span className="-ml-1.5 text-red-500" aria-hidden>
+          *
+        </span>
+      )}
+    </Label>
   )
 }
 

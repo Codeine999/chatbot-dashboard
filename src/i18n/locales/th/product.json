@@ -1,51 +1,207 @@
 {
-  "title": "สินค้า",
-  "add": "เพิ่มสินค้า +",
-  "summary": {
-    "totalProducts": "สินค้าทั้งหมด",
-    "totalStock": "สต็อกทั้งหมด",
-    "available": "สินค้าที่พร้อมขาย",
-    "unavailable": "สินค้าที่ไม่พร้อมขาย"
+  "title": "คลังสินค้า",
+  "subtitle": "จัดการสินค้า ราคา และสต็อกของร้าน",
+  "tabTodo": "ส่วนนี้กำลังพัฒนา",
+  "actions": {
+    "bulkImport": "นำเข้าจำนวนมาก",
+    "add": "เพิ่มสินค้า",
+    "edit": "แก้ไขสินค้า",
+    "duplicate": "ทำสำเนา",
+    "delete": "ลบสินค้า",
+    "copySku": "คัดลอก SKU"
   },
-  "table": {
-    "picture": "รูปภาพ",
-    "name": "ชื่อสินค้า",
-    "status": "สถานะ",
-    "price": "ราคา",
-    "stock": "สต็อก",
-    "action": "จัดการ"
+  "tab": {
+    "products": "รายการสินค้า",
+    "categories": "หมวดหมู่",
+    "import": "นำเข้า / ซิงก์",
+    "settings": "ตั้งค่า"
+  },
+  "stats": {
+    "total": "สินค้าทั้งหมด",
+    "totalHint": "SKU ทั้งหมดในร้าน",
+    "active": "วางขายอยู่",
+    "activeHint": "{{percent}}% ของสินค้าทั้งหมด",
+    "lowStock": "สต็อกใกล้หมด",
+    "viewLowStock": "ดูสินค้าสต็อกต่ำ"
   },
   "status": {
-    "available": "พร้อมขาย",
-    "unavailable": "ไม่พร้อมขาย"
+    "DRAFT": "ฉบับร่าง",
+    "ACTIVE": "วางขาย",
+    "ARCHIVED": "เก็บถาวร"
   },
-  "breadcrumb": {
-    "products": "สินค้า",
-    "add": "เพิ่มสินค้า",
-    "edit": "แก้ไขสินค้า"
+  "stockLevel": {
+    "low": "ใกล้หมด",
+    "out": "หมด",
+    "untracked": "ไม่นับสต็อก"
+  },
+  "unit": {
+    "piece_other": "{{value}} ชิ้น"
+  },
+  "filter": {
+    "searchPlaceholder": "ค้นหาชื่อสินค้า หรือ SKU...",
+    "category": "กรองตามหมวดหมู่",
+    "status": "กรองตามสถานะ",
+    "stock": "กรองตามสต็อก",
+    "allCategories": "ทุกหมวดหมู่",
+    "allStatuses": "ทุกสถานะ",
+    "stockValue": "สต็อก: {{value}}",
+    "stockOption": {
+      "all": "ทั้งหมด",
+      "in": "มีสินค้า",
+      "low": "ใกล้หมด",
+      "out": "หมด"
+    }
+  },
+  "table": {
+    "selectAll": "เลือกสินค้าทั้งหน้า",
+    "selectRow": "เลือก {{name}}",
+    "product": "สินค้า",
+    "category": "หมวดหมู่",
+    "price": "ราคา",
+    "stock": "สต็อก",
+    "status": "สถานะ",
+    "error": "โหลดรายการสินค้าไม่สำเร็จ",
+    "noMatch": "ไม่พบสินค้าที่ตรงกับตัวกรอง"
+  },
+  "detail": {
+    "title": "รายละเอียดสินค้า",
+    "close": "ปิดรายละเอียดสินค้า",
+    "imageN": "ดูรูปที่ {{index}}",
+    "moreImages_other": "ดูรูปเพิ่มอีก {{count}} รูป",
+    "category": "หมวดหมู่",
+    "brand": "แบรนด์",
+    "stockLeft": "สต็อกคงเหลือ",
+    "warranty": "ประกัน",
+    "warrantyYears_other": "{{count}} ปี",
+    "warrantyMonths_other": "{{count}} เดือน",
+    "quickStock": "ปรับสต็อกด่วน",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "description": "คำอธิบาย",
+    "noDescription": "ยังไม่มีคำอธิบาย",
+    "tags": "แท็ก",
+    "moreTags_other": "ดูแท็กเพิ่มอีก {{count}} แท็ก",
+    "emptyTitle": "เลือกสินค้าเพื่อดูรายละเอียด",
+    "emptyHint": "คลิกแถวในตารางเพื่อดูราคา สต็อก และปรับสต็อกได้ทันที"
+  },
+  "empty": {
+    "title": "ยังไม่มีสินค้าในคลัง",
+    "description": "เริ่มต้นด้วยการเพิ่มสินค้าชิ้นแรก หรือนำเข้าสินค้าทั้งหมดจากไฟล์ที่มีอยู่แล้ว",
+    "manual": "เพิ่มสินค้าเอง",
+    "manualHint": "กรอกข้อมูลทีละรายการ",
+    "file": "นำเข้าจากไฟล์",
+    "fileHint": "รองรับ CSV และ Excel พร้อมเทมเพลต",
+    "sync": "ซิงก์จากร้านที่มีอยู่",
+    "syncHint": "เชื่อมร้านออนไลน์เพื่อดึงสินค้าเข้ามา"
+  },
+  "confirmDelete": {
+    "title": "ลบสินค้านี้?",
+    "description": "\"{{name}}\" จะถูกลบออกจากคลังและหน้าร้าน การลบย้อนกลับไม่ได้",
+    "confirm": "ลบสินค้า"
   },
   "form": {
     "addTitle": "เพิ่มสินค้าใหม่",
-    "editTitle": "แก้ไขสินค้า {{name}}",
-    "description": "กรอกข้อมูลสินค้าด้านล่าง",
-    "name": "ชื่อสินค้า",
-    "namePlaceholder": "ชื่อสินค้า",
-    "category": "หมวดหมู่",
-    "categoryPlaceholder": "หมวดหมู่",
-    "price": "ราคา",
-    "pricePlaceholder": "ราคา",
-    "descriptionLabel": "รายละเอียด",
-    "descriptionPlaceholder": "รายละเอียดสินค้า...",
-    "orderItems": "ตัวเลือกสินค้า",
-    "size": "ขนาด",
-    "quantity": "จำนวน",
-    "sku": "SKU",
-    "moreItem": "เพิ่มตัวเลือก",
-    "uploadImages": "อัปโหลดรูปภาพ",
-    "save": "บันทึกสินค้า"
+    "addSubtitle": "กรอกข้อมูลสินค้าให้ครบ แล้วกดบันทึกเพื่อวางขาย",
+    "editTitle": "แก้ไขสินค้า",
+    "editSubtitle": "ปรับข้อมูลสินค้า แล้วกดบันทึกการเปลี่ยนแปลง",
+    "back": "กลับไปหน้าคลังสินค้า",
+    "cancel": "ยกเลิก",
+    "saveDraft": "บันทึกฉบับร่าง",
+    "savePublish": "บันทึกและวางขาย",
+    "saving": "กำลังบันทึก...",
+    "loadFailed": "โหลดข้อมูลสินค้าไม่สำเร็จ หรือสินค้านี้ถูกลบไปแล้ว",
+    "basic": {
+      "title": "ข้อมูลพื้นฐาน",
+      "name": "ชื่อสินค้า",
+      "namePlaceholder": "เช่น AMD Ryzen 5 7600X",
+      "sku": "SKU",
+      "skuPlaceholder": "เช่น CPU-R5-7600X",
+      "barcode": "บาร์โค้ด",
+      "barcodePlaceholder": "สแกนหรือพิมพ์รหัส",
+      "description": "คำอธิบายสินค้า",
+      "descriptionPlaceholder": "อธิบายจุดเด่นและสเปกของสินค้า"
+    },
+    "images": {
+      "title": "รูปภาพสินค้า",
+      "drop": "ลากรูปมาวางที่นี่ หรือ",
+      "browse": "เลือกไฟล์",
+      "hint": "PNG, JPG ขนาดไม่เกิน {{size}} MB · สูงสุด {{max}} รูป",
+      "primary": "รูปหลัก",
+      "setPrimary": "ตั้งเป็นรูปหลัก",
+      "remove": "ลบรูปที่ {{index}}",
+      "add": "เพิ่มรูป"
+    },
+    "pricing": {
+      "title": "ราคาและสต็อก",
+      "price": "ราคาขาย",
+      "compareAtPrice": "ราคาปกติ",
+      "compareAtPriceHint": "ใส่เพื่อแสดงเป็นราคาขีดฆ่า",
+      "costPrice": "ต้นทุน",
+      "costPriceHint": "เห็นเฉพาะผู้ดูแลระบบ",
+      "stock": "จำนวนสต็อก",
+      "trackStock": "ติดตามสต็อกอัตโนมัติ",
+      "trackStockHint": "ลดสต็อกเมื่อมีออเดอร์ และแจ้งเตือนเมื่อใกล้หมด",
+      "lowStockThreshold": "แจ้งเตือนเมื่อเหลือน้อยกว่า",
+      "unit": "ชิ้น"
+    },
+    "status": {
+      "title": "สถานะ"
+    },
+    "statusHint": {
+      "DRAFT": "ยังไม่แสดงในหน้าร้าน",
+      "ACTIVE": "แสดงในหน้าร้านทันทีหลังบันทึก"
+    },
+    "category": {
+      "title": "การจัดหมวดหมู่",
+      "category": "หมวดหมู่",
+      "categoryPlaceholder": "เลือกหมวดหมู่",
+      "brand": "แบรนด์",
+      "brandPlaceholder": "เลือกแบรนด์",
+      "tags": "แท็ก",
+      "tagsPlaceholder": "เพิ่มแท็ก แล้วกด Enter"
+    },
+    "display": {
+      "title": "การแสดงผล",
+      "showOnStorefront": "แสดงในหน้าร้าน",
+      "showOnStorefrontHint": "เมื่อสถานะเป็นวางขาย",
+      "featured": "แนะนำเป็นสินค้าเด่น",
+      "featuredHint": "ปักหมุดไว้ด้านบนของหมวดหมู่"
+    }
   },
-  "export": {
-    "pdf": "PDF",
-    "excel": "Excel"
+  "validation": {
+    "nameRequired": "กรุณากรอกชื่อสินค้า",
+    "skuInvalid": "SKU ใช้ได้เฉพาะ A-Z, 0-9 และ . _ -",
+    "skuTaken": "SKU นี้มีสินค้าอื่นใช้อยู่แล้ว",
+    "categoryRequired": "กรุณาเลือกหมวดหมู่",
+    "priceRequired": "กรุณากรอกราคาขาย",
+    "priceInvalid": "กรอกเป็นตัวเลข ทศนิยมไม่เกิน 2 ตำแหน่ง",
+    "compareAtTooLow": "ราคาปกติต้องสูงกว่าราคาขาย",
+    "stockRequired": "กรุณากรอกจำนวนสต็อก",
+    "stockInvalid": "กรอกเป็นจำนวนเต็มตั้งแต่ 0 ขึ้นไป",
+    "thresholdInvalid": "กรอกเป็นจำนวนเต็มตั้งแต่ 0 ขึ้นไป",
+    "image": {
+      "type": "รองรับเฉพาะไฟล์ PNG และ JPG",
+      "size": "บางไฟล์มีขนาดเกิน {{size}} MB",
+      "limit": "เพิ่มรูปได้สูงสุด {{max}} รูป"
+    }
+  },
+  "error": {
+    "NOT_FOUND": "ไม่พบสินค้านี้ อาจถูกลบไปแล้ว",
+    "SKU_TAKEN": "SKU นี้มีสินค้าอื่นใช้อยู่แล้ว",
+    "VERSION_CONFLICT": "ข้อมูลถูกแก้ไขจากที่อื่น โหลดค่าล่าสุดแล้วลองอีกครั้ง"
+  },
+  "toast": {
+    "published": "บันทึกและวางขายสินค้าแล้ว",
+    "draftSaved": "บันทึกฉบับร่างแล้ว",
+    "updated": "บันทึกการเปลี่ยนแปลงแล้ว",
+    "saveFailed": "บันทึกสินค้าไม่สำเร็จ",
+    "stockUpdated": "ปรับสต็อกแล้ว",
+    "stockFailed": "ปรับสต็อกไม่สำเร็จ",
+    "duplicated": "สร้างสำเนาเป็นฉบับร่างแล้ว",
+    "duplicateFailed": "ทำสำเนาไม่สำเร็จ",
+    "deleted": "ลบสินค้าแล้ว",
+    "deleteFailed": "ลบสินค้าไม่สำเร็จ",
+    "skuCopied": "คัดลอก SKU แล้ว",
+    "copyFailed": "คัดลอกไม่สำเร็จ"
   }
 }

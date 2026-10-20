@@ -28,7 +28,10 @@
       "userModel": "User Model",
       "userModelHint": "Model used for customer-facing conversations (Line chat, etc.).",
       "adminModel": "Admin Model",
-      "adminModelHint": "Model used for internal tools and admin operations."
+      "adminModelHint": "Model used for internal tools and admin operations.",
+      "saved": "Model updated",
+      "saveFailed": "Could not change the model",
+      "readOnly": "Only an owner or dev can change the models"
     },
     "config": {
       "title": "AI Configuration",

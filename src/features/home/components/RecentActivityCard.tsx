@@ -75,7 +75,7 @@ const RecentActivityCard = () => {
   const activities = activityMock;
 
   return (
-    <Card className="flex h-[384px] flex-col p-6">
+    <Card className="flex h-[474px] flex-col p-6">
       <div className="flex items-center justify-between">
         <CardTitle>{t("activity.title")}</CardTitle>
         <Button variant="ghost" className="text-sm font-medium text-icons">

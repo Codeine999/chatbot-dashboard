@@ -12,7 +12,6 @@ import {
   Send,
   SlidersHorizontal,
   Smile,
-  UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BotModeSelect } from "./components/BotModeSelect";
@@ -740,15 +739,21 @@ export const LineChat = () => {
                   >
                     <div className={`max-w-[78%] ${isUser ? "items-start" : "items-end"}`}>
                       <div className={`flex items-end gap-2 ${isUser ? "" : "flex-row-reverse"}`}>
-                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
-                          isUser
-                            ? "bg-muted text-mini"
-                            : isAi
+                        {isUser ? (
+                          <Avatar
+                            name={selectedConversation?.lineMember?.displayName ?? t("line.defaultUser")}
+                            src={selectedConversation?.lineMember?.pictureUrl}
+                            size="sm"
+                          />
+                        ) : (
+                          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                            isAi
                               ? "bg-primary/10 text-primary"
                               : "bg-primary text-primary-foreground"
-                        }`}>
-                          {isUser ? <UserRound className="h-4 w-4" /> : isAi ? <Bot className="h-4 w-4" /> : "A"}
-                        </div>
+                          }`}>
+                            {isAi ? <Bot className="h-4 w-4" /> : "A"}
+                          </div>
+                        )}
                         <div
                           className={`rounded-[1.25rem] px-4 py-2.5 text-[15px] leading-6 ${
                             isUser

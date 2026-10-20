@@ -3,14 +3,22 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ChevronDown,
   LoaderCircle,
-  MessageCircle,
+  MoreHorizontal,
   Plus,
   RefreshCw,
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SearchInput } from "@/components/common/SearchInput";
 import { cn } from "@/lib/utils";
 import type { AdminChatRoom } from "../type";
+import { groupRoomsByDate } from "../utils/groupRooms";
 
 const INITIAL_VISIBLE_COUNT = 10;
 const LOAD_MORE_COUNT = 8;
@@ -42,6 +50,7 @@ const ChatHistorySidebar = ({
 }: ChatHistorySidebarProps) => {
   const { t } = useTranslation("chat");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
+  const [keyword, setKeyword] = useState("");
 
   const sortedConversations = useMemo(
     () =>
@@ -53,8 +62,20 @@ const ChatHistorySidebar = ({
     [rooms]
   );
 
-  const visibleConversations = sortedConversations.slice(0, visibleCount);
-  const hasMore = visibleCount < sortedConversations.length;
+  const filteredConversations = useMemo(() => {
+    const query = keyword.trim().toLowerCase();
+    if (!query) return sortedConversations;
+    return sortedConversations.filter((room) =>
+      room.title.toLowerCase().includes(query)
+    );
+  }, [sortedConversations, keyword]);
+
+  const visibleConversations = filteredConversations.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredConversations.length;
+  const groups = useMemo(
+    () => groupRoomsByDate(visibleConversations),
+    [visibleConversations]
+  );
 
   useEffect(() => {
     if (!activeId) return;
@@ -70,31 +91,35 @@ const ChatHistorySidebar = ({
   return (
     <aside
       className={cn(
-        "w-[17.5rem] shrink-0 flex-col bg-background/75 backdrop-blur-xl",
+        "w-[17.5rem] shrink-0 flex-col bg-card/60 backdrop-blur-xl",
         mobile ? "flex h-full w-full" : "hidden border-r lg:flex"
       )}
     >
-      <div className="shrink-0 p-3.5">
+      <div className="shrink-0 space-y-3 p-3.5">
         <Button
           onClick={onNewChat}
-          className="h-10 w-full justify-start gap-2 rounded-xl shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          className="h-11 w-full gap-2 rounded-xl text-sm shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
         >
           <Plus className="size-4" />
-          New chat
+          {t("sidebar.newChat")}
         </Button>
+        <SearchInput
+          value={keyword}
+          onChange={(event) => setKeyword(event.target.value)}
+          placeholder={t("sidebar.search")}
+          aria-label={t("sidebar.search")}
+          wrapperClassName="w-full"
+          className="h-10 rounded-xl border-transparent bg-hover text-sm shadow-none"
+        />
       </div>
 
-      <div className="px-4 pb-2 pt-1">
-        <p className="text-xs font-semibold text-normal">{t("sidebar.recent")}</p>
-      </div>
-
-      <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-2">
         {isLoading ? (
-          <div className="space-y-2 px-2 py-3" aria-label={t("sidebar.loading")}>
+          <div className="space-y-2 px-1 py-3" aria-label={t("sidebar.loading")}>
             {[0, 1, 2, 3, 4].map((item) => (
               <div
                 key={item}
-                className="h-9 animate-pulse rounded-xl bg-muted"
+                className="h-9 animate-pulse rounded-xl bg-hover"
               />
             ))}
           </div>
@@ -109,67 +134,90 @@ const ChatHistorySidebar = ({
               className="mt-2 h-8 gap-1.5 text-xs"
             >
               <RefreshCw className="size-3.5" />
-              Retry
+              {t("messages.retry")}
             </Button>
           </div>
-        ) : visibleConversations.length === 0 ? (
-          <p className="px-2 py-3 text-xs text-mini">{t("sidebar.empty")}</p>
+        ) : groups.length === 0 ? (
+          <p className="px-2 py-3 text-xs text-mini">
+            {keyword ? t("sidebar.noResult") : t("sidebar.empty")}
+          </p>
         ) : (
-          <div className="space-y-0.5">
-            {visibleConversations.map((conversation) => {
-              const isActive = conversation.id === activeId;
+          groups.map((group) => (
+            <section key={group.key} className="mb-3">
+              <p className="px-2 pb-1.5 pt-3 text-xs text-mini">
+                {t(`sidebar.group.${group.key}`)}
+              </p>
+              <div className="space-y-0.5">
+                {group.rooms.map((conversation) => {
+                  const isActive = conversation.id === activeId;
+                  const isDeleting = deletingRoomId === conversation.id;
 
-              return (
-                <div
-                  key={conversation.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => onSelect(conversation.id)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      onSelect(conversation.id);
-                    }
-                  }}
-                  className={`group flex cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-left transition-all duration-200 ${
-                    isActive
-                      ? "bg-primary/10 text-primary"
-                      : "text-normal hover:bg-hover"
-                  }`}
-                >
-                  <MessageCircle
-                    className={`size-3.5 shrink-0 ${
-                      isActive ? "text-primary" : "text-mini"
-                    }`}
-                  />
-                  <span className="min-w-0 flex-1 truncate text-[13px]">
-                    {conversation.title}
-                  </span>
-                  <button
-                    type="button"
-                    aria-label={`Delete ${conversation.title}`}
-                    disabled={deletingRoomId === conversation.id}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onDelete(conversation.id);
-                    }}
-                    className="rounded-md p-1 text-mini opacity-0 transition hover:bg-destructive/10 hover:text-destructive focus-visible:opacity-100 disabled:opacity-60 group-hover:opacity-100"
-                  >
-                    {deletingRoomId === conversation.id ? (
-                      <LoaderCircle className="size-3.5 animate-spin" />
-                    ) : (
-                      <Trash2 className="size-3.5" />
-                    )}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+                  return (
+                    <div
+                      key={conversation.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => onSelect(conversation.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onSelect(conversation.id);
+                        }
+                      }}
+                      className={cn(
+                        "group flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 text-left transition-colors duration-200",
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-normal hover:bg-hover"
+                      )}
+                    >
+                      <span className="min-w-0 flex-1 truncate text-[13px]">
+                        {conversation.title}
+                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            aria-label={t("sidebar.options")}
+                            disabled={isDeleting}
+                            onClick={(event) => event.stopPropagation()}
+                            className={cn(
+                              "rounded-md p-1 text-mini transition hover:text-normal focus-visible:opacity-100 disabled:opacity-60",
+                              isActive || isDeleting
+                                ? "opacity-100"
+                                : "opacity-0 group-hover:opacity-100"
+                            )}
+                          >
+                            {isDeleting ? (
+                              <LoaderCircle className="size-4 animate-spin" />
+                            ) : (
+                              <MoreHorizontal className="size-4" />
+                            )}
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="rounded-xl p-1.5"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onSelect={() => onDelete(conversation.id)}
+                          >
+                            <Trash2 className="size-4" />
+                            {t("sidebar.delete")}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ))
         )}
-      </div>
 
-      <div className="min-h-14 shrink-0 border-t p-3">
-        {hasMore ? (
+        {hasMore && (
           <button
             type="button"
             onClick={() =>
@@ -177,13 +225,9 @@ const ChatHistorySidebar = ({
             }
             className="flex h-8 w-full items-center justify-center gap-1.5 rounded-lg text-xs font-medium text-mini transition hover:bg-hover hover:text-normal"
           >
-            Show more
+            {t("sidebar.showMore")}
             <ChevronDown className="size-3.5" />
           </button>
-        ) : (
-          <p className="py-2 text-center text-[11px] text-mini/70">
-            {rooms.length} conversations
-          </p>
         )}
       </div>
     </aside>

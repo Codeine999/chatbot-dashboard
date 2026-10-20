@@ -12,7 +12,8 @@
   },
   "list": {
     "status": "สถานะ",
-    "showing": "แสดง {{from}} จาก {{total}}"
+    "showing": "แสดง {{from}} จาก {{total}}",
+    "empty": "ยังไม่มีคำสั่งซื้อ"
   },
   "breadcrumb": {
     "order": "คำสั่งซื้อ",

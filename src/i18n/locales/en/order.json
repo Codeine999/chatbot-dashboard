@@ -12,7 +12,8 @@
   },
   "list": {
     "status": "Status",
-    "showing": "showing {{from}} of {{total}}"
+    "showing": "showing {{from}} of {{total}}",
+    "empty": "No orders yet"
   },
   "breadcrumb": {
     "order": "Order",
