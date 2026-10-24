@@ -28,7 +28,7 @@ jobs:
           context: .
           push: true
           build-args: |
-            VITE_API_URL=https://api.keela-agent.online/
+            VITE_API_URL=https://api.keela-agent.online/api
           tags: |
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ github.sha }}
