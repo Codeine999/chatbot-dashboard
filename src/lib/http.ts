@@ -1,1 +1,1 @@
-export const http = "https://api.portfolio-codeine.online"
+export const http = import.meta.env.VITE_CHATBOT_API_URL
