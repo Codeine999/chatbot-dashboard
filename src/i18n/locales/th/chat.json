@@ -45,20 +45,22 @@
     "modelLockedNote": "โมเดลตั้งค่าโดย owner หรือ dev",
     "apiKeyUnavailable": " · ไม่มี API key",
     "credits": "{{used}} เครดิต",
-    "creditsWithLimit": "{{used}} / {{limit}} เครดิต"
+    "creditsWithLimit": "{{used}} / {{limit}} เครดิต",
+    "defaultTitle": "AI CHAT",
+    "brand": "KeeLa.Ai"
   },
   "messages": {
     "loadError": "โหลดข้อความในห้องนี้ไม่สำเร็จ",
     "retry": "ลองใหม่",
     "copy": "คัดลอก",
-    "assistant": "ผู้ช่วย AI"
+    "assistant": "AI Assistant"
   },
   "sidebar": {
     "recent": "แชทล่าสุด",
     "loading": "กำลังโหลดรายการแชท",
     "error": "โหลดประวัติแชทไม่สำเร็จ",
     "empty": "ยังไม่มีบทสนทนา",
-    "newChat": "แชทใหม่",
+    "newChat": "สร้างใหม่",
     "search": "ค้นหาแชต",
     "noResult": "ไม่พบแชทที่ค้นหา",
     "options": "ตัวเลือก",
@@ -69,6 +71,12 @@
       "yesterday": "เมื่อวาน",
       "last7": "7 วันที่ผ่านมา",
       "older": "ก่อนหน้านี้"
+    },
+    "comingSoon": "เร็ว ๆ นี้",
+    "nav": {
+      "projects": "โปรเจกต์",
+      "scheduled": "งานตามกำหนดเวลา",
+      "more": "เพิ่มเติม"
     }
   },
   "error": {
@@ -179,7 +187,48 @@
       "noWorkflow": "ไม่ได้อยู่ใน flow ใด",
       "context": "Context ({{count}})",
       "noContext": "ยังไม่มี context"
+    },
+    "channel": {
+      "line": "LINE",
+      "application": "Application"
     }
   },
-  "greetingPrefix": "สวัสดี"
+  "greetingPrefix": "สวัสดี",
+  "appChat": {
+    "creditNote": "ช่องนี้ใช้ App Message API จริง: ข้อความลูกค้าตัดเครดิต AI จริง และถูกบันทึกเป็นห้องแชท Application (เก็บประวัติตาม APP_HISTORY_RETENTION_DAYS)",
+    "rooms": "ห้องแชท Application",
+    "newRoom": "ลูกค้าใหม่",
+    "roomsLoading": "กำลังโหลดห้องแชท…",
+    "roomsError": "โหลดห้องแชทไม่สำเร็จ",
+    "roomsEmpty": "ยังไม่มีห้องแชท ลองส่งข้อความในนามลูกค้า",
+    "mine": "ลูกค้าทดสอบ",
+    "waitingAdmin": "รอแอดมิน",
+    "newCustomer": "ลูกค้าใหม่",
+    "newCustomerHint": "ส่งข้อความแรกเพื่อสร้างห้องแชท",
+    "channelHint": "ช่องทาง Application",
+    "botMuted": "บอทหยุดตอบชั่วคราว (แอดมินตอบอยู่)",
+    "pauseBot": "พักบอท",
+    "resumeBot": "เปิดบอท",
+    "botPaused": "พักบอทของห้องนี้แล้ว",
+    "botResumed": "เปิดบอทของห้องนี้แล้ว",
+    "botActionError": "ทำรายการไม่สำเร็จ",
+    "loadOlder": "โหลดข้อความก่อนหน้า",
+    "loadingOlder": "กำลังโหลดข้อความก่อนหน้า…",
+    "historyLoading": "กำลังโหลดประวัติแชท…",
+    "historyError": "โหลดประวัติแชทไม่สำเร็จ",
+    "emptyRoom": "ห้องนี้ยังไม่มีข้อความ",
+    "emptyHint": "พิมพ์ข้อความด้านล่างเพื่อส่งในนามลูกค้าใหม่",
+    "sendAs": "ส่งในนาม",
+    "asCustomer": "ลูกค้า",
+    "asAdmin": "แอดมิน",
+    "realCustomerRoom": "ห้องของลูกค้าจริง ส่งได้เฉพาะในนามแอดมิน",
+    "placeholderAdmin": "พิมพ์ข้อความตอบลูกค้าในนามแอดมิน…",
+    "roleCustomer": "ลูกค้า",
+    "roleAdmin": "แอดมิน",
+    "roleBot": "บอท",
+    "roleSystem": "ระบบ",
+    "handoff": "ส่งต่อแอดมินแล้ว",
+    "sendError": "ส่งข้อความไม่สำเร็จ กรุณาลองอีกครั้ง",
+    "adminSendError": "ส่งข้อความแอดมินไม่สำเร็จ"
+  }
 }

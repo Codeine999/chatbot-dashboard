@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import { Package, Plus, Upload } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { IconTile } from "@/components/common/IconTile";
+import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
 import { TablePagination } from "@/components/common/TablePagination";
 import { UnderlineTabs } from "@/components/common/UnderlineTabs";
@@ -198,9 +198,8 @@ export default function ProductList() {
   };
 
   return (
-    <div className="mt-6 mb-12">
+    <PageContainer>
       <PageHeader
-        leading={<IconTile icon={Package} />}
         title={t("title")}
         subtitle={t("subtitle")}
         actions={
@@ -229,7 +228,7 @@ export default function ProductList() {
         isPending={deleteProduct.isPending}
         onConfirm={confirmDelete}
       />
-    </div>
+    </PageContainer>
   );
 }
 

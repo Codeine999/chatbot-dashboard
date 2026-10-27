@@ -19,7 +19,7 @@ const COLUMN_COUNT = 5;
 
 /** dev = สิทธิ์สูงสุด ไล่ลงมา owner และ admin สีจึงไล่จากเข้มไปอ่อน */
 const ROLE_TONES: Record<string, string> = {
-  dev: "bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300",
+  dev: "bg-primary/10 text-icons",
   owner: "bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
   admin: "bg-slate-100 text-slate-600 dark:bg-slate-500/15 dark:text-slate-300",
 };

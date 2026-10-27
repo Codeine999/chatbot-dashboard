@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import type { UserTab } from "../type";
 
 const TABS: { value: UserTab; icon: React.ElementType }[] = [
-  { value: "registered", icon: UsersRound },
   { value: "line", icon: MessageCircle },
+  { value: "registered", icon: UsersRound },
 ];
 
 export const UserTabs = ({

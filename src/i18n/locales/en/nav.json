@@ -25,6 +25,7 @@
     "settingOverall": "Over All",
     "settingSelectMenu": "Select Menu",
     "settingAi": "AI Setting",
+    "settingConnection": "Connection",
     "aiWorkflow": "Ai Work Flow",
     "internalCustomerChat": "Customer chat test"
   },
@@ -38,8 +39,16 @@
     "logout": "Logout"
   },
   "notification": {
-    "title": "Notification",
-    "empty": "No notifications yet"
+    "title": "Notifications",
+    "empty": "No notifications yet",
+    "emptyUnread": "No unread notifications",
+    "markAllRead": "Mark all as read",
+    "tabAll": "All",
+    "tabUnread": "Unread",
+    "today": "Today",
+    "earlier": "Earlier",
+    "viewAll": "View all",
+    "settings": "Notification settings"
   },
   "theme": {
     "toggle": "Toggle theme"

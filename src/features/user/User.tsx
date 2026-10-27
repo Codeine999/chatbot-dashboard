@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Download, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { UserFilters } from "./components/UserFilters";
 import { UserPagination } from "./components/UserPagination";
 import { UserStatsCards } from "./components/UserStatsCards";
@@ -83,26 +85,24 @@ const User = () => {
     );
 
   return (
-    <div className="mt-8 mb-12 flex flex-col gap-5">
-      {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-normal">{t("title")}</h1>
-          <p className="mt-1 text-sm text-mini">{t("subtitle")}</p>
-        </div>
+    <PageContainer className="flex flex-col gap-5">
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actions={
+          <>
+            <Button variant="outline" className="gap-1.5">
+              <Download className="size-4" />
+              {t("common:actions.export")}
+            </Button>
 
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="!h-11 gap-2 px-5">
-            <Download className="size-4" />
-            {t("common:actions.export")}
-          </Button>
-
-          <Button className="!h-11 gap-2 px-5">
-            <Plus className="size-4" />
-            {t("add")}
-          </Button>
-        </div>
-      </div>
+            <Button className="gap-1.5">
+              <Plus className="size-4" />
+              {t("add")}
+            </Button>
+          </>
+        }
+      />
 
       <UserStatsCards counts={counts} isLoading={isCountsLoading} />
 
@@ -154,7 +154,7 @@ const User = () => {
           onPageChange={(next) => patchParams({ page: next })}
         />
       </Card>
-    </div>
+    </PageContainer>
   );
 };
 

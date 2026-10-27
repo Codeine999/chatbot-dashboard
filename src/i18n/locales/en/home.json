@@ -16,7 +16,6 @@
     "title": "Account Overview",
     "sync": "Sync info",
     "loading": "Loading LINE OA info…",
-    "error": "Failed to load LINE OA info.",
     "active": "Active",
     "chatMode": "Chat mode",
     "replyWith": "Reply with",
@@ -32,7 +31,11 @@
     "cancel": "Cancel",
     "saveModel": "Save changes",
     "modelUpdated": "Changed model to {{model}}.",
-    "modelUpdateError": "Unable to change the AI model."
+    "modelUpdateError": "Unable to change the AI model.",
+    "notConnectedTitle": "LINE OA is not connected",
+    "notConnectedDescription": "Connect so keeLa can reply to chats for you",
+    "goConnect": "Go to connect LINE",
+    "retry": "Try again"
   },
   "money": {
     "title": "{{period}} Money",

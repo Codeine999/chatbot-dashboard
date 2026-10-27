@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -137,32 +139,24 @@ export const AiAnswer = () => {
     );
 
   return (
-    <div className="mt-6 mb-12">
-      {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-50 text-icons dark:bg-purple-500/10">
-            <BookOpen className="h-5 w-5" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold text-normal">{t("title")}</h1>
-            <p className="text-sm text-mini">{t("subtitle")}</p>
-          </div>
-        </div>
+    <PageContainer>
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actions={
+          <>
+            <Button variant="ghost" className="border gap-1.5" onClick={() => setTab(TABS[2])}>
+              <Upload className="h-4 w-4 text-icons" />
+              {t("bulkImport")}
+            </Button>
 
-        <div className="flex flex-wrap items-center gap-2">
-
-          <Button variant="ghost" className="border gap-1.5" onClick={() => setTab(TABS[2])}>
-            <Upload className="h-4 w-4 text-icons" />
-            {t("bulkImport")}
-          </Button>
-
-          <Button className="gap-1.5" onClick={handleAdd}>
-            <Plus className="h-4 w-4" />
-            {tab === "micro" ? t("micro.add") : t("add")}
-          </Button>
-        </div>
-      </div>
+            <Button className="gap-1.5" onClick={handleAdd}>
+              <Plus className="h-4 w-4" />
+              {tab === "micro" ? t("micro.add") : t("add")}
+            </Button>
+          </>
+        }
+      />
 
       {(() => {
         const tabsBar = (
@@ -401,7 +395,7 @@ export const AiAnswer = () => {
           </div>
         );
       })()}
-    </div>
+    </PageContainer>
   );
 };
 

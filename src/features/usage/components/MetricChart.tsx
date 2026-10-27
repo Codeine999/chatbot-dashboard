@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef } from "react";
 import {
   Bar,
   BarChart,
@@ -107,17 +108,51 @@ const ChartLegendRow = ({ metric }: { metric: MetricDef }) => {
   );
 };
 
+/**
+ * เลื่อนกรอบให้ bucket ล่าสุดที่มีข้อมูลชิดขอบขวาของกรอบ
+ *
+ * ถ้าให้เบราว์เซอร์ค้างตำแหน่งเดิมไว้ พอเปลี่ยนช่วงเวลา (รายวัน/รายเดือน) หรือข้อมูลมาทีหลัง
+ * กรอบอาจไปหยุดตรงช่วงว่างจนเห็นกราฟเปล่า ทั้งที่ข้อมูลอยู่นอกกรอบ
+ * ถ้าไม่มีข้อมูลเลย (focusIndex < 0) ให้ไปที่ช่วงล่าสุดแทน
+ *
+ * ผูกกับ focusIndex กับจำนวน bucket ไม่ผูกกับ array points เพราะ refetch ทุกครั้งได้ array ใหม่
+ * ถ้าผูกไว้ ผู้ใช้เลื่อนดูย้อนหลังอยู่ก็จะถูกดีดกลับ
+ */
 const ChartScroller = ({
   minWidth,
+  bucketWidth,
+  focusIndex,
+  bucketCount,
   children,
 }: {
   minWidth: number;
+  bucketWidth: number;
+  focusIndex: number;
+  bucketCount: number;
   children: React.ReactNode;
-}) => (
-  <div className="-mx-1 overflow-x-auto overscroll-x-contain px-1 pb-1">
-    <div style={{ minWidth }}>{children}</div>
-  </div>
-);
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    // เผื่อครึ่ง bucket ท้ายแท่งสุดท้ายจะได้ไม่ถูกขอบกรอบตัด
+    const target =
+      focusIndex < 0
+        ? maxScroll
+        : (focusIndex + 1.5) * bucketWidth + Y_AXIS_WIDTH - el.clientWidth;
+
+    el.scrollLeft = Math.min(Math.max(target, 0), Math.max(maxScroll, 0));
+  }, [minWidth, bucketWidth, focusIndex, bucketCount]);
+
+  return (
+    <div ref={ref} className="-mx-1 overflow-x-auto overscroll-x-contain px-1 pb-1">
+      <div style={{ minWidth }}>{children}</div>
+    </div>
+  );
+};
 
 export const MetricChart = ({ metric, points }: Props) => {
   const { t } = useTranslation("usage");
@@ -179,11 +214,22 @@ export const MetricChart = ({ metric, points }: Props) => {
     ? points.length * minBucketWidth + Y_AXIS_WIDTH
     : 0;
 
+  let lastDataIndex = -1;
+  points.forEach((point, index) => {
+    if (Number(point.total) > 0) lastDataIndex = index;
+  });
+  const scrollProps = {
+    minWidth,
+    bucketWidth: minBucketWidth,
+    focusIndex: lastDataIndex,
+    bucketCount: points.length,
+  };
+
   if (isLine) {
     const [series] = metric.series;
 
     return (
-      <ChartScroller minWidth={minWidth}>
+      <ChartScroller {...scrollProps}>
         <ChartContainer
           config={config}
           className="mt-8 aspect-auto h-[210px] w-full"
@@ -216,7 +262,7 @@ export const MetricChart = ({ metric, points }: Props) => {
 
   return (
     <div>
-      <ChartScroller minWidth={minWidth}>
+      <ChartScroller {...scrollProps}>
         <ChartContainer
           config={config}
           className="mt-8 aspect-auto h-[210px] w-full"

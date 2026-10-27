@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { getIntlLocale } from "@/i18n/format";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { UserAvatar } from "@/features/user/components/UserVisuals";
 import { useSearchParams } from "react-router-dom";
 import {
   Bot,
@@ -62,22 +63,13 @@ function Avatar({
   size?: "sm" | "md" | "lg";
 }) {
   const sizeClass = {
-    sm: "h-8 w-8 text-xs",
-    md: "h-10 w-10 text-sm",
-    lg: "h-11 w-11 text-sm",
+    sm: "size-8 text-xs",
+    md: "size-10 text-sm",
+    lg: "size-11 text-sm",
   }[size];
 
-  return (
-    <div className={`shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-green-100 to-blue-100 ${sizeClass}`}>
-      {src ? (
-        <img src={src} alt={name} className="h-full w-full object-cover" />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center font-semibold text-slate-700 dark:text-slate-900">
-          {name.slice(0, 2)}
-        </div>
-      )}
-    </div>
-  );
+  // ไม่มีรูป หรือรูปโหลดไม่ได้ (ลิงก์หมดอายุ) แสดงอักษรแรกของชื่อบนพื้นสีเหมือนหน้าผู้ใช้
+  return <UserAvatar name={name} src={src ?? undefined} className={sizeClass} />;
 }
 
 function MessageContent({ message }: { message: LineChatHistory }) {

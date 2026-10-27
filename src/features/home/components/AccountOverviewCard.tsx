@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import ErrorFace from "@/assets/icon/error/error-face.svg";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Check,
   ChevronDown,
@@ -160,9 +163,6 @@ const AccountOverviewCard = () => {
       ]
     : [];
 
-  // h-full เพื่อยืดสูงเท่าการ์ดกราฟที่อยู่ข้าง ๆ ใน grid เดียวกัน
-  // การ์ดกราฟสูงตามเนื้อหา ถ้าล็อกความสูงตายตัวไว้จะเหลือช่องว่างใต้การ์ดนี้
-  // min-h กันไม่ให้เตี้ยกว่าเดิมตอนอยู่ลำพัง
   return (
     <Card className="flex h-full min-h-[384px] flex-col overflow-auto p-6">
       <div className="flex items-center justify-between">
@@ -176,17 +176,9 @@ const AccountOverviewCard = () => {
           <RefreshCw
             className={`!w-4 !h-4 text-mini ${isFetching ? "animate-spin" : ""}`}
           />
-          {t("account.sync")}
+          {t(isError ? "account.retry" : "account.sync")}
         </Button>
       </div>
-
-      {isLoading && (
-        <p className="mt-5 text-sm text-mini">{t("account.loading")}</p>
-      )}
-
-      {isError && (
-        <p className="mt-5 text-sm text-red-600">{t("account.error")}</p>
-      )}
 
       {account && (
         <>
@@ -273,6 +265,44 @@ const AccountOverviewCard = () => {
         </>
       )}
 
+      {isLoading && (
+        <div role="status" aria-label={t("account.loading")}>
+          <div className="mt-6 flex items-center gap-4">
+            <Skeleton className="h-16 w-16 shrink-0 rounded-full" />
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-5 w-16 rounded-md" />
+            </div>
+          </div>
+
+          <div className="mt-5 border-t pt-2">
+            {Array.from({ length: 5 }, (_, index) => (
+              <div key={index} className="flex items-center justify-between py-2.5">
+                <div className="flex items-center gap-2.5">
+                  <Skeleton className="size-4" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-4 w-28" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {isError && (
+        <div className="flex flex-1 flex-col items-center justify-center gap-1 py-6 text-center">
+          <img src={ErrorFace} alt="" className="mb-4 size-32 opacity-40" />
+          <p className="text-lg font-semibold text-normal">
+            {t("account.notConnectedTitle")}
+          </p>
+          <p className="text-sm text-mini">{t("account.notConnectedDescription")}</p>
+          <Button asChild className="mt-4 rounded-full bg-slate-900 px-6 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+            <Link to="/setting/connection">{t("account.goConnect")}</Link>
+          </Button>
+        </div>
+      )}
+
       <Dialog open={modelDialogOpen} onOpenChange={setModelDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -291,7 +321,7 @@ const AccountOverviewCard = () => {
             <p className="text-sm text-red-600">{t("account.modelsError")}</p>
           ) : (
             <Select
-              value={selectedModelValue}
+            value={selectedModelValue}
               onValueChange={setSelectedModelValue}
               disabled={updateModelMutation.isPending || modelOptions.length === 0}
             >

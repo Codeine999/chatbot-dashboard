@@ -84,5 +84,132 @@
       "light": "Light",
       "dark": "Dark"
     }
+  },
+  "connection": {
+    "webhook": {
+      "title": "Webhook URL",
+      "subtitle": "Copy this URL to LINE Developers › Messaging API › Webhook settings",
+      "notReady": "Webhook not set up",
+      "ready": "Webhook set up",
+      "empty": "Save the Channel first and a URL will be created",
+      "manualNeeded": "Could not set up the webhook automatically. Copy the URL above into LINE Developers yourself",
+      "copy": "Copy",
+      "copied": "Copied",
+      "afterCopy": "After copying, set up the LINE side as follows",
+      "steps": {
+        "paste": "Paste the URL into the Webhook URL field and click Verify",
+        "enable": "Turn on Use webhook",
+        "disableAutoReply": "Turn off Auto-reply messages and Greeting messages in LINE Official Account Manager so the bot doesn't reply twice"
+      },
+      "warning": "This URL is tied to your workspace. Do not share it with others",
+      "health": {
+        "title": "Webhook health",
+        "refresh": "Check again",
+        "test": "Send test event",
+        "testing": "Testing...",
+        "checking": "Checking...",
+        "configured": {
+          "title": "1. LINE is set up correctly",
+          "ok": "The URL matches this system and Use webhook is on",
+          "okUnchecked": "The URL is set and Use webhook is on (URL not compared because the server has no PUBLIC_API_BASE_URL)",
+          "mismatch": "The URL LINE is using does not match this system. Copy the URL above into LINE Developers again",
+          "inactive": "Use webhook is not turned on in LINE Developers",
+          "missing": "No Webhook URL is set in LINE Developers",
+          "unknown": "Could not read the setting from LINE right now. Check again"
+        },
+        "reachable": {
+          "title": "2. LINE can reach the server",
+          "idle": "Click Send test event to have LINE send a sample event to this URL",
+          "ok": "LINE reached the server (HTTP {{status}})",
+          "passedBefore": "Last test passed {{when}}",
+          "reasons": {
+            "COULD_NOT_CONNECT": "LINE could not connect to the server. Check the domain, port and firewall",
+            "REQUEST_TIMEOUT": "The server took too long to respond and LINE gave up",
+            "ERROR_STATUS_CODE": "The server answered HTTP {{status}} (404 = wrong URL path, 401 = Channel secret does not match LINE, 5xx = server problem)",
+            "UNTRUSTED_CERTIFICATE": "LINE does not trust the server's SSL certificate. Check the domain's certificate",
+            "UNKNOWN": "The test failed for a reason LINE did not specify"
+          }
+        },
+        "live": {
+          "title": "3. In real use",
+          "none": "No real message from LINE yet. Try sending the bot a message from your own LINE account",
+          "last": "Last event received {{when}} ({{count}} in the last 24 hours)"
+        }
+      }
+    },
+    "line": {
+      "title": "LINE Messaging API",
+      "subtitle": "Enter the details from the LINE Developers Console for the Channel you want to connect",
+      "openConsole": "Open LINE Developers",
+      "channelId": "Channel ID",
+      "channelIdPlaceholder": "e.g. 2008123456",
+      "channelIdHint": "Found in the Basic settings tab of the Channel. Digits only",
+      "channelSecret": "Channel secret",
+      "recommended": "Recommended",
+      "channelSecretPlaceholder": "Paste Channel secret",
+      "channelSecretHint": "32 characters, 0-9 and a-f. Used to verify the webhook signature so messages really come from LINE. Found in the Basic settings tab",
+      "accessToken": "Channel access token (long-lived)",
+      "accessTokenPlaceholder": "Paste Channel access token",
+      "accessTokenHint": "Found in Messaging API › Channel access token (long-lived). Click Issue",
+      "encryptedNote": "Data is encrypted before storage and will not be shown again after saving",
+      "lockedNote": "Saved and encrypted. Only the last 4 characters are shown. Click Edit to enter new values",
+      "envNote": "The system is currently using values from the server environment. Save here to manage the Channel from this page",
+      "submit": "Save",
+      "testing": "Saving and testing...",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "reset": "Clear",
+      "show": "Show value",
+      "hide": "Hide value"
+    },
+    "validation": {
+      "channelIdRequired": "Enter the Channel ID",
+      "channelIdDigits": "Channel ID must be digits only",
+      "channelIdShort": "Channel ID is too short",
+      "channelIdLong": "Channel ID is too long",
+      "secretRequired": "Enter the Channel secret",
+      "secretFormat": "Channel secret may only contain 0-9 and a-f",
+      "secretLength": "Channel secret must be exactly 32 characters",
+      "tokenRequired": "Enter the Channel access token",
+      "tokenFormat": "Access token contains invalid characters. Check for spaces or line breaks",
+      "tokenShort": "Access token is too short. Check that you copied all of it",
+      "tokenLong": "Access token is too long"
+    },
+    "errors": {
+      "invalidToken": "LINE rejected this Channel access token. Check that it is complete and has not been reissued",
+      "ownerOnly": "Only the owner can connect LINE",
+      "conflict": "This LINE Official Account is already connected to another company",
+      "lineUnreachable": "Cannot reach LINE right now. Please try again",
+      "notReady": "The system is not ready to store encrypted data. Please contact your administrator"
+    },
+    "toast": {
+      "webhookManual": "Saved, but the webhook could not be set up automatically. Copy the URL into LINE Developers"
+    },
+    "ownerOnly": {
+      "title": "Owner only",
+      "description": "Only an account with the owner role can set up the LINE connection"
+    },
+    "status": {
+      "title": "Connection status",
+      "idle": {
+        "title": "LINE is not connected",
+        "description": "Fill in the form on the left and save. The system will test the connection right away"
+      },
+      "testing": {
+        "title": "Testing connection",
+        "description": "Checking the token with LINE and setting up the webhook"
+      },
+      "connected": {
+        "title": "Connected successfully",
+        "description": "The system is ready to receive customer messages via LINE",
+        "envDescription": "Connected using server values. The system is ready to receive customer messages via LINE",
+        "verifiedAt": "Last verified {{date}} {{time}}"
+      },
+      "failed": {
+        "title": "Connection failed",
+        "description": "Check the Channel ID, secret and access token, then try again",
+        "keepsPrevious": "Your previous connection still works"
+      }
+    }
   }
 }

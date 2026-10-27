@@ -1,29 +1,32 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RefreshCw, Search, ShieldCheck } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
+import { PillTabs } from "@/components/common/PillTabs";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { getApiErrorMessage } from "@/api/api";
 import { formatNumber } from "@/i18n/format";
+import { AddAdminDialog } from "./components/AddAdminDialog";
 import { AdminListTable } from "./components/AdminListTable";
 import { useAdminList } from "./hooks/useAdminList";
 import { ADMIN_ROLES, type AdminListFilter } from "./type";
 
 export const AdminList = () => {
   const { t } = useTranslation("admins");
-  const { data, isPending, isError, error, refetch, isFetching } = useAdminList();
+  const { data, isPending, isError, error, refetch } = useAdminList();
 
+  const [addOpen, setAddOpen] = useState(false);
   const [filter, setFilter] = useState<AdminListFilter>({ search: "", role: "all" });
 
   const admins = useMemo(() => data ?? [], [data]);
+
+  const roleTabs = [
+    { value: "all", label: t("filter.all") },
+    ...ADMIN_ROLES.map((role) => ({ value: role, label: t(`role.${role}`) })),
+  ] satisfies { value: AdminListFilter["role"]; label: string }[];
 
   const visible = useMemo(() => {
     const keyword = filter.search.trim().toLowerCase();
@@ -43,66 +46,36 @@ export const AdminList = () => {
   }, [admins, filter]);
 
   return (
-    <div className="mt-8 mb-12 flex flex-col gap-5">
-      {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <ShieldCheck className="size-5" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-semibold text-normal">{t("title")}</h1>
-            <p className="mt-0.5 text-sm text-mini">{t("subtitle")}</p>
-          </div>
-        </div>
-
-        <Button
-          variant="outline"
-          className="!h-10 gap-2"
-          disabled={isFetching}
-          onClick={() => refetch()}
-        >
-          <RefreshCw className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
-          {t("refresh")}
-        </Button>
-      </div>
+    <PageContainer className="flex flex-col gap-5">
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actions={
+          <Button className="gap-1.5" onClick={() => setAddOpen(true)}>
+            <Plus className="size-4" />
+            {t("add.title")}
+          </Button>
+        }
+      />
 
       {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative min-w-0 sm:w-1/2">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-mini" />
-          <Input
-            value={filter.search}
-            onChange={(event) =>
-              setFilter((current) => ({ ...current, search: event.target.value }))
-            }
-            placeholder={t("searchPlaceholder")}
-            className="!h-11 bg-white pl-9 dark:bg-card"
-          />
-        </div>
-
-        <Select
-          value={filter.role}
-          onValueChange={(value) =>
-            setFilter((current) => ({
-              ...current,
-              role: value as AdminListFilter["role"],
-            }))
+      <div className="relative min-w-0 sm:w-1/2">
+        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-mini" />
+        <Input
+          value={filter.search}
+          onChange={(event) =>
+            setFilter((current) => ({ ...current, search: event.target.value }))
           }
-        >
-          <SelectTrigger className="!h-11 w-44">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("filter.allRoles")}</SelectItem>
-            {ADMIN_ROLES.map((role) => (
-              <SelectItem key={role} value={role}>
-                {t(`role.${role}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder={t("searchPlaceholder")}
+          className="!h-11 bg-white pl-9 dark:bg-card"
+        />
       </div>
+
+      <PillTabs
+        tabs={roleTabs}
+        value={filter.role}
+        onChange={(role) => setFilter((current) => ({ ...current, role }))}
+      />
 
       <Card className="overflow-hidden bg-white p-0 dark:bg-card">
         <AdminListTable
@@ -119,7 +92,9 @@ export const AdminList = () => {
           </p>
         )}
       </Card>
-    </div>
+
+      <AddAdminDialog open={addOpen} onOpenChange={setAddOpen} />
+    </PageContainer>
   );
 };
 

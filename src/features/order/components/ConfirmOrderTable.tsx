@@ -70,7 +70,7 @@ const ConfirmOrderTable = ({ products }) => {
                                         className="md:mt-2 mt-6 w-[50px] h-[45px] object-contain"
                                     />
                                     <div className="mt-1 mx-4">
-                                        <p className="font-medium text-gray-900 mb-2 line-clamp-2 leading-tight text-xs">
+                                        <p className="font-medium text-normal mb-2 line-clamp-2 leading-tight text-xs">
                                             {product.name}
                                         </p>
                                         <div className="flex gap-4">

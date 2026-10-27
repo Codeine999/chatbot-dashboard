@@ -4,6 +4,8 @@ import { LayoutGrid, Loader2, Send } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { formatTime } from "@/i18n/format";
 
 import { CellInspector } from "./components/CellInspector";
@@ -69,40 +71,39 @@ export const RichMenuSetting = () => {
       : "";
 
   return (
-    <div className="mt-10 mb-12">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold text-normal">{t("page.title")}</h1>
-          <p className="mt-2 text-sm text-mini">{t("page.subtitle")}</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {savedLabel && (
-            <p className="hidden text-xs text-mini sm:block">{savedLabel}</p>
-          )}
-
-          <Button
-            variant="outline"
-            onClick={builder.saveDraft}
-            disabled={!dirty || saving}
-          >
-            {saving && <Loader2 className="size-4 animate-spin" />}
-            {t("page.saveDraft")}
-          </Button>
-
-          <Button
-            onClick={builder.publish}
-            disabled={publishing || !selectedMenu || issues.length > 0}
-          >
-            {publishing ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <Send className="size-4" />
+    <PageContainer>
+      <PageHeader
+        title={t("page.title")}
+        subtitle={t("page.subtitle")}
+        actions={
+          <>
+            {savedLabel && (
+              <p className="hidden text-xs text-mini sm:block">{savedLabel}</p>
             )}
-            {publishing ? t("page.publishing") : t("page.publish")}
-          </Button>
-        </div>
-      </header>
+
+            <Button
+              variant="outline"
+              onClick={builder.saveDraft}
+              disabled={!dirty || saving}
+            >
+              {saving && <Loader2 className="size-4 animate-spin" />}
+              {t("page.saveDraft")}
+            </Button>
+
+            <Button
+              onClick={builder.publish}
+              disabled={publishing || !selectedMenu || issues.length > 0}
+            >
+              {publishing ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Send className="size-4" />
+              )}
+              {publishing ? t("page.publishing") : t("page.publish")}
+            </Button>
+          </>
+        }
+      />
 
       <div className="mt-6 grid items-start gap-4 xl:grid-cols-[17.5rem_minmax(0,1fr)_21rem]">
         <RichMenuList
@@ -182,6 +183,6 @@ export const RichMenuSetting = () => {
           </Card>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 };

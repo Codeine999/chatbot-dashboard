@@ -26,6 +26,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { InvoiceDetailsDialog } from "./components/InvoiceDetailsDialog";
 import { PaymentMethodBadge } from "./components/PaymentMethodBadge";
 import { StatusBadge } from "./components/StatusBadge";
@@ -115,11 +117,8 @@ export const Bill = () => {
   ];
 
   return (
-    <div className="mt-10 mb-12">
-      <div>
-        <h1 className="text-2xl font-semibold text-normal">{t("title")}</h1>
-        <p className="mt-2 text-sm text-mini">{t("subtitle")}</p>
-      </div>
+    <PageContainer>
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {summaryCards.map((item) => (
@@ -324,6 +323,6 @@ export const Bill = () => {
         onOpenChange={(open) => !open && setSuccessCredits(null)}
         credits={successCredits ?? 0}
       />
-    </div>
+    </PageContainer>
   );
 };

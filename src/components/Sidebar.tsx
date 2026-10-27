@@ -78,7 +78,7 @@ const navGroups: NavGroup[] = [
       { titleKey: "item.home", url: "/", icon: Home },
       { titleKey: "item.richMenu", url: "/rich-menu/setting", icon: LayoutGrid },
       { titleKey: "item.product", url: "/product", icon: Inbox },
-      { titleKey: "item.order", url: "/order", icon: Calendar },
+      // { titleKey: "item.order", url: "/order", icon: Calendar },
       { titleKey: "item.users", url: "/users", icon: UsersRound },
     ],
   },
@@ -122,31 +122,32 @@ const navGroups: NavGroup[] = [
         icon: Settings,
         children: [
           { titleKey: "item.settingOverall", url: "/setting/admin/over-all" },
-          { titleKey: "item.settingSelectMenu", url: "/setting/admin/select-menu" },
+          // { titleKey: "item.settingSelectMenu", url: "/setting/admin/select-menu" },
           { titleKey: "item.settingAi", url: "/setting/admin/ai-setting" },
+          { titleKey: "item.settingConnection", url: "/setting/connection" },
         ],
       },
     ],
   },
 ];
 
-/** active = พื้นม่วงอ่อน + ตัวอักษรม่วง + แถบม่วงชิดขอบซ้ายของ sidebar
+/** active = พื้นแดงอ่อน + ตัวอักษรแดง + แถบแดงชิดขอบซ้ายของ sidebar
  *  ต้องใส่ ! เพราะ variant `default` ของ SidebarMenuButton มี !bg/!text ของตัวเองอยู่ */
 const menuButtonClass = cn(
   "relative rounded-lg font-normal text-normal transition-colors",
-  "hover:bg-primary/5",
-  "data-[active=true]:!bg-primary/10 data-[active=true]:!text-primary data-[active=true]:font-medium",
+  "hover:bg-button-primary/5",
+  "data-[active=true]:!bg-button-primary/10 data-[active=true]:!text-button-primary data-[active=true]:font-medium",
   "data-[active=true]:before:content-[''] data-[active=true]:before:absolute data-[active=true]:before:-left-2",
   "data-[active=true]:before:top-1.5 data-[active=true]:before:bottom-1.5",
   "data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-r-full",
-  "data-[active=true]:before:bg-primary"
+  "data-[active=true]:before:bg-button-primary"
 );
 
 const groupLabelClass =
   "px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
 
 const NavBadge = ({ children }: { children: string }) => (
-  <span className="ml-auto rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+  <span className="ml-auto rounded-md bg-button-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-button-primary">
     {children}
   </span>
 );
@@ -278,7 +279,7 @@ const SidebarNavigation = () => {
                                   <SidebarMenuSubButton
                                     asChild
                                     isActive={location.pathname === child.url}
-                                    className="text-normal data-[active=true]:!bg-primary/10 data-[active=true]:!text-primary"
+                                    className="text-normal data-[active=true]:!bg-button-primary/10 data-[active=true]:!text-button-primary"
                                   >
                                     <NavLink to={child.url} onClick={handleClose}>
                                       <span>{t(child.titleKey)}</span>

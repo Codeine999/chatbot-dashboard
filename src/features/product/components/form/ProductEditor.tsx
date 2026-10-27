@@ -29,7 +29,7 @@ export const ProductEditor = ({ product }: Props) => {
   return (
     <Form {...editor.form}>
       {/* ไม่ให้ Enter ในช่องกรอกส่งฟอร์มเอง เพราะปุ่มหลักคือการวางขายทันที */}
-      <form noValidate onSubmit={(event) => event.preventDefault()} className="mt-6 mb-12">
+      <form noValidate onSubmit={(event) => event.preventDefault()} className="pt-4 pb-12">
         <PageHeader
           title={t(`form.${mode}Title`)}
           subtitle={t(`form.${mode}Subtitle`)}

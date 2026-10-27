@@ -45,20 +45,22 @@
     "modelLockedNote": "The model is set by an owner or dev",
     "apiKeyUnavailable": " · API key unavailable",
     "credits": "{{used}} credits",
-    "creditsWithLimit": "{{used}} / {{limit}} credits"
+    "creditsWithLimit": "{{used}} / {{limit}} credits",
+    "defaultTitle": "AI CHAT",
+    "brand": "KeeLa.Ai"
   },
   "messages": {
     "loadError": "Could not load messages in this room",
     "retry": "Retry",
     "copy": "Copy",
-    "assistant": "AI assistant"
+    "assistant": "AI Assistant"
   },
   "sidebar": {
     "recent": "Recent chats",
     "loading": "Loading chats",
     "error": "Could not load chat history",
     "empty": "No conversations yet",
-    "newChat": "New chat",
+    "newChat": "New",
     "search": "Search chats",
     "noResult": "No chats found",
     "options": "Options",
@@ -69,6 +71,12 @@
       "yesterday": "Yesterday",
       "last7": "Previous 7 days",
       "older": "Older"
+    },
+    "comingSoon": "Coming soon",
+    "nav": {
+      "projects": "Projects",
+      "scheduled": "Scheduled",
+      "more": "More"
     }
   },
   "error": {
@@ -180,7 +188,48 @@
       "noWorkflow": "Not in any flow",
       "context": "Context ({{count}})",
       "noContext": "No context yet"
+    },
+    "channel": {
+      "line": "LINE",
+      "application": "Application"
     }
   },
-  "greetingPrefix": "Hello,"
+  "greetingPrefix": "Hello,",
+  "appChat": {
+    "creditNote": "This channel uses the real App Message API: customer messages spend real AI credit and are stored as Application chat rooms (kept per APP_HISTORY_RETENTION_DAYS).",
+    "rooms": "Application rooms",
+    "newRoom": "New customer",
+    "roomsLoading": "Loading rooms…",
+    "roomsError": "Could not load rooms",
+    "roomsEmpty": "No rooms yet. Send a message as a customer.",
+    "mine": "Test customer",
+    "waitingAdmin": "Waiting for admin",
+    "newCustomer": "New customer",
+    "newCustomerHint": "Send the first message to create the room",
+    "channelHint": "Application channel",
+    "botMuted": "Bot is paused for now (an admin is replying)",
+    "pauseBot": "Pause bot",
+    "resumeBot": "Resume bot",
+    "botPaused": "Bot paused for this room",
+    "botResumed": "Bot resumed for this room",
+    "botActionError": "Action failed",
+    "loadOlder": "Load earlier messages",
+    "loadingOlder": "Loading earlier messages…",
+    "historyLoading": "Loading chat history…",
+    "historyError": "Could not load chat history",
+    "emptyRoom": "No messages in this room yet",
+    "emptyHint": "Type below to send as a new customer",
+    "sendAs": "Send as",
+    "asCustomer": "Customer",
+    "asAdmin": "Admin",
+    "realCustomerRoom": "A real customer's room: you can only reply as admin",
+    "placeholderAdmin": "Type a reply as admin…",
+    "roleCustomer": "Customer",
+    "roleAdmin": "Admin",
+    "roleBot": "Bot",
+    "roleSystem": "System",
+    "handoff": "Handed off to admin",
+    "sendError": "Could not send the message. Please try again.",
+    "adminSendError": "Could not send the admin message"
+  }
 }

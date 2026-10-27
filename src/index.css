@@ -99,6 +99,7 @@ html, body {
   --color-inside: var(--inside);
   --color-mini: var(--mini);
   --color-add-button: var(--add-button);
+  --color-button-primary: var(--button-primary);
   --color-normal: var(--normal);
 
   --breakpoint-3xl: 100rem;
@@ -113,8 +114,8 @@ html, body {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* indigo-600 */
-  --primary: oklch(51.1% 0.262 276.966);
+  /* สีแบรนด์ม่วงหลัก #5048e4 ใช้ทั้งปุ่ม ไอคอน และตัวอักษรสีม่วง */
+  --primary: #5048e4;
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(48.906% 0.00006 271.152);
   --secondary-foreground: oklch(0.205 0 0);
@@ -140,22 +141,24 @@ html, body {
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --hover: oklch(0.97 0 0);
-  --icons: oklch(0.4907 0.2699 292.56);
+  --icons: #5048e4;
   --icons-hover: oklch(96.715% 0.00011 271.152);
 
   --inside: oklch(0.9821 0 0);
   --background: oklch(100% 0.00011 271.152);
   --add-button: oklch(14.479% 0.00002 271.152);
+  /* ปุ่มหลัก (Button variant default) แดงเรียบ ๆ แยกจาก --primary ที่ยังเป็นม่วงสำหรับแท็บ ไอคอน สวิตช์ */
+  --button-primary: #d9534f;
 
   --mini: oklch(0.6822 0.0289 226.98);
   --normal: oklch(42.773% 0.00513 271.302);
 
   /* ชุดสีกราฟโทนสว่าง อ่านออกทั้งตาปกติและตาบอดสี */
-  --token-ai: #4f46e5;
+  --token-ai: #5048e4;
   /* กราฟ series เดียวใช้สเต็ปที่อ่อนกว่า slot แรกของชุดสีหมวดหมู่
      เพราะทั้งใบเป็นสีเดียว ถ้าใช้สีเข้มจัดเต็มพื้นที่จะดูหนักตา
      ผ่านเกณฑ์ contrast กับพื้นการ์ด 3:1 แล้ว (อ่อนกว่านี้ตกเกณฑ์) */
-  --chart-accent: #7b7ff0;
+  --chart-accent: #5048e4;
   --token-line: #0d9488;
   --token-admin: #ea580c;
   /* สีพื้นที่ใช้เว้นร่อง 2px ระหว่างแท่งที่ซ้อนกัน */
@@ -169,8 +172,8 @@ html, body {
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
   /* indigo-400 */
-  --primary: oklch(67.3% 0.182 276.935);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: #5048e4;
+  --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(68.422% 0.02062 248.22);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -194,7 +197,8 @@ html, body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  --icons: oklch(51.659% 0.23759 292.817);
+  /* เวอร์ชันอ่อนของ #5048e4 ให้อ่านชัดบนพื้นมืด */
+  --icons: #8984ed;
   --hover: oklch(31.317% 0.00004 271.152);
   --icons-hover: oklch(91.908% 0.01456 213.452);
 
@@ -202,8 +206,10 @@ html, body {
   --background: oklch(24.816% 0.00189 286.046);
 
   --add-button: oklch(26.862% 0.00003 271.152);
-  --normal: oklch(83.392% 0.01276 276.034);
-  --mini: oklch(72.933% 0.03278 228.491);
+  --button-primary: #d9534f;
+  /* โทนมืด: หัวข้อ/ข้อความหลักเป็นขาว ข้อความรองเป็นเทากลาง ไม่มีโทนฟ้า */
+  --normal: oklch(0.985 0 0);
+  --mini: oklch(0.708 0 0);
 
   /* โทนมืดเลือกสเต็ปใหม่ ไม่ใช่การกลับสีจากธีมสว่าง */
   --token-ai: #7379f2;

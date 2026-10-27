@@ -84,5 +84,132 @@
       "light": "สว่าง",
       "dark": "มืด"
     }
+  },
+  "connection": {
+    "webhook": {
+      "title": "Webhook URL",
+      "subtitle": "คัดลอก URL นี้ไปวางที่ LINE Developers › Messaging API › Webhook settings",
+      "notReady": "ยังไม่ได้ตั้งค่า webhook",
+      "ready": "ตั้งค่า webhook แล้ว",
+      "empty": "บันทึก Channel ก่อน ระบบจะสร้าง URL ให้",
+      "manualNeeded": "ตั้ง webhook อัตโนมัติไม่สำเร็จ ให้คัดลอก URL ด้านบนไปวางที่ LINE Developers เอง",
+      "copy": "คัดลอก",
+      "copied": "คัดลอกแล้ว",
+      "afterCopy": "หลังคัดลอก ให้ตั้งค่าในฝั่ง LINE ดังนี้",
+      "steps": {
+        "paste": "วาง URL ในช่อง Webhook URL แล้วกด Verify",
+        "enable": "เปิดสวิตช์ Use webhook",
+        "disableAutoReply": "ปิด Auto-reply messages และ Greeting messages ใน LINE Official Account Manager เพื่อไม่ให้ตอบซ้ำกับบอท"
+      },
+      "warning": "URL นี้ผูกกับ workspace ของคุณโดยเฉพาะ อย่าแชร์ให้ผู้อื่น",
+      "health": {
+        "title": "ตรวจสอบสถานะ webhook",
+        "refresh": "ตรวจสอบอีกครั้ง",
+        "test": "ทดสอบส่ง event",
+        "testing": "กำลังทดสอบ...",
+        "checking": "กำลังตรวจสอบ...",
+        "configured": {
+          "title": "1. ตั้งค่าที่ LINE ถูกต้อง",
+          "ok": "URL ตรงกับของระบบ และเปิด Use webhook แล้ว",
+          "okUnchecked": "ตั้ง URL และเปิด Use webhook แล้ว (ยังเทียบ URL ไม่ได้ เพราะ server ยังไม่ได้ตั้ง PUBLIC_API_BASE_URL)",
+          "mismatch": "URL ที่ LINE ใช้อยู่ไม่ตรงกับของระบบ ให้คัดลอก URL ด้านบนไปวางที่ LINE Developers ใหม่",
+          "inactive": "ยังไม่ได้เปิดสวิตช์ Use webhook ที่ LINE Developers",
+          "missing": "ยังไม่ได้ตั้ง Webhook URL ที่ LINE Developers",
+          "unknown": "ถามค่าจาก LINE ไม่ได้ในขณะนี้ ลองตรวจสอบอีกครั้ง"
+        },
+        "reachable": {
+          "title": "2. LINE ส่งมาถึงเซิร์ฟเวอร์ได้",
+          "idle": "กดทดสอบส่ง event เพื่อให้ LINE ยิง event ตัวอย่างมาที่ URL นี้",
+          "ok": "LINE ส่งถึงเซิร์ฟเวอร์ได้ (HTTP {{status}})",
+          "passedBefore": "ทดสอบผ่านล่าสุด {{when}}",
+          "reasons": {
+            "COULD_NOT_CONNECT": "LINE ต่อเซิร์ฟเวอร์ไม่ได้ ตรวจโดเมน พอร์ต และ firewall",
+            "REQUEST_TIMEOUT": "เซิร์ฟเวอร์ตอบช้าเกินไป จน LINE ตัดการเชื่อมต่อ",
+            "ERROR_STATUS_CODE": "เซิร์ฟเวอร์ตอบ HTTP {{status}} (404 = path ของ URL ผิด, 401 = Channel secret ไม่ตรงกับของ LINE, 5xx = เซิร์ฟเวอร์มีปัญหา)",
+            "UNTRUSTED_CERTIFICATE": "ใบรับรอง SSL ของเซิร์ฟเวอร์ LINE ไม่เชื่อถือ ตรวจ certificate ของโดเมน",
+            "UNKNOWN": "ทดสอบไม่ผ่านด้วยสาเหตุที่ LINE ไม่ระบุ"
+          }
+        },
+        "live": {
+          "title": "3. ใช้งานจริงอยู่",
+          "none": "ยังไม่เคยได้รับข้อความจริงจาก LINE ลองทักบอทจากบัญชี LINE ของคุณ",
+          "last": "ได้รับ event ล่าสุด {{when}} (24 ชั่วโมงที่ผ่านมา {{count}} รายการ)"
+        }
+      }
+    },
+    "line": {
+      "title": "LINE Messaging API",
+      "subtitle": "ใส่ข้อมูลจาก LINE Developers Console ของ Channel ที่ต้องการเชื่อมต่อ",
+      "openConsole": "เปิด LINE Developers",
+      "channelId": "Channel ID",
+      "channelIdPlaceholder": "เช่น 2008123456",
+      "channelIdHint": "อยู่ที่แท็บ Basic settings ของ Channel เป็นตัวเลขล้วน",
+      "channelSecret": "Channel secret",
+      "recommended": "แนะนำ",
+      "channelSecretPlaceholder": "วาง Channel secret",
+      "channelSecretHint": "ตัวอักษร 0-9 และ a-f จำนวน 32 ตัว ใช้ตรวจลายเซ็นของ webhook ว่าข้อความมาจาก LINE จริง อยู่ที่แท็บ Basic settings",
+      "accessToken": "Channel access token (long-lived)",
+      "accessTokenPlaceholder": "วาง Channel access token",
+      "accessTokenHint": "อยู่ที่แท็บ Messaging API › Channel access token (long-lived) กดปุ่ม Issue",
+      "encryptedNote": "ข้อมูลถูกเข้ารหัสก่อนจัดเก็บ และจะไม่แสดงซ้ำหลังบันทึก",
+      "lockedNote": "บันทึกและเข้ารหัสไว้แล้ว ระบบแสดงได้แค่ 4 ตัวท้าย กดแก้ไขเพื่อกรอกค่าใหม่",
+      "envNote": "ตอนนี้ระบบใช้ค่าจากเซิร์ฟเวอร์ (environment) อยู่ บันทึกที่นี่เพื่อจัดการ Channel จากหน้านี้ได้เอง",
+      "submit": "บันทึก",
+      "testing": "กำลังบันทึกและทดสอบ...",
+      "edit": "แก้ไข",
+      "cancel": "ยกเลิก",
+      "reset": "ล้างข้อมูล",
+      "show": "แสดงค่า",
+      "hide": "ซ่อนค่า"
+    },
+    "validation": {
+      "channelIdRequired": "กรุณากรอก Channel ID",
+      "channelIdDigits": "Channel ID ต้องเป็นตัวเลขเท่านั้น",
+      "channelIdShort": "Channel ID สั้นเกินไป",
+      "channelIdLong": "Channel ID ยาวเกินไป",
+      "secretRequired": "กรุณากรอก Channel secret",
+      "secretFormat": "Channel secret ใช้ได้เฉพาะตัวอักษร 0-9 และ a-f",
+      "secretLength": "Channel secret ต้องมี 32 ตัวอักษรพอดี",
+      "tokenRequired": "กรุณากรอก Channel access token",
+      "tokenFormat": "Access token มีอักขระที่ไม่ถูกต้อง ตรวจว่าไม่มีช่องว่างหรือขึ้นบรรทัดใหม่",
+      "tokenShort": "Access token สั้นเกินไป ตรวจว่าคัดลอกมาครบ",
+      "tokenLong": "Access token ยาวเกินไป"
+    },
+    "errors": {
+      "invalidToken": "LINE ไม่ยอมรับ Channel access token นี้ ตรวจว่าคัดลอกครบและยังไม่ถูกออกใหม่",
+      "ownerOnly": "เฉพาะเจ้าของร้าน (owner) เท่านั้นที่เชื่อมต่อ LINE ได้",
+      "conflict": "LINE Official Account นี้ถูกเชื่อมกับบริษัทอื่นอยู่แล้ว",
+      "lineUnreachable": "เชื่อมต่อ LINE ไม่ได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง",
+      "notReady": "ระบบยังไม่พร้อมเก็บข้อมูลแบบเข้ารหัส กรุณาแจ้งผู้ดูแลระบบ"
+    },
+    "toast": {
+      "webhookManual": "บันทึกแล้ว แต่ตั้ง webhook อัตโนมัติไม่สำเร็จ กรุณาคัดลอก URL ไปวางที่ LINE Developers"
+    },
+    "ownerOnly": {
+      "title": "เฉพาะเจ้าของร้านเท่านั้น",
+      "description": "การเชื่อมต่อ LINE ตั้งค่าได้เฉพาะบัญชีที่มีบทบาท owner"
+    },
+    "status": {
+      "title": "สถานะการเชื่อมต่อ",
+      "idle": {
+        "title": "ยังไม่ได้เชื่อมต่อ LINE",
+        "description": "กรอกข้อมูลทางซ้ายแล้วกดบันทึก ระบบจะทดสอบการเชื่อมต่อให้ทันที"
+      },
+      "testing": {
+        "title": "กำลังทดสอบการเชื่อมต่อ",
+        "description": "ระบบกำลังตรวจสอบ token กับ LINE และตั้งค่า webhook"
+      },
+      "connected": {
+        "title": "เชื่อมต่อสำเร็จ",
+        "description": "ระบบพร้อมรับข้อความจากลูกค้าผ่าน LINE",
+        "envDescription": "เชื่อมต่อด้วยค่าจากเซิร์ฟเวอร์ ระบบพร้อมรับข้อความจากลูกค้าผ่าน LINE",
+        "verifiedAt": "ตรวจสอบล่าสุด {{date}} {{time}}"
+      },
+      "failed": {
+        "title": "เชื่อมต่อไม่สำเร็จ",
+        "description": "ตรวจสอบ Channel ID, secret และ access token อีกครั้ง แล้วลองใหม่",
+        "keepsPrevious": "การเชื่อมต่อเดิมยังใช้งานได้ตามปกติ"
+      }
+    }
   }
 }
