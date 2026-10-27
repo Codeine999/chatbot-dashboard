@@ -63,7 +63,7 @@ type NavItem = {
   /** ป้ายเล็กท้ายเมนู เช่น AI / Beta — เป็นชื่อเฉพาะ ไม่ต้องแปล */
   badge?: string;
   /** ถ้ามี children เมนูจะกลายเป็น dropdown แทนการลิงก์ตรง */
-  children?: { titleKey: string; url: string }[];
+  children?: { titleKey: string; url: string; roles?: AdminRole[] }[];
 };
 
 type NavGroup = {
@@ -125,6 +125,7 @@ const navGroups: NavGroup[] = [
           // { titleKey: "item.settingSelectMenu", url: "/setting/admin/select-menu" },
           { titleKey: "item.settingAi", url: "/setting/admin/ai-setting" },
           { titleKey: "item.settingConnection", url: "/setting/connection" },
+          { titleKey: "item.settingClearSession", url: "/setting/clear-session", roles: ["owner", "dev"] },
         ],
       },
     ],
@@ -161,6 +162,9 @@ const SidebarNavigation = () => {
   const { data: brandInfo } = useCompanyBrandInfo();
   const { t } = useTranslation("nav");
   const user = useAuthUser();
+
+  /** ไม่ระบุ roles = เห็นทุก role */
+  const canSee = (roles?: AdminRole[]) => !roles || (!!user && roles.includes(user.role));
 
   const handleClose = () => {
     if (isMobile) {
@@ -218,7 +222,11 @@ const SidebarNavigation = () => {
             <SidebarGroupContent>
               <SidebarMenu className="gap-0.5">
                 {group.items
-                  .filter((item) => !item.roles || (user && item.roles.includes(user.role)))
+                  .filter((item) => canSee(item.roles))
+                  .map((item) => ({
+                    ...item,
+                    children: item.children?.filter((child) => canSee(child.roles)),
+                  }))
                   .map((item) => {
                   const isItemActive =
                     item.url === "/"

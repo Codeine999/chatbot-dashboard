@@ -26,6 +26,7 @@
     "settingSelectMenu": "เลือกเมนู",
     "settingAi": "ตั้งค่า AI",
     "settingConnection": "การเชื่อมต่อ",
+    "settingClearSession": "ล้าง session",
     "aiWorkflow": "AI Work Flow",
     "internalCustomerChat": "ทดสอบแชทลูกค้า"
   },

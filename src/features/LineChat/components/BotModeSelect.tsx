@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useResumeBot } from "../hooks/useLineChat";
-import { deriveBotMode } from "../lib/botMode";
-import type { BotMode, LineChatHistory, LineConversation } from "../types/lineChat.type";
+import type { BotMode, LineConversation } from "../types/lineChat.type";
 
 const MODES: {
   id: BotMode;
@@ -41,15 +40,17 @@ const useNow = (intervalMs: number) => {
 
 type Props = {
   conversation: LineConversation;
-  messages: LineChatHistory[];
 };
 
-export const BotModeSelect = ({ conversation, messages }: Props) => {
+export const BotModeSelect = ({ conversation }: Props) => {
   const { t } = useTranslation("chat");
   const resumeBot = useResumeBot();
   const now = useNow(15_000);
 
-  const { mode, resumesAt } = deriveBotMode(messages, now);
+  const mode = conversation.botMode;
+  const resumesAt = conversation.botMuteUntil
+    ? new Date(conversation.botMuteUntil).getTime()
+    : undefined;
   const minutesLeft = resumesAt ? Math.max(1, Math.ceil((resumesAt - now) / 60_000)) : 0;
   const current = MODES.find((item) => item.id === mode) ?? MODES[0];
   const CurrentIcon = current.icon;

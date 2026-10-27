@@ -17,6 +17,19 @@
     "title": "Language",
     "subtitle": "Choose the language used across the dashboard"
   },
+  "clearSession": {
+    "title": "Clear session",
+    "subtitle": "Clear the sessions of conversations that are still open",
+    "action": "Clear session",
+    "confirm": {
+      "title": "Clear all sessions?",
+      "description": "This clears every user's bans, strike and spam records, rate-limit counters and chat sessions. It cannot be undone."
+    },
+    "toast": {
+      "cleared": "Sessions cleared",
+      "failed": "Failed to clear sessions"
+    }
+  },
   "aiSetting": {
     "title": "AI Setting",
     "subtitle": "Configure AI RAG behavior, models, tone, and fallback responses.",

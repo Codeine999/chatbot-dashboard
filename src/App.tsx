@@ -21,6 +21,7 @@ import { OverallSetting } from "./features/setting/overallSetting/OverAllSetting
 import { SelectMenu } from "./features/setting/selectMenu/SelectMenu";
 import { AiSetting } from "./features/setting/aiSetting/AiSetting";
 import { Connection } from "./features/setting/connection/Connection";
+import { ClearSession } from "./features/setting/clearSession/ClearSession";
 import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
 import GuestRoute from "@/features/auth/components/GuestRoute";
 
@@ -62,6 +63,7 @@ function App() {
           <Route path="/setting/admin/select-menu" element={<SelectMenu />} />
           <Route path="/setting/admin/ai-setting" element={<AiSetting />} />
           <Route path="/setting/connection" element={<Connection />} />
+          <Route path="/setting/clear-session" element={<ClearSession />} />
         </Route>
       </Route>
 

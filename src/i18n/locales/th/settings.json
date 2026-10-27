@@ -17,6 +17,19 @@
     "title": "ภาษา",
     "subtitle": "เลือกภาษาที่ใช้แสดงผลในระบบ"
   },
+  "clearSession": {
+    "title": "ล้าง session",
+    "subtitle": "ล้าง session ของการสนทนาที่ค้างอยู่",
+    "action": "Clear session",
+    "confirm": {
+      "title": "ล้าง session ทั้งหมดใช่ไหม",
+      "description": "ระบบจะล้างการแบน สถิติการละเมิด ตัวนับ rate limit และ session แชทของผู้ใช้ทุกคน การกระทำนี้ย้อนกลับไม่ได้"
+    },
+    "toast": {
+      "cleared": "ล้าง session เรียบร้อยแล้ว",
+      "failed": "ล้าง session ไม่สำเร็จ"
+    }
+  },
   "aiSetting": {
     "title": "ตั้งค่า AI",
     "subtitle": "ตั้งค่าการทำงานของ AI RAG โมเดล โทนการตอบ และข้อความสำรอง",

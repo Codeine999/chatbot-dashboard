@@ -667,7 +667,7 @@ export const LineChat = () => {
                     </p>
                   </div>
                   <ConversationStatusBadge status={selectedConversation.status} />
-                  <BotModeSelect conversation={selectedConversation} messages={messages} />
+                  <BotModeSelect conversation={selectedConversation} />
                 </div>
               ) : (
                 <p className="font-semibold text-normal">{t("line.selectConversation")}</p>

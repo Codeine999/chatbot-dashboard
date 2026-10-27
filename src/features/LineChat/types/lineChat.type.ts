@@ -30,6 +30,10 @@ export type LineConversation = {
   lastMessageAt: string;
   unreadCount: number;
   lineMember: LineMember;
+  /** โหมดบอทจาก backend (อ่านจาก Redis) ไม่ต้องคำนวณจากข้อความ */
+  botMode: BotMode;
+  /** ISO time ที่บอทจะกลับมาตอบเอง มีค่าเฉพาะตอน botMode = "admin" */
+  botMuteUntil: string | null;
 };
 
 export type LineChatHistory = {
