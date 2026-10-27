@@ -298,7 +298,7 @@ export const Usage = () => {
             used={aiChatUsed}
             limit={aiChatLimit}
             icon={Bot}
-            iconClassName="bg-primary/10 text-icons ring-primary/15"
+            iconClassName="border border-border bg-transparent text-icons dark:border-transparent"
             progressClassName="from-primary to-primary/70"
           />
           <UsageOverviewRow

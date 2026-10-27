@@ -7,7 +7,7 @@ const BURST_DOTS = Array.from({ length: 10 }, (_, index) => index);
 const SPRING = { type: "spring", stiffness: 260, damping: 18 } as const;
 
 const TONE: Record<ConnectionStatus, string> = {
-  idle: "bg-primary/10 text-icons",
+  idle: "border border-border bg-transparent text-icons dark:border-transparent",
   testing: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
   connected: "bg-green-500 text-white shadow-lg shadow-green-500/30",
   failed: "bg-red-500 text-white shadow-lg shadow-red-500/25",

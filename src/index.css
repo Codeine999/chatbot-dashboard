@@ -141,7 +141,7 @@ html, body {
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --hover: oklch(0.97 0 0);
-  --icons: #5048e4;
+  --icons: #d9534f;
   --icons-hover: oklch(96.715% 0.00011 271.152);
 
   --inside: oklch(0.9821 0 0);
@@ -198,7 +198,7 @@ html, body {
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   /* เวอร์ชันอ่อนของ #5048e4 ให้อ่านชัดบนพื้นมืด */
-  --icons: #8984ed;
+  --icons: #e57373;
   --hover: oklch(31.317% 0.00004 271.152);
   --icons-hover: oklch(91.908% 0.01456 213.452);
 

@@ -30,7 +30,7 @@ export function UnderlineTabs<T extends string>({ tabs, value, onChange, classNa
             className={cn(
               "-mb-px cursor-pointer whitespace-nowrap border-b-2 pb-2 text-sm transition",
               isActive
-                ? "border-icons font-medium text-icons"
+                ? "border-button-primary font-medium text-button-primary"
                 : "border-transparent text-mini hover:text-normal"
             )}
           >

@@ -11,7 +11,6 @@ import {
 import type { ConnectionStatus } from "../type";
 import {
   getConnectErrorMessage,
-  isForbiddenError,
 } from "../utils/connectionErrors";
 import { resolveWebhookUrl } from "../utils/connectionView";
 import { useConnectLineChannel, useLineChannelStatus } from "./useLineChannel";
@@ -86,7 +85,6 @@ export const useLineConnection = () => {
     state,
     status,
     isLoading: channel.isLoading,
-    isForbidden: isForbiddenError(channel.error),
     locked,
     canCancel: editing,
     canSubmit: form.formState.isValid && !connect.isPending,

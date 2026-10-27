@@ -31,7 +31,7 @@ export function PillTabs<T extends string>({ tabs, value, onChange, className }:
               "cursor-pointer whitespace-nowrap rounded-full px-5 py-2 text-sm transition-colors",
               "outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
               isActive
-                ? "bg-primary/10 font-semibold text-primary"
+                ? "bg-button-primary/10 font-semibold text-button-primary"
                 : "text-mini hover:bg-hover hover:text-normal"
             )}
           >

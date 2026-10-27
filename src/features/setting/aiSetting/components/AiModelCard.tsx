@@ -80,7 +80,7 @@ export const AiModelCard = () => {
 
   const catalog = catalogQuery.data ?? [];
   const settings = settingsQuery.data ?? [];
-  const canEdit = user?.role === "dev" || user?.role === "owner";
+  const canEdit = user?.role === "dev";
   const settingOf = (scope: AiProviderScope) =>
     settings.find((setting) => setting.scope === scope);
 

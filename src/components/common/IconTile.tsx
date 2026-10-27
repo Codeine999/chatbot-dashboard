@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const iconTileVariants = cva("flex shrink-0 items-center justify-center", {
   variants: {
     tone: {
-      primary: "bg-primary/10 text-icons",
+      primary: "border border-border bg-transparent text-icons dark:border-transparent",
       success: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
       warning: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400",
       info: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",

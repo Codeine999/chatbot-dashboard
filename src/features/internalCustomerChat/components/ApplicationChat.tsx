@@ -113,7 +113,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
 
   return (
     <div className={active ? undefined : "hidden"}>
-      <p className="mb-5 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
+      <p className="mb-5 rounded-xl border border-amber-300 p-3 text-xs leading-relaxed text-amber-700 dark:border-transparent dark:bg-amber-500/10 dark:text-amber-400">
         {t("appChat.creditNote")}
       </p>
 

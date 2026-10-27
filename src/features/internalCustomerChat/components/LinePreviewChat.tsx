@@ -31,7 +31,7 @@ export function LinePreviewChat({ active, tabs }: { active: boolean; tabs: React
   return (
     <div className={active ? undefined : "hidden"}>
       <div className="mb-5 flex flex-wrap items-center gap-3">
-        <p className="min-w-0 flex-1 basis-80 rounded-xl bg-amber-50 p-3 text-xs leading-relaxed text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
+        <p className="min-w-0 flex-1 basis-80 rounded-xl border border-amber-300 p-3 text-xs leading-relaxed text-amber-700 dark:border-transparent dark:bg-amber-500/10 dark:text-amber-400">
           {t("customerTest.creditNote")}
         </p>
         <Button

@@ -44,7 +44,7 @@ const KnowledgeStatsCards = ({ stats, onManageCategories }: Props) => {
         value={formatNumber(stats.total)}
         hint={t("stats.totalHint")}
         icon={BookOpen}
-        tone="bg-primary/10 text-icons"
+        tone="border border-border bg-transparent text-icons dark:border-transparent"
       />
 
       <StatCard

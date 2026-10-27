@@ -36,7 +36,7 @@ export const UserTabs = ({
             className={cn(
               "-mb-px flex cursor-pointer items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-sm transition",
               isActive
-                ? "border-primary font-medium text-primary"
+                ? "border-button-primary font-medium text-button-primary"
                 : "border-transparent text-mini hover:text-normal"
             )}
           >
@@ -46,7 +46,7 @@ export const UserTabs = ({
               <span
                 className={cn(
                   "rounded-md px-1.5 py-0.5 text-xs font-medium",
-                  isActive ? "bg-primary/10 text-primary" : "bg-muted text-mini"
+                  isActive ? "bg-button-primary/10 text-button-primary" : "bg-muted text-mini"
                 )}
               >
                 {formatNumber(counts[tab])}

@@ -93,6 +93,9 @@ export const AiConfigCard = ({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  {tone && !(AI_TONES as readonly string[]).includes(tone) && (
+                    <SelectItem value={tone}>{tone}</SelectItem>
+                  )}
                   {AI_TONES.map((value) => (
                     <SelectItem key={value} value={value}>
                       {t(`aiSetting.tone.${value.toLowerCase()}`)}

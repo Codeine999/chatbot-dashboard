@@ -47,3 +47,26 @@ export type AiSettingForm = {
   responseStyle: AiResponseStyle;
   fallbackMessage: string;
 };
+
+/** หนึ่งรายการจาก GET /api/admin/ai-settings (systemPrompt ส่งมาเฉพาะ dev) */
+export type AiSettingRecord = {
+  id: string;
+  ownerPrompt: string | null;
+  tone: string | null;
+  /** Json ฝั่ง backend: ตรวจรูปร่างก่อนใช้เสมอ */
+  skills: unknown;
+  responseStyle: unknown;
+  fallbackMessage: string | null;
+  promptVersion: number;
+  active: boolean;
+  updatedAt: string;
+};
+
+/** body ของ POST/PATCH /api/admin/ai-settings (ส่งเฉพาะฟิลด์ที่ฟอร์มแก้ได้) */
+export type AiSettingPayload = {
+  ownerPrompt: string | null;
+  tone: string | null;
+  skills: AiSkill[];
+  responseStyle: AiResponseStyle;
+  fallbackMessage: string | null;
+};

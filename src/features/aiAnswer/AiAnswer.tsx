@@ -168,7 +168,7 @@ export const AiAnswer = () => {
                 onClick={() => setTab(name)}
                 className={`-mb-px border-b-2 pb-2 text-sm transition ${
                   tab === name
-                    ? "border-icons font-medium text-icons"
+                    ? "border-button-primary font-medium text-button-primary"
                     : "border-transparent text-mini hover:text-normal"
                 }`}
               >

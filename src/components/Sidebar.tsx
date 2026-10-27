@@ -121,7 +121,7 @@ const navGroups: NavGroup[] = [
         url: "/setting",
         icon: Settings,
         children: [
-          { titleKey: "item.settingOverall", url: "/setting/admin/over-all" },
+          // { titleKey: "item.settingOverall", url: "/setting/admin/over-all" },
           // { titleKey: "item.settingSelectMenu", url: "/setting/admin/select-menu" },
           { titleKey: "item.settingAi", url: "/setting/admin/ai-setting" },
           { titleKey: "item.settingConnection", url: "/setting/connection" },
@@ -180,8 +180,8 @@ const SidebarNavigation = () => {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link to="/">
-                <div className="flex items-center xl:gap-3 gap-4 ">
-                  <div className={`duration-300 ease-in-out ${isCollapsed ? "w-6 -mx-1" : "w-8"
+                <div className="flex w-full items-center gap-3">
+                  <div className={`shrink-0 duration-300 ease-in-out ${isCollapsed ? "w-6 -mx-1" : "w-8"
                     }`}>
                     {brandInfo?.image ? (
                       <img src={resolveImageUrl(brandInfo.image)} alt="logo" className="rounded-md object-cover" />
@@ -192,13 +192,13 @@ const SidebarNavigation = () => {
                     )}
                   </div>
                   {!isCollapsed && (
-                    <div className="flex items-center gap-6">
-                      <div className="flex flex-col">
+                    <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+                      <div className="flex min-w-0 flex-col">
                         <CardTitle className="text-sm">{brandInfo?.name || t("brand.fallbackName")}</CardTitle>
                         <CardDescription className="text-[10px]">{t("brand.subtitle")}</CardDescription>
                       </div>
 
-                      <ChevronDown className="w-4 h-4 text-normal" />
+                      <ChevronDown className="size-4 shrink-0 text-normal" />
                     </div>
                   )}
                 </div>

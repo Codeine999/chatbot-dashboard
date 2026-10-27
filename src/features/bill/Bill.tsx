@@ -176,7 +176,7 @@ export const Bill = () => {
                 className={cn(
                   "rounded-md px-4 py-1.5 text-sm font-medium transition-colors cursor-pointer",
                   filter === tab.value
-                    ? "bg-card text-primary shadow-sm"
+                    ? "bg-card text-button-primary shadow-sm"
                     : "text-mini hover:text-normal"
                 )}
               >
