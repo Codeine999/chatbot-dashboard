@@ -25,6 +25,7 @@
     "settingOverall": "ตั้งค่าทั่วไป",
     "settingSelectMenu": "เลือกเมนู",
     "settingAi": "ตั้งค่า AI",
+    "settingConnection": "การเชื่อมต่อ",
     "aiWorkflow": "AI Work Flow",
     "internalCustomerChat": "ทดสอบแชทลูกค้า"
   },
@@ -39,7 +40,15 @@
   },
   "notification": {
     "title": "การแจ้งเตือน",
-    "empty": "ยังไม่มีการแจ้งเตือน"
+    "empty": "ยังไม่มีการแจ้งเตือน",
+    "emptyUnread": "ไม่มีการแจ้งเตือนที่ยังไม่อ่าน",
+    "markAllRead": "อ่านทั้งหมดแล้ว",
+    "tabAll": "ทั้งหมด",
+    "tabUnread": "ยังไม่อ่าน",
+    "today": "วันนี้",
+    "earlier": "ก่อนหน้านี้",
+    "viewAll": "ดูทั้งหมด",
+    "settings": "ตั้งค่าการแจ้งเตือน"
   },
   "theme": {
     "toggle": "สลับธีมสว่าง/มืด"

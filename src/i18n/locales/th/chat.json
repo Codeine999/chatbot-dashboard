@@ -45,20 +45,22 @@
     "modelLockedNote": "โมเดลตั้งค่าโดย owner หรือ dev",
     "apiKeyUnavailable": " · ไม่มี API key",
     "credits": "{{used}} เครดิต",
-    "creditsWithLimit": "{{used}} / {{limit}} เครดิต"
+    "creditsWithLimit": "{{used}} / {{limit}} เครดิต",
+    "defaultTitle": "AI CHAT",
+    "brand": "KeeLa.Ai"
   },
   "messages": {
     "loadError": "โหลดข้อความในห้องนี้ไม่สำเร็จ",
     "retry": "ลองใหม่",
     "copy": "คัดลอก",
-    "assistant": "ผู้ช่วย AI"
+    "assistant": "AI Assistant"
   },
   "sidebar": {
     "recent": "แชทล่าสุด",
     "loading": "กำลังโหลดรายการแชท",
     "error": "โหลดประวัติแชทไม่สำเร็จ",
     "empty": "ยังไม่มีบทสนทนา",
-    "newChat": "แชทใหม่",
+    "newChat": "สร้างใหม่",
     "search": "ค้นหาแชต",
     "noResult": "ไม่พบแชทที่ค้นหา",
     "options": "ตัวเลือก",
@@ -69,6 +71,12 @@
       "yesterday": "เมื่อวาน",
       "last7": "7 วันที่ผ่านมา",
       "older": "ก่อนหน้านี้"
+    },
+    "comingSoon": "เร็ว ๆ นี้",
+    "nav": {
+      "projects": "โปรเจกต์",
+      "scheduled": "งานตามกำหนดเวลา",
+      "more": "เพิ่มเติม"
     }
   },
   "error": {

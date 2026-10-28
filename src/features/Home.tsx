@@ -1,10 +1,5 @@
-import {
-  Card,
-  CardContent,
-  CardTitle,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card"
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 
 import Chatbot from "./home/Chat";
 
@@ -25,16 +20,14 @@ const Home = () => {
   const user = useAuthUser();
 
   return (
-    <main className="min-h-svh py-2 text-slate-900">
-      <div className="mb-12">
-        <div className="mt-2 text-color">
-          <CardTitle className="text-2xl">
-            {t("welcome", { name: user?.firstname || user?.username || "" })}
-          </CardTitle>
-          <CardDescription className="text-sm">{t("subtitle")}</CardDescription>
-        </div>
+    <main className="min-h-svh">
+      <PageContainer>
+        <PageHeader
+          title={t("welcome", { name: user?.firstname || user?.username || "" })}
+          subtitle={t("subtitle")}
+        />
 
-        <div className="mt-4 flex flex-col gap-4">
+        <div className="mt-6 flex flex-col gap-4">
           {/* Overview */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <OverviewCard />
@@ -56,7 +49,7 @@ const Home = () => {
             {/* <ViewCard /> */}
           </div>
         </div>
-      </div>
+      </PageContainer>
     </main>
   );
 };

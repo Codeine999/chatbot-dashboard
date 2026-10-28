@@ -1,6 +1,6 @@
 /** สีของ badge หมวดหมู่ ถ้าเจอหมวดใหม่จะวนใช้สีจากลิสต์แทนที่จะไม่มีสี */
 const CATEGORY_TONES = [
-  "bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-300",
+  "bg-primary/10 text-icons",
   "bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300",
   "bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-300",
   "bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300",

@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { Info, Search } from "lucide-react";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
@@ -74,11 +76,8 @@ export const SelectMenu = () => {
     .filter((group) => group.items.length > 0);
 
   return (
-    <div className="mt-10 mb-12">
-      <div>
-        <h1 className="text-2xl font-semibold text-normal">{t("selectMenu.title")}</h1>
-        <p className="mt-2 text-sm text-mini">{t("selectMenu.subtitle")}</p>
-      </div>
+    <PageContainer>
+      <PageHeader title={t("selectMenu.title")} subtitle={t("selectMenu.subtitle")} />
 
       <div className="mt-6 flex items-start gap-2 rounded-xl bg-primary/10 px-4 py-3">
         <Info className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -145,6 +144,6 @@ export const SelectMenu = () => {
           )}
         </CardContent>
       </Card>
-    </div>
+    </PageContainer>
   );
 };

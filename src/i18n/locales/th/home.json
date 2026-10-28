@@ -16,7 +16,6 @@
     "title": "ภาพรวมบัญชี",
     "sync": "ซิงก์ข้อมูล",
     "loading": "กำลังโหลดข้อมูล LINE OA…",
-    "error": "ไม่สามารถโหลดข้อมูล LINE OA ได้",
     "active": "ใช้งานอยู่",
     "chatMode": "โหมดแชท",
     "replyWith": "ตอบกลับด้วย",
@@ -32,7 +31,11 @@
     "cancel": "ยกเลิก",
     "saveModel": "บันทึกการเปลี่ยนแปลง",
     "modelUpdated": "เปลี่ยนโมเดลเป็น {{model}} แล้ว",
-    "modelUpdateError": "ไม่สามารถเปลี่ยนโมเดล AI ได้"
+    "modelUpdateError": "ไม่สามารถเปลี่ยนโมเดล AI ได้",
+    "notConnectedTitle": "ยังไม่ได้เชื่อมต่อ LINE OA",
+    "notConnectedDescription": "เชื่อมต่อเพื่อให้ keeLa ตอบแชทแทนคุณ",
+    "goConnect": "ไปเชื่อมต่อ LINE",
+    "retry": "ลองใหม่"
   },
   "money": {
     "title": "รายได้{{period}}",

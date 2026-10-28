@@ -18,6 +18,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getApiErrorMessage } from "@/api/api";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { useAdminUsage } from "./hooks/useAdminUsage";
 import { useLinePushMessageUsage } from "./hooks/useLinePushMessageUsage";
 import { useUsageAccounts } from "./hooks/useUsageAccounts";
@@ -261,21 +263,21 @@ export const Usage = () => {
   const activeAccounts = usageAccounts.filter((item) => item.status === "active").length;
 
   return (
-    <div className="mt-10 mb-12">
-      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-normal">{t("title")}</h1>
-          <p className="mt-2 text-sm text-mini">{t("subtitle")}</p>
-        </div>
-        <div className="flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium text-mini shadow-sm">
-          <Sparkles className="h-4 w-4 text-orange-500" />
-          {isAdminUsageLoading || isLinePushLoading
-            ? t("sync.syncing")
-            : isAdminUsageError || isLinePushError
-              ? t("sync.fallback")
-              : t("sync.updated")}
-        </div>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actions={
+          <div className="flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium text-mini shadow-sm">
+            <Sparkles className="h-4 w-4 text-orange-500" />
+            {isAdminUsageLoading || isLinePushLoading
+              ? t("sync.syncing")
+              : isAdminUsageError || isLinePushError
+                ? t("sync.fallback")
+                : t("sync.updated")}
+          </div>
+        }
+      />
 
       <Card className="mt-6">
         <div className="flex flex-col gap-3 border-b border-white/50 px-5 py-5 dark:border-border sm:flex-row sm:items-center sm:justify-between sm:px-7">
@@ -296,8 +298,8 @@ export const Usage = () => {
             used={aiChatUsed}
             limit={aiChatLimit}
             icon={Bot}
-            iconClassName="bg-indigo-50/80 text-indigo-600 ring-indigo-100 dark:bg-indigo-500/10 dark:text-indigo-400 dark:ring-indigo-500/20"
-            progressClassName="from-indigo-600 via-violet-500 to-fuchsia-500"
+            iconClassName="bg-primary/10 text-icons ring-primary/15"
+            progressClassName="from-primary to-primary/70"
           />
           <UsageOverviewRow
             title={t("token.lineSend")}
@@ -335,6 +337,6 @@ export const Usage = () => {
           ))}
         </div>
       )}
-    </div>
+    </PageContainer>
   );
 };

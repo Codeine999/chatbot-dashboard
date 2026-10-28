@@ -29,7 +29,7 @@ export function Background({ className, ...props }: BackgroundProps) {
         opacity-0 shadow-[0_0_56px_16px_rgba(255,255,255,0.88)] dark:opacity-0" 
       />
       <div className="absolute left-[8%] top-[64%] h-32 w-[38rem] dark:opacity-0 -rotate-[27deg] rounded-full bg-white/70 blur-xl" />
-      <div className="absolute right-[1%] top-[75%] h-24 w-[42rem] dark:opacity-0 -rotate-12 rounded-full bg-violet-200/35 blur-2xl" />
+      <div className="absolute right-[1%] top-[75%] h-24 w-[42rem] dark:opacity-0 -rotate-12 rounded-full bg-primary/15 blur-2xl" />
     </div>
   );
 }

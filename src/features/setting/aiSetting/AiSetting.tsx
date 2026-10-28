@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Settings2 } from "lucide-react";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Button } from "@/components/ui/button";
 import { AiModelCard } from "./components/AiModelCard";
 import { AiConfigCard } from "./components/AiConfigCard";
@@ -29,17 +30,8 @@ export const AiSetting = () => {
   const handleSave = () => setSaved(form);
 
   return (
-    <div className="mt-6 mb-12 flex flex-col gap-4">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <Settings2 className="size-5" />
-        </div>
-        <div>
-          <h1 className="text-xl font-semibold text-normal">{t("aiSetting.title")}</h1>
-          <p className="text-sm text-mini">{t("aiSetting.subtitle")}</p>
-        </div>
-      </div>
+    <PageContainer className="flex flex-col gap-4">
+      <PageHeader title={t("aiSetting.title")} subtitle={t("aiSetting.subtitle")} />
 
       <AiModelCard />
 
@@ -69,7 +61,7 @@ export const AiSetting = () => {
           {t("aiSetting.save")}
         </Button>
       </div>
-    </div>
+    </PageContainer>
   );
 };
 

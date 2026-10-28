@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { orderList } from "@/data/order.data";
+// import { orderList } from "@/data/order.data";
 import { EmptyState } from "@/components/common/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -51,17 +51,17 @@ import { useTranslation } from "react-i18next";
 const Order = () => {
   const { t } = useTranslation("order");
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [rawOrder, setRawOrder] = useState(orderList);
+  // const [rawOrder, setRawOrder] = useState(orderList);
   const [currentPage, setCurrentPage] = useState(1);
   const [position, setPosition] = React.useState("All")
   const [orders, setOrders] = useState<any[]>([]);
   const itemsPerPage = 10;
 
-  const filteredOrder = position === "All"
-    ? rawOrder
-    : rawOrder.filter((item) => item.status === position);
+  // const filteredOrder = position === "All"
+  //   ? rawOrder
+  //   : rawOrder.filter((item) => item.status === position);
 
-  const totalPages = Math.ceil(filteredOrder.length / itemsPerPage) || 1;
+  // const totalPages = Math.ceil(filteredOrder.length / itemsPerPage) || 1;
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -70,9 +70,9 @@ const Order = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    setRawOrder(orderList);
-  }, [orderList]);
+  // useEffect(() => {
+  //   setRawOrder(orderList);
+  // }, [orderList]);
 
   
   useEffect(() => {
@@ -95,26 +95,26 @@ const Order = () => {
     return 120;
   };
 
-  const cutText = (text, maxLength) =>
-    text.length <= maxLength ? text : text.slice(0, maxLength) + "..";
+  // const cutText = (text, maxLength) =>
+  //   text.length <= maxLength ? text : text.slice(0, maxLength) + "..";
 
-  const nextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  };
+  // const nextPage = () => {
+  //   if (currentPage < totalPages) {
+  //     setCurrentPage((prevPage) => prevPage + 1);
+  //   }
+  // };
 
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
+  // const prevPage = () => {
+  //   if (currentPage > 1) {
+  //     setCurrentPage((prevPage) => prevPage - 1);
+  //   }
+  // };
 
 
-  const currentItems = filteredOrder.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // const currentItems = filteredOrder.slice(
+  //   (currentPage - 1) * itemsPerPage,
+  //   currentPage * itemsPerPage
+  // );
 
   return (
     <div className="mt-6">
@@ -181,10 +181,10 @@ const Order = () => {
 
         {/* Scrollable Order List */}
         <div className="flex-1 overflow-y-auto">
-          {orderList.length === 0 && (
+          {/* {orderList.length === 0 && (
             <EmptyState icon={ShoppingBag} title={t("list.empty")} />
           )}
-          {orderList.map(item => (
+         {orderList.map(item => (
             <Link key={item.orderID} to={`/order/confirm/${item.orderID}`}>
               <div className="flex justify-center items-center gap-2 p-4 -my-[1.2px] hover:bg-[#f1f3f9]">
                 <div className="mr-auto flex md:gap-6 gap-2 items-center">
@@ -220,7 +220,7 @@ const Order = () => {
               </div>
               <div className="w-full border-b" />
             </Link>
-          ))}
+          ))}  */}
         </div>
 
         {/* Pagination fixed to bottom */}
@@ -228,13 +228,13 @@ const Order = () => {
           <div className="flex items-center justify-end">
             <Button
               variant="ghost"
-              onClick={prevPage}
+              // onClick={prevPage}
               disabled={currentPage === 1}
             >
               <ChevronLeft className="!w-10 !h-5" />
             </Button>
 
-            <div className="border px-5 rounded-full">
+            {/* <div className="border px-5 rounded-full">
               <span className="text-xs">
                 {currentPage} / {totalPages}
               </span>
@@ -246,20 +246,20 @@ const Order = () => {
               disabled={currentPage === totalPages}
             >
               <ChevronRight className="!w-10 !h-5" />
-            </Button>
+            </Button> */}
           </div>
         </div>
 
 
         <div className="md:hidden block overflow-y-auto h-[656px]">
-          {currentItems.map((items) => (
+          {/* {currentItems.map((items) => (
             <Link to={`/order/confirm/${items.orderID}`} key={items.orderID}>
               <div className="flex justify-center items-center gap-2 p-4">
                 <div className="mr-auto flex gap-4 items-center">
                   <Checkbox id="terms" />
                   <div className="flex flex-col">
                     <div className="flex gap-4">
-                      <p className="text-sm text-color font-bold">
+                      <p className="text-sm text-normal font-bold">
                         {cutText(items.name, maxLength())}
                       </p>
                       <Button
@@ -289,13 +289,13 @@ const Order = () => {
               </div>
               <div className="-mt-1 w-full border-1" />
             </Link>
-          ))}
+          ))} */}
         </div>
 
         <div className="block md:hidden">
-          <div className="flex justify-between -mt-1 p-2 px-4">
+          {/* <div className="flex justify-between -mt-1 p-2 px-4">
             <p className="text-sm">{t("list.showing", { from: filteredOrder.length ? 1 : 0, total: filteredOrder.length })}</p>
-          </div>
+          </div> */}
         </div>
       </Card>
     </div>

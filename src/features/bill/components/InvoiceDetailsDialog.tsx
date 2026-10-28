@@ -40,7 +40,7 @@ export const InvoiceDetailsDialog = ({ invoice, onOpenChange }: Props) => {
 
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-lg font-semibold text-gray-900">{invoice.id}</p>
+                <p className="text-lg font-semibold text-normal">{invoice.id}</p>
                 <p className="text-xs text-gray-400">{formatDateTime(invoice.paymentDate)}</p>
               </div>
               <Button

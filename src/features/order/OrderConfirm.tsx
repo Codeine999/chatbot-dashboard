@@ -18,7 +18,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-import { orderdetail, ordernotic } from "@/data/order.data"
+// import { orderdetail, ordernotic } from "@/data/order.data"
 import {
   AArrowDown,
   Trash,
@@ -51,12 +51,12 @@ const OrderConfirm = () => {
   const [itemsPerPage, setItemsPerPage] = useState(4);
 
 
-  useEffect(() => {
-    const order = ordernotic.find(order => order.orderID === id);
-    console.log("Received ID from URL:", order);
-    setOrderData(order);
-    setLoading(false);
-  }, [id]);
+  // useEffect(() => {
+  //   const order = ordernotic.find(order => order.orderID === id);
+  //   console.log("Received ID from URL:", order);
+  //   setOrderData(order);
+  //   setLoading(false);
+  // }, [id]);
 
 
   useEffect(() => {
@@ -75,11 +75,11 @@ const OrderConfirm = () => {
   }, []);
 
 
-  useEffect(() => {
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    setCurrentItems(orderdetail.slice(indexOfFirstItem, indexOfLastItem));
-  }, [currentPage, itemsPerPage, orderdetail]);
+  // useEffect(() => {
+  //   const indexOfLastItem = currentPage * itemsPerPage;
+  //   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  //   setCurrentItems(orderdetail.slice(indexOfFirstItem, indexOfLastItem));
+  // }, [currentPage, itemsPerPage, orderdetail]);
 
 
   return (
@@ -114,7 +114,7 @@ const OrderConfirm = () => {
       <div className="grid lg:grid-cols-[70%_30%] grid-cols-1 gap-4">
 
         {/* Product Order */}
-        <ConfirmOrderTable products={orderdetail} />
+        {/* <ConfirmOrderTable products={orderdetail} /> */}
 
         {/* Customer Detail */}
         <ConfirmOrderCustomer />

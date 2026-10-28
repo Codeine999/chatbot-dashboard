@@ -41,7 +41,7 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 const fieldClassName =
-  "h-13 rounded-2xl border-white/80 bg-white/70 pl-11 pr-4 text-[15px] text-slate-800 shadow-[0_8px_22px_rgba(88,70,148,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] placeholder:text-slate-400 focus-visible:border-violet-300 focus-visible:bg-white/90 focus-visible:ring-4 focus-visible:ring-violet-400/15 dark:!bg-white/70";
+  "h-13 rounded-2xl border-white/80 bg-white/70 pl-11 pr-4 text-[15px] text-slate-800 shadow-[0_8px_22px_rgba(88,70,148,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] placeholder:text-slate-400 focus-visible:border-primary/40 focus-visible:bg-white/90 focus-visible:ring-4 focus-visible:ring-primary/15 dark:!bg-white/70";
 
 const Login = () => {
   const { t } = useTranslation("auth");
@@ -102,11 +102,11 @@ const Login = () => {
         >
           {isForgotPassword ? (
             <div>
-              <button type="button" onClick={() => setForgotPassword(false)} className="mb-7 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-violet-700">
+              <button type="button" onClick={() => setForgotPassword(false)} className="mb-7 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-primary">
                 <ChevronLeft className="size-4" /> {t("reset.backToSignIn")}
               </button>
               <div className="text-center">
-                <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-white/80 bg-white/70 px-4 py-2 text-sm font-semibold text-violet-700 shadow-sm">
+                <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-white/80 bg-white/70 px-4 py-2 text-sm font-semibold text-primary shadow-sm">
                   <Mail className="size-4" /> {t("reset.badge")}
                 </div>
                 <h1 className="mt-6 text-3xl font-bold tracking-[-0.04em] text-slate-900 sm:text-4xl">{t("reset.title")}</h1>
@@ -128,7 +128,7 @@ const Login = () => {
                     </FormItem>
                   )} />
                   {isSent && <p className="rounded-xl bg-emerald-50 px-4 py-3 text-center text-sm text-emerald-700">{t("reset.sent")}</p>}
-                  <Button type="submit" disabled={loading} className="h-13 w-full rounded-2xl bg-gradient-to-r from-violet-700 via-violet-600 to-fuchsia-500 text-[15px] font-semibold text-white shadow-[0_12px_24px_rgba(116,66,235,0.32),inset_0_1px_1px_rgba(255,255,255,0.45)] transition hover:brightness-105">
+                  <Button type="submit" disabled={loading} className="h-13 w-full rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-[15px] font-semibold text-white shadow-[0_12px_24px_rgba(116,66,235,0.32),inset_0_1px_1px_rgba(255,255,255,0.45)] transition hover:brightness-105">
                     {loading ? <img src={Spinner} alt={t("login.loading")} className="size-5" /> : t("reset.submit")}
                   </Button>
                   <p className="text-center text-xs text-slate-400">{t("reset.spamHint")}</p>
@@ -139,8 +139,8 @@ const Login = () => {
             <div>
               <div className="text-center mb-14">
                 <div className="-mt-12 flex justify-center">
-                  <div className="flex items-center gap-3 rounded-full border border-white/90 bg-white/75 py-1 pl-3 pr-5 text-[22px] font-bold tracking-[-0.04em] text-violet-600 shadow-[0_7px_22px_rgba(123,92,229,0.18),inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-md">
-                    <span className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-400 via-violet-600 to-fuchsia-500 text-white shadow-[0_4px_12px_rgba(132,83,235,0.38)]">
+                  <div className="flex items-center gap-3 rounded-full border border-white/90 bg-white/75 py-1 pl-3 pr-5 text-[22px] font-bold tracking-[-0.04em] text-primary shadow-[0_7px_22px_rgba(123,92,229,0.18),inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-md">
+                    <span className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-primary/70 to-primary text-white shadow-[0_4px_12px_rgba(132,83,235,0.38)]">
                       <Bot className="size-5" strokeWidth={2} />
                     </span>
                       <p className="text-[17px]">{t("login.brand")}</p>
@@ -171,7 +171,7 @@ const Login = () => {
                         <div className="relative">
                           <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
                           <Input type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder={t("login.passwordPlaceholder")} {...field} className={`${fieldClassName} pr-12`} />
-                          <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-violet-50 hover:text-violet-700" aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}>
+                          <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-primary/10 hover:text-primary" aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}>
                             {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                           </button>
                         </div>
@@ -182,10 +182,10 @@ const Login = () => {
 
                   <div className="flex items-center justify-between gap-4 pt-0.5">
                     <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-slate-600">
-                      <Checkbox checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked === true)} className="size-5 rounded-md border-slate-300 bg-white/75 data-[state=checked]:border-violet-600 data-[state=checked]:bg-violet-600 dark:!bg-white/75 dark:data-[state=checked]:!bg-violet-600" />
+                      <Checkbox checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked === true)} className="size-5 rounded-md border-slate-300 bg-white/75 data-[state=checked]:border-primary data-[state=checked]:bg-primary dark:!bg-white/75 dark:data-[state=checked]:!bg-primary" />
                       {t("login.rememberMe")}
                     </label>
-                    <button type="button" onClick={() => setForgotPassword(true)} className="text-sm font-semibold text-violet-600 transition hover:text-violet-800">{t("login.forgotPassword")}</button>
+                    <button type="button" onClick={() => setForgotPassword(true)} className="text-sm font-semibold text-primary transition hover:text-primary/80">{t("login.forgotPassword")}</button>
                   </div>
 
                   {errorMessage && <p className="rounded-xl bg-red-50 px-4 py-3 text-center text-sm text-red-600">{errorMessage}</p>}

@@ -45,20 +45,22 @@
     "modelLockedNote": "The model is set by an owner or dev",
     "apiKeyUnavailable": " · API key unavailable",
     "credits": "{{used}} credits",
-    "creditsWithLimit": "{{used}} / {{limit}} credits"
+    "creditsWithLimit": "{{used}} / {{limit}} credits",
+    "defaultTitle": "AI CHAT",
+    "brand": "KeeLa.Ai"
   },
   "messages": {
     "loadError": "Could not load messages in this room",
     "retry": "Retry",
     "copy": "Copy",
-    "assistant": "AI assistant"
+    "assistant": "AI Assistant"
   },
   "sidebar": {
     "recent": "Recent chats",
     "loading": "Loading chats",
     "error": "Could not load chat history",
     "empty": "No conversations yet",
-    "newChat": "New chat",
+    "newChat": "New",
     "search": "Search chats",
     "noResult": "No chats found",
     "options": "Options",
@@ -69,6 +71,12 @@
       "yesterday": "Yesterday",
       "last7": "Previous 7 days",
       "older": "Older"
+    },
+    "comingSoon": "Coming soon",
+    "nav": {
+      "projects": "Projects",
+      "scheduled": "Scheduled",
+      "more": "More"
     }
   },
   "error": {

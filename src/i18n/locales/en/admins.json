@@ -1,13 +1,47 @@
 {
   "title": "Admin accounts",
   "subtitle": "Everyone who can sign in to this workspace",
-  "refresh": "Refresh",
+  "add": {
+    "title": "Add admin",
+    "subtitle": "Create an account to sign in to the back office",
+    "cancel": "Cancel",
+    "submit": "Add admin",
+    "avatar": {
+      "upload": "Upload profile photo",
+      "hint": "PNG or JPG · optional"
+    },
+    "field": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "username": "Username",
+      "role": "Role",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "email": "Email",
+      "phone": "Phone",
+      "aiCredit": "Max AI credit"
+    },
+    "placeholder": {
+      "username": "e.g. somying",
+      "email": "name@company.com",
+      "phone": "08x-xxx-xxxx",
+      "role": "Select a role",
+      "aiCredit": "e.g. 1000"
+    },
+    "hint": {
+      "aiCredit": "Most credit this admin can use"
+    },
+    "ai": {
+      "label": "Enable AI",
+      "description": "Allow AI features and count credit usage"
+    }
+  },
   "searchPlaceholder": "Search by name, username, email, or phone...",
   "loadFailed": "Could not load admin accounts",
   "empty": "No admin matches your filters",
   "count": "Showing {{count}} of {{total}} accounts",
   "filter": {
-    "allRoles": "All roles"
+    "all": "All"
   },
   "role": {
     "dev": "Developer",
@@ -24,5 +58,14 @@
     "role": "Role",
     "aiAccess": "AI access",
     "joined": "Joined"
+  },
+  "validation": {
+    "roleRequired": "Select a role",
+    "creditRequired": "Enter the AI credit",
+    "creditInvalid": "Use a number with up to 6 decimals"
+  },
+  "toast": {
+    "created": "Admin added",
+    "createFailed": "Could not add the admin"
   }
 }

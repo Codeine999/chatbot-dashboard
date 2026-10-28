@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useMemo, useState } from "react";
 import {
-  ChevronDown,
   LoaderCircle,
+  Search,
   MoreHorizontal,
   Plus,
   RefreshCw,
@@ -15,8 +15,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { SearchInput } from "@/components/common/SearchInput";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { sidebarNavMock } from "../mock/chatSidebar.mock";
+import { SidebarNavRow, SidebarSectionToggle } from "./SidebarRows";
 import type { AdminChatRoom } from "../type";
 import { groupRoomsByDate } from "../utils/groupRooms";
 
@@ -51,6 +53,18 @@ const ChatHistorySidebar = ({
   const { t } = useTranslation("chat");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
   const [keyword, setKeyword] = useState("");
+  // กลุ่มที่ผู้ใช้พับเก็บไว้ (กดที่หัวกลุ่ม)
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+
+  const comingSoon = () => toast(t("sidebar.comingSoon"));
+
+  const toggleGroup = (key: string) =>
+    setCollapsed((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
 
   const sortedConversations = useMemo(
     () =>
@@ -91,29 +105,43 @@ const ChatHistorySidebar = ({
   return (
     <aside
       className={cn(
-        "w-[17.5rem] shrink-0 flex-col bg-card/60 backdrop-blur-xl",
+        "w-[18rem] shrink-0 flex-col bg-inside",
         mobile ? "flex h-full w-full" : "hidden border-r lg:flex"
       )}
     >
-      <div className="shrink-0 space-y-3 p-3.5">
-        <Button
+      {/* แถวเมนูบนสุด ไอคอนกับข้อความตรงแนวเดียวกันทุกแถว */}
+      <div className="shrink-0 space-y-0.5 px-2 pt-3">
+        {/* ไม่มีห้องที่เลือก = อยู่หน้าแชทใหม่ ไฮไลต์แถวนี้ */}
+        <SidebarNavRow
+          icon={Plus}
+          label={t("sidebar.newChat")}
+          active={!activeId}
           onClick={onNewChat}
-          className="h-11 w-full gap-2 rounded-xl text-sm shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-        >
-          <Plus className="size-4" />
-          {t("sidebar.newChat")}
-        </Button>
-        <SearchInput
-          value={keyword}
-          onChange={(event) => setKeyword(event.target.value)}
-          placeholder={t("sidebar.search")}
-          aria-label={t("sidebar.search")}
-          wrapperClassName="w-full"
-          className="h-10 rounded-xl border-transparent bg-hover text-sm shadow-none"
         />
+
+        <label className="flex h-9 w-full cursor-text items-center gap-3 rounded-lg px-3 text-sm text-normal transition-colors focus-within:bg-hover hover:bg-hover">
+          <Search className="size-[18px] shrink-0" aria-hidden />
+          <input
+            type="search"
+            value={keyword}
+            onChange={(event) => setKeyword(event.target.value)}
+            placeholder={t("sidebar.search")}
+            aria-label={t("sidebar.search")}
+            className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-normal focus:placeholder:text-mini"
+          />
+        </label>
+
+        {sidebarNavMock.map(({ key, icon }) => (
+          <SidebarNavRow
+            key={key}
+            icon={icon}
+            label={t(`sidebar.nav.${key}`)}
+            onClick={comingSoon}
+          />
+        ))}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-2">
+      <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3">
         {isLoading ? (
           <div className="space-y-2 px-1 py-3" aria-label={t("sidebar.loading")}>
             {[0, 1, 2, 3, 4].map((item) => (
@@ -143,11 +171,13 @@ const ChatHistorySidebar = ({
           </p>
         ) : (
           groups.map((group) => (
-            <section key={group.key} className="mb-3">
-              <p className="px-2 pb-1.5 pt-3 text-xs text-mini">
-                {t(`sidebar.group.${group.key}`)}
-              </p>
-              <div className="space-y-0.5">
+            <section key={group.key} className="mt-4">
+              <SidebarSectionToggle
+                label={t(`sidebar.group.${group.key}`)}
+                collapsed={collapsed.has(group.key)}
+                onToggle={() => toggleGroup(group.key)}
+              />
+              <div className={cn("space-y-0.5", collapsed.has(group.key) && "hidden")}>
                 {group.rooms.map((conversation) => {
                   const isActive = conversation.id === activeId;
                   const isDeleting = deletingRoomId === conversation.id;
@@ -165,13 +195,11 @@ const ChatHistorySidebar = ({
                         }
                       }}
                       className={cn(
-                        "group flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 text-left transition-colors duration-200",
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-normal hover:bg-hover"
+                        "group flex h-9 cursor-pointer items-center gap-2 rounded-lg pl-3 pr-1.5 text-left transition-colors duration-200",
+                        isActive ? "bg-hover text-normal" : "text-normal hover:bg-hover"
                       )}
                     >
-                      <span className="min-w-0 flex-1 truncate text-[13px]">
+                      <span className="min-w-0 flex-1 truncate text-sm">
                         {conversation.title}
                       </span>
                       <DropdownMenu>
@@ -223,10 +251,9 @@ const ChatHistorySidebar = ({
             onClick={() =>
               setVisibleCount((count) => count + LOAD_MORE_COUNT)
             }
-            className="flex h-8 w-full items-center justify-center gap-1.5 rounded-lg text-xs font-medium text-mini transition hover:bg-hover hover:text-normal"
+            className="mt-1 flex h-8 w-full cursor-pointer items-center rounded-lg px-3 text-xs text-mini transition hover:text-normal"
           >
             {t("sidebar.showMore")}
-            <ChevronDown className="size-3.5" />
           </button>
         )}
       </div>
