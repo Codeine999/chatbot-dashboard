@@ -32,7 +32,7 @@
   },
   "aiSetting": {
     "title": "AI Setting",
-    "subtitle": "Configure AI RAG behavior, models, tone, and fallback responses.",
+    "subtitle": "Tune your AI's personality, answers, and skills to fit your business.",
     "cancel": "Cancel",
     "save": "Save Changes",
     "model": {
@@ -46,47 +46,120 @@
       "saveFailed": "Could not change the model",
       "readOnly": "Only a dev can change the models"
     },
+    "status": {
+      "active": "Active",
+      "draft": "Not saved yet",
+      "version": "Version {{version}}"
+    },
+    "sections": {
+      "persona": {
+        "title": "Role & business context",
+        "subtitle": "Tell the AI who it is, what the business does, and what it may answer."
+      },
+      "style": {
+        "title": "Personality & style",
+        "subtitle": "Tune voice, length, and emoji use to match your brand."
+      },
+      "skills": {
+        "title": "Skills",
+        "subtitle": "Topic-specific instructions the AI uses when answering."
+      },
+      "fallback": {
+        "title": "When the AI can't answer",
+        "subtitle": "Message sent when no answer is found in your business data."
+      }
+    },
     "config": {
-      "title": "AI Configuration",
-      "subtitle": "Define how the AI responds, what it can do, and its personality.",
       "ownerPrompt": "Owner Prompt",
-      "ownerPromptPlaceholder": "Extra context about your business for the AI",
-      "ownerPromptHint": "Additional context or instructions specific to the business owner.",
-      "tone": "Tone",
-      "toneHint": "Set the communication tone for AI responses.",
-      "responseStyle": "Response Style",
-      "responseStyleHint": "Control the length and style of responses.",
-      "emojiLevel": "Emoji Level",
-      "emojiLevelHint": "How often the AI may use emoji in its replies.",
-      "skills": "Skills (Skill Object Array)",
-      "skillsHint": "Define what the AI can help with. You can add, remove, or reorder skills.",
-      "fallback": "Fallback Response",
+      "ownerPromptPlaceholder": "e.g. You are the shop's admin... only answer about our products and services",
+      "ownerPromptHint": "Tip: state the role, what the shop sells, and what topics to avoid.",
+      "tone": "Voice",
+      "toneCustomPlaceholder": "Describe the voice you want, e.g. polite, warm, never pushy",
+      "toneCustomHint": "Write your own voice description for more control than the presets.",
+      "responseStyle": "Answer length",
+      "emojiLevel": "Emoji",
       "fallbackPlaceholder": "Message sent when the AI has no answer",
-      "fallbackHint": "Message used when the AI cannot answer a question."
+      "fallbackHint": "Used when the AI can't find a confident answer."
     },
     "skills": {
       "add": "Add Skill",
       "remove": "Remove skill",
-      "namePlaceholder": "Skill name",
-      "promptPlaceholder": "What the AI should do for this skill"
+      "expand": "Edit skill",
+      "count": "{{count}}/{{max}} skills",
+      "always": "Every message",
+      "alwaysHint": "Every skill is currently sent to the AI on every message.",
+      "untitled": "Untitled skill",
+      "emptyPrompt": "No instructions yet",
+      "incomplete": "Needs both a name and instructions",
+      "empty": "No skills yet",
+      "emptyHint": "Add skills to teach topic-specific answers, such as product recommendations or after-sales service.",
+      "namePlaceholder": "Skill name, e.g. Recommend products",
+      "promptPlaceholder": "What the AI should do when using this skill"
     },
     "tone": {
       "friendly": "Friendly",
       "professional": "Professional",
       "casual": "Casual",
       "formal": "Formal",
-      "playful": "Playful"
+      "playful": "Playful",
+      "custom": "Custom"
+    },
+    "toneHint": {
+      "friendly": "Warm and approachable",
+      "professional": "Polite, clear, trustworthy",
+      "casual": "Relaxed, like a friend",
+      "formal": "Formal written language",
+      "playful": "Bright and fun",
+      "custom": "Write your own"
     },
     "targetLength": {
       "short": "Concise",
-      "medium": "Balanced",
+      "medium": "Detailed",
       "adaptive": "Adaptive"
+    },
+    "targetLengthHint": {
+      "short": "1–3 sentences, to the point",
+      "medium": "Includes needed details",
+      "adaptive": "Short or long as the question needs"
     },
     "emojiLevel": {
       "none": "None",
       "light": "Light",
       "normal": "Normal"
     },
+    "emojiSample": {
+      "none": "Thank you",
+      "light": "Thank you 🙂",
+      "normal": "Thank you 😊🙏"
+    },
+    "preview": {
+      "title": "Reply preview",
+      "subtitle": "A simulation of your settings, no AI call is made",
+      "customer": "Customer",
+      "bot": "AI",
+      "question": "What time do you open?",
+      "fallbackQuestion": "Do you ship abroad?",
+      "fallbackLabel": "When no answer is found",
+      "noFallback": "No fallback message set",
+      "opener": {
+        "friendly": "Hi there! ",
+        "professional": "Hello, ",
+        "casual": "Sure~ ",
+        "formal": "Dear customer, ",
+        "playful": "Ooh, great question! ",
+        "custom": ""
+      },
+      "answer": {
+        "short": "We're open daily 9:00–18:00.",
+        "medium": "We're open daily 9:00–18:00. Hours may be shorter on public holidays, so feel free to message us before visiting.",
+        "adaptive": "We're open daily 9:00–18:00. Message us before visiting on a holiday."
+      },
+      "summary": "Personality",
+      "skillsActive": "{{count}} skills"
+    },
+    "unsaved": "You have unsaved changes",
+    "upToDate": "All changes saved",
+    "invalidSkills": "Some skills are incomplete",
     "loading": "Loading settings…",
     "loadError": "Could not load AI settings",
     "retry": "Retry",
