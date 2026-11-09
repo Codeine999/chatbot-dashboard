@@ -18,12 +18,12 @@ import {
   ChevronLeft,
   Eye,
   EyeOff,
+  LoaderCircle,
   LockKeyhole,
   Mail,
   ShieldCheck,
 } from "lucide-react";
 
-import Spinner from "@/assets/spin.svg";
 import { Background } from "@/components/BackGround";
 import { useLogin } from "./hooks/useAuth";
 import type { LoginPayload } from "./types/auth.type";
@@ -128,8 +128,8 @@ const Login = () => {
                     </FormItem>
                   )} />
                   {isSent && <p className="rounded-xl bg-emerald-50 px-4 py-3 text-center text-sm text-emerald-700">{t("reset.sent")}</p>}
-                  <Button type="submit" disabled={loading} className="h-13 w-full rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-[15px] font-semibold text-white shadow-[0_12px_24px_rgba(116,66,235,0.32),inset_0_1px_1px_rgba(255,255,255,0.45)] transition hover:brightness-105">
-                    {loading ? <img src={Spinner} alt={t("login.loading")} className="size-5" /> : t("reset.submit")}
+                  <Button type="submit" disabled={loading} className="h-13 w-full rounded-2xl disabled:opacity-100 bg-gradient-to-r from-primary to-primary/80 text-[15px] font-semibold text-white shadow-[0_12px_24px_rgba(116,66,235,0.32),inset_0_1px_1px_rgba(255,255,255,0.45)] transition hover:brightness-105">
+                    {loading ? <LoaderCircle className="size-5 animate-spin" role="status" aria-label={t("login.loading")} /> : t("reset.submit")}
                   </Button>
                   <p className="text-center text-xs text-slate-400">{t("reset.spamHint")}</p>
                 </form>
@@ -193,8 +193,8 @@ const Login = () => {
                   <Button 
                     type="submit" 
                     disabled={isPending} 
-                    className="h-13 w-full mt-12">
-                    {isPending ? <img src={Spinner} alt={t("login.loading")} className="size-5" /> : t("login.submit")}
+                    className="h-13 w-full mt-12 disabled:opacity-100">
+                    {isPending ? <LoaderCircle className="size-5 animate-spin" role="status" aria-label={t("login.loading")} /> : t("login.submit")}
                   </Button>
                 </form>
               </Form>

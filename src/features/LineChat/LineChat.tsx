@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import {
   Bot,
   ChevronDown,
+  ChevronLeft,
   ImageIcon,
   Menu,
   Plus,
@@ -202,11 +203,11 @@ function ChannelTabs({
             type="button"
             disabled={item.soon}
             onClick={() => onChange(item.id)}
-            className={`flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
+            className={`flex shrink-0 cursor-pointer items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed ${
               isActive
                 ? "bg-primary/10 text-normal"
                 : item.soon
-                  ? "cursor-not-allowed bg-muted text-mini/70"
+                  ? "bg-muted text-mini/70"
                   : "bg-muted text-normal hover:bg-hover"
             }`}
           >
@@ -220,7 +221,7 @@ function ChannelTabs({
         type="button"
         disabled
         aria-label={t("line.channel.add")}
-        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-mini"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-mini disabled:cursor-not-allowed"
       >
         <Plus className="size-4" />
       </button>
@@ -248,11 +249,11 @@ function QuickFilterChips({
             type="button"
             disabled={item.soon}
             onClick={() => onChange(item.id)}
-            className={`transition-colors duration-200 ${
+            className={`cursor-pointer transition-colors duration-200 disabled:cursor-not-allowed ${
               item.id === value
                 ? "font-semibold text-normal"
                 : item.soon
-                  ? "cursor-not-allowed text-mini/70"
+                  ? "text-mini/70"
                   : "text-mini hover:text-normal"
             }`}
           >
@@ -276,14 +277,14 @@ function ConversationStatusBadge({ status }: { status: string }) {
 
   if (status !== WAITING_ADMIN) {
     return (
-      <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-mini">
+      <span className="shrink-0 whitespace-nowrap rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-mini">
         {t(`line.status.${status}`, { defaultValue: status })}
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700 ring-1 ring-inset ring-orange-200 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-500/30">
+    <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700 ring-1 ring-inset ring-orange-200 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-500/30">
       <span className="relative flex size-2">
         <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500 opacity-60" />
         <span className="relative inline-flex size-2 rounded-full bg-orange-500" />
@@ -299,6 +300,10 @@ export const LineChat = () => {
   const [selectedId, setSelectedId] = useState("");
   const [reply, setReply] = useState("");
   const [isInboxOpen, setIsInboxOpen] = useState(true);
+  // จอแคบ (< xl) แสดงทีละฝั่ง: รายการแชท หรือห้องแชท เปิดห้องจากแจ้งเตือนให้เข้าห้องเลย
+  const [isChatOpenOnMobile, setIsChatOpenOnMobile] = useState(() =>
+    Boolean(searchParams.get("conversationId"))
+  );
   const [search, setSearch] = useState("");
   const [channel, setChannel] = useState<ChannelId>("line");
   const [quickFilter, setQuickFilter] = useState<QuickFilterId>("all");
@@ -450,6 +455,7 @@ export const LineChat = () => {
 
   const handleSelectConversation = (id: string) => {
     setSelectedId(id);
+    setIsChatOpenOnMobile(true);
   };
 
   const handleMessagesScroll = async () => {
@@ -498,9 +504,18 @@ export const LineChat = () => {
   };
 
   const conversationHeader = (
-    <div className="flex min-w-0 items-center justify-between gap-4">
+    <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2">
       {selectedConversation ? (
         <div className="flex min-w-0 items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label={t("line.back")}
+            className="size-8 shrink-0 cursor-pointer rounded-full xl:hidden"
+            onClick={() => setIsChatOpenOnMobile(false)}
+          >
+            <ChevronLeft className="size-5" />
+          </Button>
           <Avatar
             name={selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
             src={selectedConversation.lineMember?.pictureUrl}
@@ -518,7 +533,7 @@ export const LineChat = () => {
             </p>
           </div>
           {selectedConversation.lineMember?.lastActiveAt && (
-            <span className="shrink-0 text-xs text-mini">
+            <span className="hidden shrink-0 text-xs text-mini md:inline">
               {t("line.lastActive", {
                 time: formatTime(selectedConversation.lineMember.lastActiveAt),
               })}
@@ -550,13 +565,17 @@ export const LineChat = () => {
   return (
     <div className="mx-[-20px] h-[calc(100vh-72px)] w-[calc(100%+1rem)] overflow-hidden md:w-[calc(100%+1.5rem)] xl:w-[calc(100%+2.5rem)]">
       <div
-        className={`grid h-full w-full grid-cols-1 overflow-hidden rounded-l-2xl bg-background ${
+        className={`grid h-full w-full grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-l-2xl bg-background xl:grid-rows-none ${
           isInboxOpen
             ? "xl:grid-cols-[400px_minmax(0,1fr)]"
             : "xl:grid-cols-[76px_minmax(0,1fr)]"
         }`}
       >
-        <aside className="flex min-h-0 flex-col border-b bg-background/75 backdrop-blur-xl xl:border-b-0 xl:border-r">
+        <aside
+          className={`min-h-0 flex-col border-b bg-background/75 backdrop-blur-xl xl:flex xl:border-b-0 xl:border-r ${
+            isChatOpenOnMobile ? "hidden" : "flex"
+          }`}
+        >
           <div className="shrink-0 p-3.5">
             <div className="flex items-center justify-between gap-2">
               {isInboxOpen && (
@@ -568,7 +587,7 @@ export const LineChat = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={isInboxOpen ? "" : "mx-auto"}
+                className={`max-xl:hidden ${isInboxOpen ? "" : "mx-auto"}`}
                 onClick={() => setIsInboxOpen((value) => !value)}
               >
                 <Menu className="h-5 w-5" />
@@ -749,15 +768,19 @@ export const LineChat = () => {
           </div>
         </aside>
 
-        <main className="flex min-h-0 min-w-0 w-full flex-col bg-background">
-          <header className="shrink-0 border-b px-5 py-2.5">
+        <main
+          className={`min-h-0 min-w-0 w-full flex-col bg-background xl:flex ${
+            isChatOpenOnMobile ? "flex" : "hidden"
+          }`}
+        >
+          <header className="shrink-0 border-b px-3 py-2.5 sm:px-5">
             <div className="mx-auto w-full max-w-6xl">{conversationHeader}</div>
           </header>
 
           <div
             ref={messageListRef}
             onScroll={handleMessagesScroll}
-            className="min-h-0 flex-1 overflow-y-auto px-5 py-5"
+            className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5 sm:py-5"
           >
             <div className="mx-auto w-full max-w-6xl space-y-4">
               {messagesQuery.isFetchingNextPage && (
@@ -795,7 +818,7 @@ export const LineChat = () => {
                 const isUser = sender === "USER";
                 const isAdmin = sender === "ADMIN";
                 const isAi = sender === "AI";
-                const senderLabel = isAi ? "AI" : message.senderName || t("line.adminName");
+                const senderLabel = message.sentByAdminId || "AI";
 
                 return (
                   <div
@@ -843,7 +866,7 @@ export const LineChat = () => {
             </div>
           </div>
 
-          <footer className="border-t bg-background p-4">
+          <footer className="border-t bg-background p-2 sm:p-4">
             <div className="mx-auto w-full max-w-6xl rounded-2xl border bg-muted/50 p-2">
               <Textarea
                 value={reply}

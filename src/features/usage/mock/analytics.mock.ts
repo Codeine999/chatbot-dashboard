@@ -28,7 +28,8 @@ const BASE: Record<AnalyticsMetric, Record<Granularity, number>> = {
   chat: { hour: 180, day: 3_200, month: 92_000, year: 1_050_000 },
   creditUsage: { hour: 4_200, day: 68_000, month: 1_850_000, year: 19_500_000 },
   followers: { hour: 4_200, day: 4_400, month: 5_100, year: 6_800 },
-  revenue: { hour: 900, day: 18_000, month: 520_000, year: 6_200_000 },
+  // รายได้ตัวอย่างเป็น 0 เพื่อไม่ให้ตัวเลขปลอมถูกเข้าใจว่าเป็นยอดจริงตอน API ผิดพลาด
+  revenue: { hour: 0, day: 0, month: 0, year: 0 },
 };
 
 /** สัดส่วนของแต่ละ series เมื่อ metric มีมากกว่าหนึ่งเส้น */

@@ -45,8 +45,8 @@ export type LineChatHistory = {
   conversationId: string;
   lineMemberId: string;
   sender: LineChatSender;
-  /** ชื่อแอดมินที่ตอบ backend ส่งมาเมื่อมี ถ้าไม่มีจะแสดงคำกลาง ๆ */
-  senderName?: string | null;
+  /** backend แปลงเป็น username ของแอดมินที่ตอบแล้ว null = ไม่ใช่แอดมินตอบ (แสดงเป็น AI) */
+  sentByAdminId?: string | null;
   messageType: LineChatMessageType;
   text?: string | null;
   lineMessageId?: string | null;

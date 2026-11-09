@@ -12,8 +12,8 @@ import { useTranslation } from "react-i18next";
 
 const toneClass: Record<ActivityTone, string> = {
   green: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
-  indigo: "bg-primary/10 text-icons",
-  purple: "bg-primary/10 text-icons",
+  indigo: "border border-border bg-transparent text-icons dark:border-transparent",
+  purple: "border border-border bg-transparent text-icons dark:border-transparent",
   blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
   orange: "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
 };

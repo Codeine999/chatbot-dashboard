@@ -57,7 +57,7 @@ const OverviewCard = () => {
         {
             id: "messages-sent",
             accent: "text-violet-500",
-            iconTone: "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
+            iconTone: "border border-border bg-transparent text-icons dark:border-transparent",
             points: [3, 4, 3.5, 5, 7, 5.5, 6, 9, 6.5, 8],
             title: t("overview.messagesSent"),
             icon: MessageSquare,
@@ -88,10 +88,10 @@ const OverviewCard = () => {
             title: t("overview.activeNow"),
             icon: User,
             loading: false,
-            total: 573,
+            total: 0,
             description: (
                 <>
-                    <span className="text-green-600 mr-1">+20.1%</span>
+                    <span className="text-green-600 mr-1">+0%</span>
                     {t("overview.fromLastMonth")}
                 </>
             ),
@@ -103,7 +103,7 @@ const OverviewCard = () => {
             {cards.map((item) => {
                 const Icon = item.icon;
                 return (
-                    <Card key={item.id} className="relative overflow-hidden p-4">
+                    <Card key={item.id} className="relative overflow-hidden p-4 md:max-xl:flex md:max-xl:flex-col md:max-xl:gap-3">
                         <div className="flex items-start gap-3">
                             <div
                                 className={cn(
@@ -128,7 +128,7 @@ const OverviewCard = () => {
                         <Sparkline
                             points={item.points}
                             className={cn(
-                                "pointer-events-none absolute bottom-3 right-3 h-12 w-28",
+                                "pointer-events-none absolute bottom-3 right-3 h-12 w-28 md:max-xl:static md:max-xl:h-10 md:max-xl:w-full",
                                 item.accent
                             )}
                         />

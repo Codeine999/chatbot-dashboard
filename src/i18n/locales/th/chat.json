@@ -89,8 +89,8 @@
   "line": {
     "searchPlaceholder": "ค้นหาบทสนทนา...",
     "settings": "ตั้งค่าแชท",
+    "back": "กลับไปรายการแชท",
     "repliedBy": "ตอบโดย {{name}}",
-    "adminName": "แอดมิน",
     "newestFirst": "ใหม่ไปเก่า",
     "oldestFirst": "เก่าไปใหม่",
     "recent": "แชทล่าสุด",

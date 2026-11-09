@@ -118,7 +118,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
       </p>
 
       <div className="grid items-start gap-5 lg:grid-cols-[300px_1fr]">
-        <aside className="flex h-[min(700px,80svh)] min-h-[480px] flex-col rounded-2xl border bg-card p-5">
+        <aside className="flex h-[min(900px,calc(100svh-10rem))] min-h-[520px] flex-col rounded-2xl border bg-card p-5">
           {tabs}
           <AppRoomList
             rooms={rooms.data}
@@ -135,7 +135,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
           />
         </aside>
 
-        <section className="flex h-[min(700px,80svh)] min-h-[480px] flex-col overflow-hidden rounded-2xl border bg-card">
+        <section className="flex h-[min(900px,calc(100svh-10rem))] min-h-[520px] flex-col overflow-hidden rounded-2xl border bg-card">
           <header className="flex flex-wrap items-center gap-3 border-b p-4">
             <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <MessageCircle />

@@ -160,11 +160,10 @@ export const NotificationBell = () => {
           </button>
           <button
             type="button"
-            onClick={() => goTo("/setting/admin/over-all")}
-            className="flex cursor-pointer items-center gap-1.5 text-sm text-mini transition hover:text-normal"
+            aria-label={t("notification.settings")}
+            className="flex cursor-pointer items-center text-mini transition hover:text-normal"
           >
             <Settings className="size-[18px]" />
-            {t("notification.settings")}
           </button>
         </div>
       </PopoverContent>

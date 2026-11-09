@@ -50,7 +50,7 @@ export function LinePreviewChat({ active, tabs }: { active: boolean; tabs: React
           <PreviewDebugPanel sessionId={chat.sessionId} />
         </aside>
 
-        <section className="flex h-[min(700px,80svh)] min-h-[480px] flex-col overflow-hidden rounded-2xl border bg-card">
+        <section className="flex h-[min(900px,calc(100svh-10rem))] min-h-[520px] flex-col overflow-hidden rounded-2xl border bg-card">
           <header className="flex items-center gap-3 border-b p-4">
             <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <MessageCircle />

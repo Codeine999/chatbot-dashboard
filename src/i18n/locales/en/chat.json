@@ -89,8 +89,8 @@
   "line": {
     "searchPlaceholder": "Search conversations...",
     "settings": "Chat settings",
-    "repliedBy": "Replied by {{name}}",
-    "adminName": "Admin",
+    "back": "Back to conversations",
+    "repliedBy": "Reply by {{name}}",
     "newestFirst": "Newest first",
     "oldestFirst": "Oldest first",
     "recent": "Recent chats",
