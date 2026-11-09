@@ -21,6 +21,9 @@ export type LineMember = {
   profileSyncedAt?: string | null;
 };
 
+/** ช่องทางที่ห้องแชทมาจาก ไม่ส่งมาให้ถือเป็น line */
+export type ConversationPlatform = "line" | "messenger" | "tiktok" | "application";
+
 export type LineConversation = {
   id: string;
   lineMemberId: string;
@@ -34,6 +37,7 @@ export type LineConversation = {
   botMode: BotMode;
   /** ISO time ที่บอทจะกลับมาตอบเอง มีค่าเฉพาะตอน botMode = "admin" */
   botMuteUntil: string | null;
+  platform?: ConversationPlatform;
 };
 
 export type LineChatHistory = {
@@ -41,6 +45,8 @@ export type LineChatHistory = {
   conversationId: string;
   lineMemberId: string;
   sender: LineChatSender;
+  /** ชื่อแอดมินที่ตอบ backend ส่งมาเมื่อมี ถ้าไม่มีจะแสดงคำกลาง ๆ */
+  senderName?: string | null;
   messageType: LineChatMessageType;
   text?: string | null;
   lineMessageId?: string | null;

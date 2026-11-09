@@ -147,8 +147,8 @@ html, body {
   --inside: oklch(0.9821 0 0);
   --background: oklch(100% 0.00011 271.152);
   --add-button: oklch(14.479% 0.00002 271.152);
-  /* ปุ่มหลัก (Button variant default) แดงเรียบ ๆ แยกจาก --primary ที่ยังเป็นม่วงสำหรับแท็บ ไอคอน สวิตช์ */
-  --button-primary: #d9534f;
+  /* ปุ่มหลัก (Button variant default) ม่วงสีหลัก */
+  --button-primary: #5048e4;
 
   --mini: oklch(0.6822 0.0289 226.98);
   --normal: oklch(42.773% 0.00513 271.302);
@@ -206,7 +206,7 @@ html, body {
   --background: oklch(24.816% 0.00189 286.046);
 
   --add-button: oklch(26.862% 0.00003 271.152);
-  --button-primary: #d9534f;
+  --button-primary: #5048e4;
   /* โทนมืด: หัวข้อ/ข้อความหลักเป็นขาว ข้อความรองเป็นเทากลาง ไม่มีโทนฟ้า */
   --normal: oklch(0.985 0 0);
   --mini: oklch(0.708 0 0);

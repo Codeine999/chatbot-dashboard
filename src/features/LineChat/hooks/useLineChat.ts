@@ -12,6 +12,7 @@ import { lineChatApi } from "../services/lineChat.service";
 import type { LineChatHistory } from "../types/lineChat.type";
 
 const POLL_INTERVAL_MS = 2000;
+const MESSAGE_PAGE_SIZE = 20;
 
 export function useConversations() {
   return useQuery({
@@ -30,10 +31,10 @@ export function useConversationMessages(conversationId?: string) {
       lineChatApi.getConversationMessages({
         conversationId: conversationId ?? "",
         before: pageParam,
-        limit: 30,
+        limit: MESSAGE_PAGE_SIZE,
       }),
     getNextPageParam: (lastPage) => {
-      if (lastPage.length < 30) return undefined;
+      if (lastPage.length < MESSAGE_PAGE_SIZE) return undefined;
       return lastPage[0]?.createdAt;
     },
   });

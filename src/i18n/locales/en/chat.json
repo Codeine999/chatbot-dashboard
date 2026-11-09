@@ -44,8 +44,7 @@
     "changeModelNote": "Change the answering model — applies to all admins",
     "modelLockedNote": "The model is set by an owner or dev",
     "apiKeyUnavailable": " · API key unavailable",
-    "credits": "{{used}} credits",
-    "creditsWithLimit": "{{used}} / {{limit}} credits",
+    "creditsRemaining": "{{remaining}} credits remaining",
     "defaultTitle": "AI CHAT",
     "brand": "KeeLa.Ai"
   },
@@ -89,6 +88,9 @@
   "defaultName": "Admin",
   "line": {
     "searchPlaceholder": "Search conversations...",
+    "settings": "Chat settings",
+    "repliedBy": "Replied by {{name}}",
+    "adminName": "Admin",
     "newestFirst": "Newest first",
     "oldestFirst": "Oldest first",
     "recent": "Recent chats",
@@ -111,7 +113,8 @@
       "all": "All",
       "line": "LINE",
       "messenger": "Messenger",
-      "tiktok": "TikTok"
+      "tiktok": "TikTok",
+      "add": "Add channel"
     },
     "quickFilter": {
       "all": "All",

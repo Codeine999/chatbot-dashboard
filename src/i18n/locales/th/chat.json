@@ -44,8 +44,7 @@
     "changeModelNote": "เปลี่ยนโมเดลที่ใช้ตอบ — มีผลกับแอดมินทุกคน",
     "modelLockedNote": "โมเดลตั้งค่าโดย owner หรือ dev",
     "apiKeyUnavailable": " · ไม่มี API key",
-    "credits": "{{used}} เครดิต",
-    "creditsWithLimit": "{{used}} / {{limit}} เครดิต",
+    "creditsRemaining": "เหลือ {{remaining}} เครดิต",
     "defaultTitle": "AI CHAT",
     "brand": "KeeLa.Ai"
   },
@@ -89,6 +88,9 @@
   "defaultName": "แอดมิน",
   "line": {
     "searchPlaceholder": "ค้นหาบทสนทนา...",
+    "settings": "ตั้งค่าแชท",
+    "repliedBy": "ตอบโดย {{name}}",
+    "adminName": "แอดมิน",
     "newestFirst": "ใหม่ไปเก่า",
     "oldestFirst": "เก่าไปใหม่",
     "recent": "แชทล่าสุด",
@@ -110,7 +112,8 @@
       "all": "ทั้งหมด",
       "line": "LINE",
       "messenger": "Messenger",
-      "tiktok": "TikTok"
+      "tiktok": "TikTok",
+      "add": "เพิ่มช่องทาง"
     },
     "quickFilter": {
       "all": "ทั้งหมด",

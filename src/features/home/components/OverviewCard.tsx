@@ -17,6 +17,8 @@ import {
 } from "../hooks/useLineOaDashboard";
 import { useTranslation } from "react-i18next";
 import { formatNumber } from "@/i18n/format";
+import { cn } from "@/lib/utils";
+import { Sparkline } from "./Sparkline";
 
 const OverviewCard = () => {
     const { t } = useTranslation("home");
@@ -28,6 +30,9 @@ const OverviewCard = () => {
     const cards = [
         {
             id: "followers",
+            accent: "text-blue-500",
+            iconTone: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
+            points: [4, 5, 4.5, 6, 5, 7, 6.5, 8, 7, 9],
             title: t("overview.followers"),
             icon: Users,
             loading: followers.isLoading,
@@ -51,6 +56,9 @@ const OverviewCard = () => {
         },
         {
             id: "messages-sent",
+            accent: "text-violet-500",
+            iconTone: "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
+            points: [3, 4, 3.5, 5, 7, 5.5, 6, 9, 6.5, 8],
             title: t("overview.messagesSent"),
             icon: MessageSquare,
             loading: messageUsage.isLoading,
@@ -63,6 +71,9 @@ const OverviewCard = () => {
         },
         {
             id: "quota-used",
+            accent: "text-emerald-500",
+            iconTone: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
+            points: [2, 3, 3, 4.5, 4, 6, 8, 7, 9, 10],
             title: t("overview.quotaUsed"),
             icon: Gauge,
             loading: messageUsage.isLoading,
@@ -71,6 +82,9 @@ const OverviewCard = () => {
         },
         {
             id: "active-now",
+            accent: "text-orange-500",
+            iconTone: "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
+            points: [5, 4, 5.5, 5, 6.5, 6, 7, 8, 7.5, 10],
             title: t("overview.activeNow"),
             icon: User,
             loading: false,
@@ -89,11 +103,19 @@ const OverviewCard = () => {
             {cards.map((item) => {
                 const Icon = item.icon;
                 return (
-                    <Card key={item.id} className="p-4">
-                        <div className="flex justify-between">
-                            <div>
+                    <Card key={item.id} className="relative overflow-hidden p-4">
+                        <div className="flex items-start gap-3">
+                            <div
+                                className={cn(
+                                    "flex size-11 shrink-0 items-center justify-center rounded-xl",
+                                    item.iconTone
+                                )}
+                            >
+                                <Icon className="size-5" />
+                            </div>
+                            <div className="min-w-0">
                                 <CardTitle>{item.title}</CardTitle>
-                                <p className="mt-1 text-xl font-medium">
+                                <p className="mt-1 text-xl font-semibold">
                                     {item.loading || item.total === null
                                         ? "—"
                                         : formatNumber(item.total)}
@@ -102,8 +124,14 @@ const OverviewCard = () => {
                                     {item.description}
                                 </CardDescription>
                             </div>
-                            <Icon className="mt-1 w-5 h-5 text-icons" />
                         </div>
+                        <Sparkline
+                            points={item.points}
+                            className={cn(
+                                "pointer-events-none absolute bottom-3 right-3 h-12 w-28",
+                                item.accent
+                            )}
+                        />
                     </Card>
                 );
             })}

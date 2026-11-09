@@ -64,7 +64,7 @@ export const BotModeSelect = ({ conversation }: Props) => {
         <Button
           variant="outline"
           size="sm"
-          className="h-8 gap-2 rounded-full px-3 text-xs font-medium"
+          className="h-7 gap-1.5 rounded-full px-2.5 text-[11px] font-medium"
           disabled={resumeBot.isPending}
         >
           {resumeBot.isPending ? (

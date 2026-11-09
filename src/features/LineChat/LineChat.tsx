@@ -9,13 +9,21 @@ import {
   ChevronDown,
   ImageIcon,
   Menu,
+  Plus,
   Search,
   Send,
+  Settings,
   SlidersHorizontal,
   Smile,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BotModeSelect } from "./components/BotModeSelect";
+import {
+  ApplicationIcon,
+  LineIcon,
+  MessengerIcon,
+  TikTokIcon,
+} from "./components/ChannelIcons";
 import { Textarea } from "@/components/ui/textarea";
 import {
   useConversationMessages,
@@ -28,6 +36,7 @@ import {
   useNotifications,
 } from "@/features/notifications/hooks/useNotifications";
 import type {
+  ConversationPlatform,
   LineChatHistory,
   LineChatMessageType,
   LineChatSender,
@@ -41,6 +50,9 @@ const formatTime = (date?: string | null) => {
     minute: "2-digit",
   }).format(new Date(date));
 };
+
+/** เริ่มโหลดข้อความเก่าก่อนถึงบนสุดของรายการ เพื่อให้เลื่อนขึ้นไปแล้วไม่ต้องรอ */
+const MESSAGE_PREFETCH_OFFSET_PX = 80;
 
 const normalizeSender = (sender: LineChatSender) => sender.toUpperCase();
 const normalizeType = (type: LineChatMessageType) => type.toUpperCase();
@@ -70,6 +82,24 @@ function Avatar({
 
   // ไม่มีรูป หรือรูปโหลดไม่ได้ (ลิงก์หมดอายุ) แสดงอักษรแรกของชื่อบนพื้นสีเหมือนหน้าผู้ใช้
   return <UserAvatar name={name} src={src ?? undefined} className={sizeClass} />;
+}
+
+const PLATFORM_ICONS: Record<ConversationPlatform, React.ElementType> = {
+  line: LineIcon,
+  messenger: MessengerIcon,
+  tiktok: TikTokIcon,
+  application: ApplicationIcon,
+};
+
+/** ไอคอนช่องทางที่มุมล่างขวาของรูปโปรไฟล์ */
+function PlatformBadge({ platform = "line" }: { platform?: ConversationPlatform }) {
+  const Icon = PLATFORM_ICONS[platform] ?? LineIcon;
+
+  return (
+    <span className="absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full bg-background ring-2 ring-background">
+      <Icon className="size-4" />
+    </span>
+  );
 }
 
 function MessageContent({ message }: { message: LineChatHistory }) {
@@ -123,11 +153,16 @@ type QuickFilterId = "all" | "unread" | "waiting";
 /** สถานะที่บอทส่งต่อมาให้แอดมินตอบเอง — ต้องมีคนลงมือ จึงต้องเด่นกว่าแชทอื่น */
 const WAITING_ADMIN = "waiting_admin";
 
-const CHANNELS: { id: ChannelId; labelKey: string; soon?: boolean }[] = [
+const CHANNELS: {
+  id: ChannelId;
+  labelKey: string;
+  soon?: boolean;
+  icon?: React.ElementType;
+}[] = [
   { id: "all", labelKey: "line.channel.all" },
-  { id: "line", labelKey: "line.channel.line" },
-  { id: "messenger", labelKey: "line.channel.messenger", soon: true },
-  { id: "tiktok", labelKey: "line.channel.tiktok", soon: true },
+  { id: "line", labelKey: "line.channel.line", icon: LineIcon },
+  { id: "messenger", labelKey: "line.channel.messenger", soon: true, icon: MessengerIcon },
+  { id: "tiktok", labelKey: "line.channel.tiktok", soon: true, icon: TikTokIcon },
 ];
 
 const QUICK_FILTERS: { id: QuickFilterId; labelKey: string; soon?: boolean }[] = [
@@ -156,9 +191,10 @@ function ChannelTabs({
   const { t } = useTranslation("chat");
 
   return (
-    <div className="flex items-center gap-1 overflow-x-auto">
+    <div className="flex items-center gap-2 overflow-x-auto pb-1">
       {CHANNELS.map((item) => {
         const isActive = item.id === value;
+        const Icon = item.icon;
 
         return (
           <button
@@ -166,19 +202,28 @@ function ChannelTabs({
             type="button"
             disabled={item.soon}
             onClick={() => onChange(item.id)}
-            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-all duration-200 ${
+            className={`flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
               isActive
-                ? "bg-primary/10 text-primary"
+                ? "bg-primary/10 text-normal"
                 : item.soon
-                  ? "cursor-not-allowed text-mini/70"
-                  : "text-mini hover:bg-hover hover:text-normal"
+                  ? "cursor-not-allowed bg-muted text-mini/70"
+                  : "bg-muted text-normal hover:bg-hover"
             }`}
           >
+            {Icon && <Icon className="size-4 shrink-0" />}
             {t(item.labelKey)}
             {item.soon && <SoonBadge />}
           </button>
         );
       })}
+      <button
+        type="button"
+        disabled
+        aria-label={t("line.channel.add")}
+        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-mini"
+      >
+        <Plus className="size-4" />
+      </button>
     </div>
   );
 }
@@ -313,9 +358,12 @@ export const LineChat = () => {
   );
 
   const filteredConversations = useMemo(() => {
-    // only LINE is connected today, so "all" and "line" resolve to the same list
     const byChannel =
-      channel === "all" || channel === "line" ? sortedConversations : [];
+      channel === "all"
+        ? sortedConversations
+        : sortedConversations.filter(
+            (conversation) => (conversation.platform ?? "line") === channel
+          );
     const byQuickFilter =
       quickFilter === "unread"
         ? byChannel.filter((conversation) => conversation.unreadCount > 0)
@@ -408,7 +456,7 @@ export const LineChat = () => {
     const container = messageListRef.current;
     if (
       !container ||
-      container.scrollTop > 0 ||
+      container.scrollTop > MESSAGE_PREFETCH_OFFSET_PX ||
       !messagesQuery.hasNextPage ||
       messagesQuery.isFetchingNextPage
     ) {
@@ -449,12 +497,62 @@ export const LineChat = () => {
     }
   };
 
+  const conversationHeader = (
+    <div className="flex min-w-0 items-center justify-between gap-4">
+      {selectedConversation ? (
+        <div className="flex min-w-0 items-center gap-3">
+          <Avatar
+            name={selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
+            src={selectedConversation.lineMember?.pictureUrl}
+            size="sm"
+          />
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-normal">
+              {selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
+            </p>
+            <p
+              title={selectedConversation.lineMember?.lineUserId}
+              className="max-w-[15ch] truncate text-xs text-mini"
+            >
+              {selectedConversation.lineMember?.lineUserId ?? "-"}
+            </p>
+          </div>
+          {selectedConversation.lineMember?.lastActiveAt && (
+            <span className="shrink-0 text-xs text-mini">
+              {t("line.lastActive", {
+                time: formatTime(selectedConversation.lineMember.lastActiveAt),
+              })}
+            </span>
+          )}
+          <ConversationStatusBadge status={selectedConversation.status} />
+        </div>
+      ) : (
+        <p className="font-semibold text-normal">{t("line.selectConversation")}</p>
+      )}
+      <div className="flex shrink-0 items-center gap-3">
+        {selectedConversation && (
+          <>
+            <BotModeSelect conversation={selectedConversation} />
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t("line.settings")}
+              className="size-7 rounded-full text-mini hover:text-normal"
+            >
+              <Settings className="size-4" />
+            </Button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <div className="mx-[-20px] h-[calc(100vh-72px)] w-[calc(100%+1rem)] overflow-hidden md:w-[calc(100%+1.5rem)] xl:w-[calc(100%+2.5rem)]">
       <div
         className={`grid h-full w-full grid-cols-1 overflow-hidden rounded-l-2xl bg-background ${
           isInboxOpen
-            ? "xl:grid-cols-[310px_minmax(0,1fr)]"
+            ? "xl:grid-cols-[400px_minmax(0,1fr)]"
             : "xl:grid-cols-[76px_minmax(0,1fr)]"
         }`}
       >
@@ -464,7 +562,7 @@ export const LineChat = () => {
               {isInboxOpen && (
                 <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
                   <span className="size-1.5 rounded-full bg-primary" />
-                  LINE OA
+                  Inbox
                 </span>
               )}
               <Button
@@ -589,6 +687,9 @@ export const LineChat = () => {
                             {conversation.unreadCount}
                           </span>
                         )}
+                        {isInboxOpen && (
+                          <PlatformBadge platform={conversation.platform} />
+                        )}
                       </div>
                       {isInboxOpen && (
                         <>
@@ -649,37 +750,8 @@ export const LineChat = () => {
         </aside>
 
         <main className="flex min-h-0 min-w-0 w-full flex-col bg-background">
-          <header className="border-b px-5 py-4">
-            <div className="mx-auto flex w-full max-w-7xl 2xl:max-w-[1500px] items-center justify-between">
-              {selectedConversation ? (
-                <div className="flex min-w-0 items-center gap-3">
-                  <Avatar
-                    name={selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
-                    src={selectedConversation.lineMember?.pictureUrl}
-                    size="lg"
-                  />
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold text-normal">
-                      {selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
-                    </p>
-                    <p className="truncate text-xs text-mini">
-                      {selectedConversation.lineMember?.lineUserId ?? "-"}
-                    </p>
-                  </div>
-                  <ConversationStatusBadge status={selectedConversation.status} />
-                  <BotModeSelect conversation={selectedConversation} />
-                </div>
-              ) : (
-                <p className="font-semibold text-normal">{t("line.selectConversation")}</p>
-              )}
-              {selectedConversation?.lineMember?.lastActiveAt && (
-                <span className="text-xs text-mini">
-                  {t("line.lastActive", {
-                    time: formatTime(selectedConversation.lineMember.lastActiveAt),
-                  })}
-                </span>
-              )}
-            </div>
+          <header className="shrink-0 border-b px-5 py-2.5">
+            <div className="mx-auto w-full max-w-6xl">{conversationHeader}</div>
           </header>
 
           <div
@@ -687,7 +759,7 @@ export const LineChat = () => {
             onScroll={handleMessagesScroll}
             className="min-h-0 flex-1 overflow-y-auto px-5 py-5"
           >
-            <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1500px] space-y-4">
+            <div className="mx-auto w-full max-w-6xl space-y-4">
               {messagesQuery.isFetchingNextPage && (
                 <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-xs text-mini">
                   {t("line.loadingOlder")}
@@ -723,6 +795,7 @@ export const LineChat = () => {
                 const isUser = sender === "USER";
                 const isAdmin = sender === "ADMIN";
                 const isAi = sender === "AI";
+                const senderLabel = isAi ? "AI" : message.senderName || t("line.adminName");
 
                 return (
                   <div
@@ -759,6 +832,7 @@ export const LineChat = () => {
                         </div>
                       </div>
                       <p className={`mt-1 text-[11px] text-mini ${isUser ? "text-left" : "text-right"}`}>
+                        {!isUser && `${t("line.repliedBy", { name: senderLabel })} · `}
                         {formatTime(message.createdAt)}
                         {isAdmin && message.sentStatus ? ` · ${message.sentStatus}` : ""}
                       </p>
@@ -770,14 +844,14 @@ export const LineChat = () => {
           </div>
 
           <footer className="border-t bg-background p-4">
-            <div className="mx-auto w-full max-w-7xl 2xl:max-w-[1500px] rounded-2xl border bg-muted/50 p-2">
+            <div className="mx-auto w-full max-w-6xl rounded-2xl border bg-muted/50 p-2">
               <Textarea
                 value={reply}
                 onChange={(event) => setReply(event.target.value)}
                 onKeyDown={handleReplyKeyDown}
                 disabled={!selectedConversation || sendMessageMutation.isPending}
                 placeholder={t("line.replyPlaceholder")}
-                className="max-h-36 min-h-20 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
+                className="max-h-32 min-h-12 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
               />
               <div className="mt-2 flex items-center justify-between px-1">
                 <p className="text-xs text-mini">{t("line.connected")}</p>

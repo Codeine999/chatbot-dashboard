@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatNumber } from "@/i18n/format";
 import { modelValue, parseModelValue } from "../lib/chatFormat";
 import type { useChatModel } from "../hooks/useChatModel";
 
@@ -23,6 +24,8 @@ export const ChatModelBar = ({ model, isThinking }: Props) => {
   const { t } = useTranslation("chat");
   const { usage, selected, options, canChange, isCatalogLoading, isUpdating, change } = model;
   const label = selected?.model ?? t("header.loadingModel");
+  // เครดิตคงเหลือ = วงเงิน - ที่ใช้ไป (ค่าที่ไม่มีให้ถือเป็น 0)
+  const remaining = Number(usage?.limitCredit ?? 0) - Number(usage?.usedCredit ?? 0);
 
   return (
     <div className="mt-2 flex items-center justify-between gap-3 px-2 text-sm text-mini">
@@ -31,9 +34,9 @@ export const ChatModelBar = ({ model, isThinking }: Props) => {
           <>
             <Coins className="size-4 shrink-0 text-amber-500" />
             <span className="truncate">
-              {usage.limitCredit
-                ? t("header.creditsWithLimit", { used: usage.usedCredit, limit: usage.limitCredit })
-                : t("header.credits", { used: usage.usedCredit })}
+              {t("header.creditsRemaining", {
+                remaining: formatNumber(remaining, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+              })}
             </span>
           </>
         )}
