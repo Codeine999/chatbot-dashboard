@@ -4,26 +4,19 @@ import { getIntlLocale } from "@/i18n/format";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { UserAvatar } from "@/features/user/components/UserVisuals";
 import { useSearchParams } from "react-router-dom";
-import {
-  Bot,
-  ChevronDown,
-  ChevronLeft,
-  ImageIcon,
-  Menu,
-  Plus,
-  Search,
-  Send,
-  Settings,
-  SlidersHorizontal,
-  Smile,
-} from "lucide-react";
+import { ArrowUp, ChevronDown, ChevronLeft, Ellipsis, ImageIcon, LayoutGrid, PencilLine, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SearchIcon, SidebarToggleIcon } from "@/components/navbar/icons";
 import { BotModeSelect } from "./components/BotModeSelect";
+import { CustomerPanel } from "./components/CustomerPanel";
 import {
   ApplicationIcon,
   LineIcon,
+  LineSquareIcon,
   MessengerIcon,
+  MessengerSoonIcon,
   TikTokIcon,
+  TikTokSoonIcon,
 } from "./components/ChannelIcons";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -73,10 +66,12 @@ function Avatar({
 }: {
   name: string;
   src?: string | null;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg" | "header";
 }) {
   const sizeClass = {
+    xs: "size-7 text-xs",
     sm: "size-8 text-xs",
+    header: "size-9 text-sm",
     md: "size-10 text-sm",
     lg: "size-11 text-sm",
   }[size];
@@ -92,16 +87,22 @@ const PLATFORM_ICONS: Record<ConversationPlatform, React.ElementType> = {
   application: ApplicationIcon,
 };
 
-/** ไอคอนช่องทางที่มุมล่างขวาของรูปโปรไฟล์ */
+/** จุดช่องทางที่มุมล่างขวาของรูปโปรไฟล์ (วงกลม 14px ขอบขาว) */
 function PlatformBadge({ platform = "line" }: { platform?: ConversationPlatform }) {
   const Icon = PLATFORM_ICONS[platform] ?? LineIcon;
 
   return (
-    <span className="absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full bg-background ring-2 ring-background">
-      <Icon className="size-4" />
+    <span className="absolute -bottom-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full bg-background ring-2 ring-background">
+      <Icon className="size-3.5" />
     </span>
   );
 }
+
+const GeminiSparkle = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" aria-hidden>
+    <path d="M12 2c.6 5.4 4.6 9.4 10 10-5.4.6-9.4 4.6-10 10-.6-5.4-4.6-9.4-10-10 5.4-.6 9.4-4.6 10-10z" fill="#4285f4" />
+  </svg>
+);
 
 function MessageContent({ message }: { message: LineChatHistory }) {
   const { t } = useTranslation("chat");
@@ -142,7 +143,7 @@ function MessageContent({ message }: { message: LineChatHistory }) {
     );
   }
 
-  return <p className="whitespace-pre-wrap leading-relaxed">{message.text ?? "-"}</p>;
+  return <p className="whitespace-pre-wrap leading-relaxed text-inherit">{message.text ?? "-"}</p>;
 }
 
 const INITIAL_VISIBLE_CONVERSATIONS = 12;
@@ -154,82 +155,69 @@ type QuickFilterId = "all" | "unread" | "waiting";
 /** สถานะที่บอทส่งต่อมาให้แอดมินตอบเอง — ต้องมีคนลงมือ จึงต้องเด่นกว่าแชทอื่น */
 const WAITING_ADMIN = "waiting_admin";
 
-const CHANNELS: {
-  id: ChannelId;
-  labelKey: string;
-  soon?: boolean;
-  icon?: React.ElementType;
-}[] = [
-  { id: "all", labelKey: "line.channel.all" },
-  { id: "line", labelKey: "line.channel.line", icon: LineIcon },
-  { id: "messenger", labelKey: "line.channel.messenger", soon: true, icon: MessengerIcon },
-  { id: "tiktok", labelKey: "line.channel.tiktok", soon: true, icon: TikTokIcon },
-];
-
 const QUICK_FILTERS: { id: QuickFilterId; labelKey: string; soon?: boolean }[] = [
   { id: "all", labelKey: "line.quickFilter.all" },
   { id: "unread", labelKey: "line.quickFilter.unread" },
   { id: "waiting", labelKey: "line.quickFilter.waiting" },
 ];
 
-function SoonBadge() {
-  const { t } = useTranslation("chat");
-
-  return (
-    <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-mini">
-      {t("line.soon")}
-    </span>
-  );
-}
-
-function ChannelTabs({
+/** ชิปช่องทาง: ตัวที่เลือกพื้นดำ ช่องที่ยังไม่เปิดใช้เป็นไอคอนจาง ๆ */
+function ChannelChips({
   value,
+  counts,
   onChange,
 }: {
   value: ChannelId;
+  counts: Record<"all" | "line", number>;
   onChange: (id: ChannelId) => void;
 }) {
   const { t } = useTranslation("chat");
+  const pill = (id: "all" | "line") => {
+    const isActive = id === value;
+
+    return (
+      <button
+        key={id}
+        type="button"
+        role="radio"
+        aria-checked={isActive}
+        onClick={() => onChange(id)}
+        className={`flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-full pl-1 pr-2.5 text-xs font-medium transition-colors ${
+          isActive ? "bg-primary text-primary-foreground" : "border bg-background text-foreground hover:bg-accent"
+        }`}
+      >
+        {id === "all" ? (
+          <span className="flex size-[22px] items-center justify-center rounded-full bg-white/20">
+            <LayoutGrid className="size-[11px]" />
+          </span>
+        ) : (
+          <LineSquareIcon className="size-[22px]" />
+        )}
+        {t(`line.channel.${id}`)}
+        <span className={isActive ? "text-primary-foreground/70" : "text-muted-foreground"}>{counts[id]}</span>
+      </button>
+    );
+  };
 
   return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-1">
-      {CHANNELS.map((item) => {
-        const isActive = item.id === value;
-        const Icon = item.icon;
-
-        return (
-          <button
-            key={item.id}
-            type="button"
-            disabled={item.soon}
-            onClick={() => onChange(item.id)}
-            className={`flex shrink-0 cursor-pointer items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition-all duration-200 disabled:cursor-not-allowed ${
-              isActive
-                ? "bg-primary/10 text-normal"
-                : item.soon
-                  ? "bg-muted text-mini/70"
-                  : "bg-muted text-normal hover:bg-hover"
-            }`}
-          >
-            {Icon && <Icon className="size-4 shrink-0" />}
-            {t(item.labelKey)}
-            {item.soon && <SoonBadge />}
-          </button>
-        );
-      })}
-      <button
-        type="button"
-        disabled
-        aria-label={t("line.channel.add")}
-        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-mini disabled:cursor-not-allowed"
+    <div role="radiogroup" className="flex items-center gap-1.5 overflow-x-auto">
+      {pill("all")}
+      {pill("line")}
+      <span
+        title={`${t("line.channel.messenger")} · ${t("line.comingSoon")}`}
+        className="ml-2.5 shrink-0"
       >
-        <Plus className="size-4" />
-      </button>
+        <MessengerSoonIcon className="size-5" />
+      </span>
+      <span title={`${t("line.channel.tiktok")} · ${t("line.comingSoon")}`} className="ml-1 shrink-0">
+        <TikTokSoonIcon className="size-5" />
+      </span>
     </div>
   );
 }
 
-function QuickFilterChips({
+/** ตัวกรองด่วนแบบแท็บขีดเส้นใต้ ตัวที่เลือกขีดดำ */
+function QuickFilterTabs({
   value,
   waitingCount,
   onChange,
@@ -241,54 +229,52 @@ function QuickFilterChips({
   const { t } = useTranslation("chat");
 
   return (
-    <div className="flex items-center gap-2 text-xs">
-      {QUICK_FILTERS.map((item, index) => (
-        <div key={item.id} className="flex items-center gap-2">
-          {index > 0 && <span className="text-mini/40">|</span>}
+    <div role="tablist" className="flex gap-6 border-b px-5">
+      {QUICK_FILTERS.map((item) => {
+        const isActive = item.id === value;
+
+        return (
           <button
+            key={item.id}
             type="button"
-            disabled={item.soon}
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onChange(item.id)}
-            className={`cursor-pointer transition-colors duration-200 disabled:cursor-not-allowed ${
-              item.id === value
-                ? "font-semibold text-normal"
-                : item.soon
-                  ? "text-mini/70"
-                  : "text-mini hover:text-normal"
+            className={`-mb-px flex h-10 cursor-pointer items-center gap-2 border-b-2 text-[13px] transition-colors ${
+              isActive
+                ? "border-primary font-semibold text-primary"
+                : "border-transparent font-medium text-muted-foreground hover:text-foreground"
             }`}
           >
             {t(item.labelKey)}
             {/* จำนวนที่รอแอดมินโชว์เฉพาะเมื่อมี เพื่อให้เห็นภาระงานโดยไม่ต้องกดเข้าไป */}
             {item.id === "waiting" && waitingCount > 0 && (
-              <span className="ml-1.5 rounded-full bg-orange-500 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-white">
+              <span className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-orange-600 px-1.5 text-[11px] font-semibold text-white">
                 {waitingCount}
               </span>
             )}
           </button>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
-/** ป้ายสถานะ: waiting_admin เป็นสีส้มพร้อมจุดกะพริบ สถานะอื่นเป็นป้ายเทากลาง ๆ เหมือนเดิม */
+/** ป้ายสถานะ: waiting_admin เป็นสีส้มพร้อมจุด สถานะอื่นเป็นป้ายเทากลาง ๆ */
 function ConversationStatusBadge({ status }: { status: string }) {
   const { t } = useTranslation("chat");
 
   if (status !== WAITING_ADMIN) {
     return (
-      <span className="shrink-0 whitespace-nowrap rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-mini">
+      <span className="shrink-0 whitespace-nowrap rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-normal">
         {t(`line.status.${status}`, { defaultValue: status })}
       </span>
     );
   }
 
   return (
-    <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-orange-100 px-2.5 py-1 text-xs font-semibold text-orange-700 ring-1 ring-inset ring-orange-200 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-500/30">
-      <span className="relative flex size-2">
-        <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500 opacity-60" />
-        <span className="relative inline-flex size-2 rounded-full bg-orange-500" />
-      </span>
+    <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">
+      <span className="size-1.5 rounded-full bg-orange-600" />
       {t("line.status.waiting_admin")}
     </span>
   );
@@ -299,13 +285,15 @@ export const LineChat = () => {
   const [searchParams] = useSearchParams();
   const [selectedId, setSelectedId] = useState("");
   const [reply, setReply] = useState("");
-  const [isInboxOpen, setIsInboxOpen] = useState(true);
+  // ไม่มีปุ่มพับแถบรายการแล้ว (ตามดีไซน์ Inbox) แต่คงโครงสร้างโหมดพับไว้เผื่อกลับมาใช้
+  const isInboxOpen = true;
+  const [isInfoOpen, setIsInfoOpen] = useState(true);
   // จอแคบ (< xl) แสดงทีละฝั่ง: รายการแชท หรือห้องแชท เปิดห้องจากแจ้งเตือนให้เข้าห้องเลย
   const [isChatOpenOnMobile, setIsChatOpenOnMobile] = useState(() =>
     Boolean(searchParams.get("conversationId"))
   );
   const [search, setSearch] = useState("");
-  const [channel, setChannel] = useState<ChannelId>("line");
+  const [channel, setChannel] = useState<ChannelId>("all");
   const [quickFilter, setQuickFilter] = useState<QuickFilterId>("all");
   const [isNewestFirst, setIsNewestFirst] = useState(true);
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_CONVERSATIONS);
@@ -361,6 +349,28 @@ export const LineChat = () => {
     () => conversations.filter((conversation) => conversation.status === WAITING_ADMIN).length,
     [conversations]
   );
+
+  const channelCounts = useMemo(
+    () => ({
+      all: conversations.length,
+      line: conversations.filter((conversation) => (conversation.platform ?? "line") === "line").length,
+    }),
+    [conversations]
+  );
+
+  // ตัวเลขในแถบ "กำลังดู" นับเฉพาะช่องทางที่เลือก
+  const channelConversations = useMemo(
+    () =>
+      channel === "all"
+        ? conversations
+        : conversations.filter((conversation) => (conversation.platform ?? "line") === channel),
+    [channel, conversations]
+  );
+  const channelWaitingCount = useMemo(
+    () => channelConversations.filter((conversation) => conversation.status === WAITING_ADMIN).length,
+    [channelConversations]
+  );
+  const viewingLabel = channel === "all" ? t("line.allChannels") : t(`line.channel.${channel}`);
 
   const filteredConversations = useMemo(() => {
     const byChannel =
@@ -503,8 +513,12 @@ export const LineChat = () => {
     }
   };
 
+  const showInfoPanel = isInfoOpen && !!selectedConversation;
+
+  const selectedName = selectedConversation?.lineMember?.displayName ?? t("line.defaultUser");
+
   const conversationHeader = (
-    <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-4 gap-y-2">
+    <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-x-4 gap-y-2">
       {selectedConversation ? (
         <div className="flex min-w-0 items-center gap-3">
           <Button
@@ -516,45 +530,53 @@ export const LineChat = () => {
           >
             <ChevronLeft className="size-5" />
           </Button>
-          <Avatar
-            name={selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
-            src={selectedConversation.lineMember?.pictureUrl}
-            size="sm"
-          />
-          <div className="min-w-0">
-            <p className="truncate font-semibold text-normal">
-              {selectedConversation.lineMember?.displayName ?? t("line.defaultUser")}
-            </p>
-            <p
-              title={selectedConversation.lineMember?.lineUserId}
-              className="max-w-[15ch] truncate text-xs text-mini"
-            >
-              {selectedConversation.lineMember?.lineUserId ?? "-"}
-            </p>
-          </div>
-          {selectedConversation.lineMember?.lastActiveAt && (
-            <span className="hidden shrink-0 text-xs text-mini md:inline">
-              {t("line.lastActive", {
-                time: formatTime(selectedConversation.lineMember.lastActiveAt),
-              })}
+          <Avatar name={selectedName} src={selectedConversation.lineMember?.pictureUrl} size="header" />
+          <div className="flex min-w-0 flex-col leading-snug">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="truncate text-[15px] font-semibold text-foreground">{selectedName}</span>
+              <ConversationStatusBadge status={selectedConversation.status} />
+            </div>
+            <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+              <span>{t(`line.channel.${selectedConversation.platform ?? "line"}`, { defaultValue: "LINE" })}</span>
+              <span>·</span>
+              <span
+                title={selectedConversation.lineMember?.lineUserId}
+                className="max-w-[16ch] truncate font-mono"
+              >
+                {selectedConversation.lineMember?.lineUserId ?? "-"}
+              </span>
+              {selectedConversation.lineMember?.lastActiveAt && (
+                <span className="hidden truncate md:inline">
+                  · {t("line.lastActive", { time: formatTime(selectedConversation.lineMember.lastActiveAt) })}
+                </span>
+              )}
             </span>
-          )}
-          <ConversationStatusBadge status={selectedConversation.status} />
+          </div>
         </div>
       ) : (
-        <p className="font-semibold text-normal">{t("line.selectConversation")}</p>
+        <p className="font-semibold text-foreground">{t("line.selectConversation")}</p>
       )}
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 items-center gap-2">
         {selectedConversation && (
           <>
             <BotModeSelect conversation={selectedConversation} />
             <Button
-              variant="ghost"
+              variant="outline"
+              size="icon"
+              aria-label={t("line.customerInfo")}
+              aria-pressed={isInfoOpen}
+              className={`size-[38px] cursor-pointer rounded-[10px] text-foreground shadow-none max-xl:hidden ${isInfoOpen ? "bg-muted" : ""}`}
+              onClick={() => setIsInfoOpen((value) => !value)}
+            >
+              <SidebarToggleIcon className="size-4 rotate-180" />
+            </Button>
+            <Button
+              variant="outline"
               size="icon"
               aria-label={t("line.settings")}
-              className="size-7 rounded-full text-mini hover:text-normal"
+              className="size-[38px] rounded-[10px] text-foreground shadow-none"
             >
-              <Settings className="size-4" />
+              <Ellipsis className="size-4" />
             </Button>
           </>
         )}
@@ -563,96 +585,101 @@ export const LineChat = () => {
   );
 
   return (
-    <div className="mx-[-20px] h-[calc(100vh-72px)] w-[calc(100%+1rem)] overflow-hidden md:w-[calc(100%+1.5rem)] xl:w-[calc(100%+2.5rem)]">
+    <div className="-mx-4 h-[calc(100svh-62px)] overflow-hidden md:-mx-6">
       <div
-        className={`grid h-full w-full grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden rounded-l-2xl bg-background xl:grid-rows-none ${
+        className={`grid h-full w-full grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden bg-background xl:grid-rows-none ${
           isInboxOpen
-            ? "xl:grid-cols-[400px_minmax(0,1fr)]"
-            : "xl:grid-cols-[76px_minmax(0,1fr)]"
+            ? showInfoPanel
+              ? "xl:grid-cols-[380px_minmax(0,1fr)_320px]"
+              : "xl:grid-cols-[380px_minmax(0,1fr)]"
+            : showInfoPanel
+              ? "xl:grid-cols-[76px_minmax(0,1fr)_320px]"
+              : "xl:grid-cols-[76px_minmax(0,1fr)]"
         }`}
       >
         <aside
-          className={`min-h-0 flex-col border-b bg-background/75 backdrop-blur-xl xl:flex xl:border-b-0 xl:border-r ${
+          className={`min-h-0 min-w-0 flex-col border-b bg-background xl:flex xl:border-b-0 xl:border-r ${
             isChatOpenOnMobile ? "hidden" : "flex"
           }`}
         >
-          <div className="shrink-0 p-3.5">
-            <div className="flex items-center justify-between gap-2">
-              {isInboxOpen && (
-                <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-                  <span className="size-1.5 rounded-full bg-primary" />
-                  Inbox
-                </span>
-              )}
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`max-xl:hidden ${isInboxOpen ? "" : "mx-auto"}`}
-                onClick={() => setIsInboxOpen((value) => !value)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </div>
-
+          <div className={`flex shrink-0 items-center gap-3 ${isInboxOpen ? "px-5 pb-3 pt-4" : "justify-center py-4"}`}>
             {isInboxOpen && (
               <>
-                <div className="mt-3">
-                  <ChannelTabs value={channel} onChange={setChannel} />
+                <div className="min-w-0 flex-1">
+                  <h1 className="truncate text-base font-semibold leading-tight text-foreground">{t("line.inbox")}</h1>
+                  <p className="truncate text-xs text-muted-foreground">{t("line.inboxSubtitle")}</p>
                 </div>
-
-                <div className="mt-3 flex items-center gap-2">
-                  <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-xl bg-muted px-3">
-                    <Search className="h-4 w-4 shrink-0 text-mini" />
-                    <input
-                      value={search}
-                      onChange={(event) => setSearch(event.target.value)}
-                      className="w-full bg-transparent text-sm text-normal outline-none placeholder:text-mini"
-                      placeholder={t("line.searchPlaceholder")}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsNewestFirst((value) => !value)}
-                    title={isNewestFirst ? t("line.newestFirst") : t("line.oldestFirst")}
-                    aria-label={isNewestFirst ? t("line.newestFirst") : t("line.oldestFirst")}
-                    className={`flex size-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
-                      isNewestFirst
-                        ? "bg-muted text-mini hover:text-normal"
-                        : "bg-primary/10 text-primary"
-                    }`}
-                  >
-                    <SlidersHorizontal className="size-4" />
-                  </button>
-                </div>
-
-                <div className="mt-3">
-                  <QuickFilterChips
-                    value={quickFilter}
-                    waitingCount={waitingCount}
-                    onChange={setQuickFilter}
-                  />
-                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label={t("line.newChat")}
+                  className="size-9 shrink-0 rounded-xl shadow-none"
+                >
+                  <PencilLine className="size-4" />
+                </Button>
               </>
             )}
           </div>
 
           {isInboxOpen && (
-            <div className="shrink-0 px-4 pb-2 pt-1">
-              <p className="text-xs font-semibold text-normal">{t("line.recent")}</p>
-            </div>
+            <>
+              <div className="shrink-0 px-5 pb-3">
+                <ChannelChips value={channel} counts={channelCounts} onChange={setChannel} />
+              </div>
+
+              <div className="shrink-0 px-5 pb-3">
+                <div className="flex h-9 items-center gap-2 rounded-xl border bg-muted/40 px-3 text-xs">
+                  <span className="text-muted-foreground">{t("line.viewing")}</span>
+                  <span className="size-2 shrink-0 rounded-full bg-primary" />
+                  <span className="truncate font-semibold text-foreground">{viewingLabel}</span>
+                  <span className="ml-auto shrink-0 text-muted-foreground">
+                    {t("line.conversationCount", { count: channelConversations.length })} ·{" "}
+                    {t("line.waitingCount", { count: channelWaitingCount })}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 gap-2 border-t px-5 pb-3 pt-3">
+                <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-xl bg-muted px-3">
+                  <SearchIcon className="size-[15px] shrink-0 text-muted-foreground" />
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    aria-label={t("line.searchPlaceholder")}
+                    className="w-full min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                    placeholder={t("line.searchPlaceholder")}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsNewestFirst((value) => !value)}
+                  title={isNewestFirst ? t("line.newestFirst") : t("line.oldestFirst")}
+                  aria-label={isNewestFirst ? t("line.newestFirst") : t("line.oldestFirst")}
+                  className={`flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border transition-colors hover:bg-accent ${
+                    isNewestFirst ? "bg-background text-normal" : "bg-muted text-foreground"
+                  }`}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+                    <path d="M4 6h16M7 12h10M10 18h4" />
+                  </svg>
+                </button>
+              </div>
+
+              <QuickFilterTabs value={quickFilter} waitingCount={waitingCount} onChange={setQuickFilter} />
+            </>
           )}
 
-          <div className="min-h-0 flex-1 overflow-y-auto pb-2">
+          <div className={`min-h-0 flex-1 overflow-y-auto pb-2 ${isInboxOpen ? "px-2" : "px-1.5 pt-2"}`}>
             {conversationsQuery.isLoading && (
-              <div className="px-4 py-3 text-xs text-mini">{t("line.loading")}</div>
+              <div className="px-3 py-3 text-xs text-muted-foreground">{t("line.loading")}</div>
             )}
 
             {conversationsQuery.isError && (
-              <div className="px-4 py-3 text-xs text-destructive">{t("line.error")}</div>
+              <div className="px-3 py-3 text-xs text-destructive">{t("line.error")}</div>
             )}
 
             {!conversationsQuery.isLoading && filteredConversations.length === 0 && (
-              <div className="px-4 py-3 text-xs text-mini">{t("line.empty")}</div>
+              <div className="px-3 py-3 text-xs text-muted-foreground">{t("line.empty")}</div>
             )}
 
             {visibleConversations.map((conversation) => {
@@ -666,84 +693,68 @@ export const LineChat = () => {
                 conversation.id
               );
               const isWaitingAdmin = conversation.status === WAITING_ADMIN;
-              const notificationBg = isActive
-                ? "bg-primary/10 text-primary"
+              const rowBg = isActive
+                ? "bg-muted"
                 : hasUnreadNotification
                   ? "bg-amber-50 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/15"
                   : hasReadNotification
-                    ? "opacity-70 hover:bg-hover"
-                    : "hover:bg-hover";
+                    ? "opacity-70 hover:bg-accent/60"
+                    : "hover:bg-accent/60";
 
               return (
-                <div
+                <button
                   key={conversation.id}
-                  className="border-b border-border/40 last:border-b-0"
+                  type="button"
+                  aria-current={isActive}
+                  onClick={() => handleSelectConversation(conversation.id)}
+                  className={`relative flex w-full cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-colors ${rowBg} ${
+                    isInboxOpen ? "" : "justify-center"
+                  }`}
                 >
-                  <button
-                    type="button"
-                    onClick={() => handleSelectConversation(conversation.id)}
-                    className={`w-full text-left transition-all duration-200 ${
-                      notificationBg
-                    } ${isInboxOpen ? "px-4 py-3.5" : "px-2 py-3.5"} ${
-                      isWaitingAdmin ? "shadow-[inset_3px_0_0_0_var(--color-orange-500)]" : ""
-                    }`}
-                  >
-                    <div className={`flex items-center ${isInboxOpen ? "gap-3" : "justify-center"}`}>
-                      <div className="relative">
-                        <Avatar
-                          name={displayName}
-                          src={conversation.lineMember?.pictureUrl}
-                          size="md"
-                        />
+                  <div className="relative shrink-0">
+                    <Avatar
+                      name={displayName}
+                      src={conversation.lineMember?.pictureUrl}
+                      size="sm"
+                    />
+                    {!isInboxOpen && conversation.unreadCount > 0 && (
+                      <span className="absolute -right-1 -top-1 h-4 min-w-4 rounded-full bg-primary px-1 text-center text-[10px] font-semibold leading-4 text-primary-foreground">
+                        {conversation.unreadCount}
+                      </span>
+                    )}
+                    {isInboxOpen && <PlatformBadge platform={conversation.platform} />}
+                  </div>
+                  {isInboxOpen && (
+                    <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span
+                          className={`truncate text-sm text-foreground ${
+                            conversation.unreadCount > 0 ? "font-semibold" : "font-medium"
+                          }`}
+                        >
+                          {displayName}
+                        </span>
+                        <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
+                          {formatTime(conversation.lastMessageAt)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
                         {isWaitingAdmin && (
-                          <span className="absolute -left-0.5 -top-0.5 flex size-3">
-                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-orange-500 opacity-60" />
-                            <span className="relative inline-flex size-3 rounded-full border-2 border-background bg-orange-500" />
+                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-orange-50 px-[7px] py-px text-[11px] font-semibold text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">
+                            <span className="size-[5px] rounded-full bg-orange-600" />
+                            {t("line.status.waiting_admin_short")}
                           </span>
                         )}
-                        {!isInboxOpen && conversation.unreadCount > 0 && (
-                          <span className="absolute -right-1 -top-1 h-4 min-w-4 rounded-full bg-primary px-1 text-[10px] font-semibold leading-4 text-primary-foreground">
+                        <span className="min-w-0 flex-1 truncate text-[13px] text-normal">{preview}</span>
+                        {conversation.unreadCount > 0 && (
+                          <span className="flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-full bg-primary px-[5px] text-[11px] font-semibold text-primary-foreground">
                             {conversation.unreadCount}
                           </span>
                         )}
-                        {isInboxOpen && (
-                          <PlatformBadge platform={conversation.platform} />
-                        )}
                       </div>
-                      {isInboxOpen && (
-                        <>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center justify-between gap-2">
-                              <p
-                                className={`truncate text-[13px] font-medium ${
-                                  isActive ? "text-primary" : "text-normal"
-                                }`}
-                              >
-                                {displayName}
-                              </p>
-                              <span className="shrink-0 text-[11px] text-mini">
-                                {formatTime(conversation.lastMessageAt)}
-                              </span>
-                            </div>
-                            <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-mini">
-                              {isWaitingAdmin && (
-                                <span className="shrink-0 rounded bg-orange-100 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">
-                                  {t("line.status.waiting_admin_short")}
-                                </span>
-                              )}
-                              <span className="truncate">{preview}</span>
-                            </p>
-                          </div>
-                          {conversation.unreadCount > 0 && (
-                            <span className="rounded-full bg-primary px-1.5 text-[11px] font-semibold leading-5 text-primary-foreground">
-                              {conversation.unreadCount}
-                            </span>
-                          )}
-                        </>
-                      )}
                     </div>
-                  </button>
-                </div>
+                  )}
+                </button>
               );
             })}
 
@@ -753,7 +764,7 @@ export const LineChat = () => {
                 onClick={() =>
                   setVisibleCount((count) => count + LOAD_MORE_CONVERSATIONS)
                 }
-                className="flex h-11 w-full items-center justify-center gap-1.5 text-xs font-medium text-mini transition hover:bg-hover hover:text-normal"
+                className="flex h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl text-xs font-medium text-muted-foreground transition hover:bg-accent/60 hover:text-foreground"
               >
                 {isInboxOpen ? t("line.showMore") : ""}
                 <ChevronDown className="size-3.5" />
@@ -761,7 +772,7 @@ export const LineChat = () => {
             )}
 
             {isInboxOpen && !hasMoreConversations && filteredConversations.length > 0 && (
-              <p className="py-3 text-center text-[11px] text-mini/70">
+              <p className="pb-6 pt-4 text-center text-xs text-muted-foreground">
                 {t("line.conversationCount", { count: filteredConversations.length })}
               </p>
             )}
@@ -773,24 +784,24 @@ export const LineChat = () => {
             isChatOpenOnMobile ? "flex" : "hidden"
           }`}
         >
-          <header className="shrink-0 border-b px-3 py-2.5 sm:px-5">
-            <div className="mx-auto w-full max-w-6xl">{conversationHeader}</div>
+          <header className="flex min-h-16 shrink-0 items-center border-b px-4 py-2.5 sm:px-6">
+            {conversationHeader}
           </header>
 
           <div
             ref={messageListRef}
             onScroll={handleMessagesScroll}
-            className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5 sm:py-5"
+            className="min-h-0 flex-1 overflow-y-auto"
           >
-            <div className="mx-auto w-full max-w-6xl space-y-4">
+            <div className="mx-auto flex w-full max-w-[880px] flex-col px-4 pb-6 pt-7 sm:px-6">
               {messagesQuery.isFetchingNextPage && (
-                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-xs text-mini">
+                <div className="mx-auto mb-3 w-fit rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
                   {t("line.loadingOlder")}
                 </div>
               )}
 
               {messagesQuery.isLoading && selectedConversation && (
-                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-mini">
+                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
                   Loading messages...
                 </div>
               )}
@@ -802,63 +813,59 @@ export const LineChat = () => {
               )}
 
               {!messagesQuery.isLoading && selectedConversation && messages.length === 0 && (
-                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-mini">
+                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
                   No messages yet
                 </div>
               )}
 
               {!selectedConversation && (
-                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-mini">
+                <div className="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
                   Select a conversation from the inbox
                 </div>
               )}
 
-              {messages.map((message) => {
+              {messages.map((message, index) => {
                 const sender = normalizeSender(message.sender);
                 const isUser = sender === "USER";
                 const isAdmin = sender === "ADMIN";
                 const isAi = sender === "AI";
                 const senderLabel = message.sentByAdminId || "AI";
+                // ข้อความต่อกันจากคนเดิมชิดกัน 4px เปลี่ยนคนห่าง 16px
+                const prev = messages[index - 1];
+                const sameSender =
+                  prev && (normalizeSender(prev.sender) === "USER") === isUser;
+                const gap = index === 0 ? "" : sameSender ? "mt-1" : "mt-4";
 
-                return (
-                  <div
-                    key={message.id}
-                    className={`flex ${isUser ? "justify-start" : "justify-end"}`}
-                  >
-                    <div className={`max-w-[78%] ${isUser ? "items-start" : "items-end"}`}>
-                      <div className={`flex items-end gap-2 ${isUser ? "" : "flex-row-reverse"}`}>
-                        {isUser ? (
-                          <Avatar
-                            name={selectedConversation?.lineMember?.displayName ?? t("line.defaultUser")}
-                            src={selectedConversation?.lineMember?.pictureUrl}
-                            size="sm"
-                          />
-                        ) : (
-                          <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
-                            isAi
-                              ? "bg-primary/10 text-primary"
-                              : "bg-primary text-primary-foreground"
-                          }`}>
-                            {isAi ? <Bot className="h-4 w-4" /> : "A"}
-                          </div>
-                        )}
-                        <div
-                          className={`rounded-[1.25rem] px-4 py-2.5 text-[15px] leading-6 ${
-                            isUser
-                              ? "rounded-bl-md bg-muted text-normal"
-                              : isAi
-                                ? "rounded-br-md bg-primary/10 text-normal"
-                                : "rounded-br-md bg-muted text-normal"
-                          }`}
-                        >
+                if (isUser) {
+                  return (
+                    <div key={message.id} className={`flex items-end gap-2.5 ${gap}`}>
+                      <Avatar name={selectedName} src={selectedConversation?.lineMember?.pictureUrl} size="xs" />
+                      <div className="flex max-w-[70%] flex-col gap-1">
+                        <div className="rounded-[18px_18px_18px_6px] bg-muted px-3.5 py-2.5 text-sm leading-[1.55] text-foreground">
                           <MessageContent message={message} />
                         </div>
+                        <span className="pl-1 font-mono text-[11px] text-muted-foreground">
+                          {formatTime(message.createdAt)}
+                        </span>
                       </div>
-                      <p className={`mt-1 text-[11px] text-mini ${isUser ? "text-left" : "text-right"}`}>
-                        {!isUser && `${t("line.repliedBy", { name: senderLabel })} · `}
-                        {formatTime(message.createdAt)}
-                        {isAdmin && message.sentStatus ? ` · ${message.sentStatus}` : ""}
-                      </p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={message.id} className={`flex justify-end ${gap}`}>
+                    <div className="flex max-w-[70%] flex-col items-end gap-1">
+                      <div className="rounded-[18px_18px_6px_18px] bg-muted px-3.5 py-2.5 text-sm leading-[1.55] text-foreground">
+                        <MessageContent message={message} />
+                      </div>
+                      <span className="flex items-center gap-1.5 pr-1 text-[11px] text-muted-foreground">
+                        {isAi && <GeminiSparkle />}
+                        {t("line.repliedBy", { name: senderLabel })}
+                        <span className="font-mono">
+                          · {formatTime(message.createdAt)}
+                          {isAdmin && message.sentStatus ? ` · ${message.sentStatus}` : ""}
+                        </span>
+                      </span>
                     </div>
                   </div>
                 );
@@ -866,33 +873,49 @@ export const LineChat = () => {
             </div>
           </div>
 
-          <footer className="border-t bg-background p-2 sm:p-4">
-            <div className="mx-auto w-full max-w-6xl rounded-2xl border bg-muted/50 p-2">
+          <footer className="mx-auto w-full max-w-[880px] shrink-0 px-4 pb-4 sm:px-6 sm:pb-6">
+            <div className="flex flex-col gap-1.5 rounded-2xl border bg-background py-2.5 pl-4 pr-3 shadow-[rgba(0,0,0,0.04)_0px_4px_14px]">
               <Textarea
                 value={reply}
                 onChange={(event) => setReply(event.target.value)}
                 onKeyDown={handleReplyKeyDown}
                 disabled={!selectedConversation || sendMessageMutation.isPending}
                 placeholder={t("line.replyPlaceholder")}
-                className="max-h-32 min-h-12 resize-none border-0 bg-transparent shadow-none focus-visible:ring-0"
+                aria-label={t("line.replyPlaceholder")}
+                rows={2}
+                className="max-h-32 min-h-0 resize-none rounded-none border-0 bg-transparent px-0 py-1 text-[15px] leading-normal shadow-none focus-visible:ring-0 dark:bg-transparent md:text-[15px]"
               />
-              <div className="mt-2 flex items-center justify-between px-1">
-                <p className="text-xs text-mini">{t("line.connected")}</p>
-                <Button
-                  onClick={sendReply}
-                  disabled={!reply.trim() || !selectedConversation || sendMessageMutation.isPending}
-                  className="rounded-xl"
-                >
-                  <Send className="h-4 w-4" />
-                  {sendMessageMutation.isPending ? t("line.sending") : t("line.send")}
-                </Button>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="size-1.5 rounded-full bg-[#16a34a]" />
+                  {t("line.connected")}
+                </span>
+                <div className="flex items-center gap-2.5">
+                  <span className="hidden text-xs text-muted-foreground sm:inline">{t("line.sendHint")}</span>
+                  <Button
+                    onClick={sendReply}
+                    disabled={!reply.trim() || !selectedConversation || sendMessageMutation.isPending}
+                    className="h-[38px] rounded-full bg-foreground pl-3.5 pr-4 text-sm text-background hover:bg-foreground/85"
+                  >
+                    <ArrowUp className="size-3.5" strokeWidth={2.2} />
+                    {sendMessageMutation.isPending ? t("line.sending") : t("line.send")}
+                  </Button>
+                </div>
               </div>
               {sendMessageMutation.isError && (
-                <p className="px-1 pt-2 text-xs text-destructive">{t("line.sendFailed")}</p>
+                <p className="pt-1 text-xs text-destructive">{t("line.sendFailed")}</p>
               )}
             </div>
           </footer>
         </main>
+
+        {showInfoPanel && selectedConversation && (
+          <CustomerPanel
+            conversation={selectedConversation}
+            messages={messages}
+            onClose={() => setIsInfoOpen(false)}
+          />
+        )}
       </div>
     </div>
   );

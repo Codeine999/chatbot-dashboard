@@ -1,10 +1,4 @@
 import {
-    Card,
-    CardTitle,
-    CardDescription,
-} from "@/components/ui/card"
-
-import {
     Users,
     User,
     MessageSquare,
@@ -30,9 +24,11 @@ const OverviewCard = () => {
     const cards = [
         {
             id: "followers",
-            accent: "text-blue-500",
-            iconTone: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
-            points: [4, 5, 4.5, 6, 5, 7, 6.5, 8, 7, 9],
+            flat: false,
+            // เส้นตกแต่งเท่านั้น ไม่ใช่ข้อมูลจริง
+            points: [26, 22, 24, 17, 21, 12, 15, 8, 11, 3],
+            // เส้นตกแต่งเท่านั้น ไม่ใช่ข้อมูลจริง
+            iconColor: "text-[#8b5cf6]",
             title: t("overview.followers"),
             icon: Users,
             loading: followers.isLoading,
@@ -44,7 +40,7 @@ const OverviewCard = () => {
                     <>
                         <span
                             className={
-                                followerDelta >= 0 ? "text-green-600" : "text-red-600"
+                                followerDelta >= 0 ? "font-semibold text-green-700" : "font-semibold text-red-600"
                             }
                         >
                             {followerDelta >= 0 ? "+" : ""}
@@ -56,9 +52,11 @@ const OverviewCard = () => {
         },
         {
             id: "messages-sent",
-            accent: "text-violet-500",
-            iconTone: "border border-border bg-transparent text-icons dark:border-transparent",
-            points: [3, 4, 3.5, 5, 7, 5.5, 6, 9, 6.5, 8],
+            flat: false,
+            // เส้นตกแต่งเท่านั้น ไม่ใช่ข้อมูลจริง
+            points: [28, 24, 26, 18, 12, 16, 14, 6, 14, 9],
+            // เส้นตกแต่งเท่านั้น ไม่ใช่ข้อมูลจริง
+            iconColor: "text-[#2563eb]",
             title: t("overview.messagesSent"),
             icon: MessageSquare,
             loading: messageUsage.isLoading,
@@ -71,9 +69,11 @@ const OverviewCard = () => {
         },
         {
             id: "quota-used",
-            accent: "text-emerald-500",
-            iconTone: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
-            points: [2, 3, 3, 4.5, 4, 6, 8, 7, 9, 10],
+            flat: false,
+            // เส้นตกแต่งเท่านั้น ไม่ใช่ข้อมูลจริง
+            points: [28, 26, 27, 22, 23, 16, 10, 13, 7, 5],
+            // เส้นตกแต่งเท่านั้น ไม่ใช่ข้อมูลจริง
+            iconColor: "text-[#ea580c]",
             title: t("overview.quotaUsed"),
             icon: Gauge,
             loading: messageUsage.isLoading,
@@ -82,16 +82,17 @@ const OverviewCard = () => {
         },
         {
             id: "active-now",
-            accent: "text-orange-500",
-            iconTone: "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
-            points: [5, 4, 5.5, 5, 6.5, 6, 7, 8, 7.5, 10],
+            points: [] as number[],
+            flat: true,
+            // เส้นตกแต่งเท่านั้น ไม่ใช่ข้อมูลจริง
+            iconColor: "text-[#16a34a]",
             title: t("overview.activeNow"),
             icon: User,
             loading: false,
             total: 0,
             description: (
                 <>
-                    <span className="text-green-600 mr-1">+0%</span>
+                    <span className="mr-1 font-semibold text-normal">0%</span>
                     {t("overview.fromLastMonth")}
                 </>
             ),
@@ -100,39 +101,40 @@ const OverviewCard = () => {
 
     return (
         <>
-            {cards.map((item) => {
+            {cards.map((item, index) => {
                 const Icon = item.icon;
+                const empty = item.loading || item.total === null;
                 return (
-                    <Card key={item.id} className="relative overflow-hidden p-4 md:max-xl:flex md:max-xl:flex-col md:max-xl:gap-3">
-                        <div className="flex items-start gap-3">
-                            <div
+                    <div
+                        key={item.id}
+                        className={cn(
+                            "flex flex-col gap-2.5 py-0.5",
+                            // เส้นคั่นแนวตั้งระหว่างช่อง ช่องแรกชิดซ้าย ช่องสุดท้ายชิดขวา
+                            index === 0 ? "pr-7" : "border-l px-7",
+                            index === cards.length - 1 && "pr-0"
+                        )}
+                    >
+                        <span className="flex items-center gap-2 text-[15px] text-normal">
+                            <Icon className={cn("size-4 shrink-0", item.iconColor)} strokeWidth={1.7} />
+                            <span className="truncate">{item.title}</span>
+                        </span>
+                        <div className="flex items-end justify-between gap-4">
+                            <span
                                 className={cn(
-                                    "flex size-11 shrink-0 items-center justify-center rounded-xl",
-                                    item.iconTone
+                                    "text-[32px] font-semibold leading-none tracking-[-0.025em] tabular-nums",
+                                    empty ? "text-[#b5b0aa]" : "text-foreground"
                                 )}
                             >
-                                <Icon className="size-5" />
-                            </div>
-                            <div className="min-w-0">
-                                <CardTitle>{item.title}</CardTitle>
-                                <p className="mt-1 text-xl font-semibold">
-                                    {item.loading || item.total === null
-                                        ? "—"
-                                        : formatNumber(item.total)}
-                                </p>
-                                <CardDescription className="mt-1">
-                                    {item.description}
-                                </CardDescription>
-                            </div>
+                                {empty ? "—" : formatNumber(item.total as number)}
+                            </span>
+                            <Sparkline
+                                flat={item.flat}
+                                points={item.points}
+                                className={cn("pointer-events-none h-7 w-[88px] shrink-0", item.iconColor)}
+                            />
                         </div>
-                        <Sparkline
-                            points={item.points}
-                            className={cn(
-                                "pointer-events-none absolute bottom-3 right-3 h-12 w-28 md:max-xl:static md:max-xl:h-10 md:max-xl:w-full",
-                                item.accent
-                            )}
-                        />
-                    </Card>
+                        <span className="text-[13px] text-muted-foreground">{item.description}</span>
+                    </div>
                 );
             })}
         </>

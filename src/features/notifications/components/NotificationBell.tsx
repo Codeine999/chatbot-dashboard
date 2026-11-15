@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Bell, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
+import { BellIcon } from "@/components/navbar/icons";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -56,12 +57,10 @@ export const NotificationBell = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="nav" className="relative">
-          <Bell className="w-5 h-5" />
+        <Button variant="pill" size="pill-icon" className="relative">
+          <BellIcon className="size-5" />
           {unreadCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold leading-4 text-white">
-              {unreadCount}
-            </span>
+            <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-[#1b8fd6] ring-2 ring-background" />
           )}
         </Button>
       </PopoverTrigger>

@@ -28,6 +28,7 @@
     "settingConnection": "Connection",
     "settingClearSession": "Clear session",
     "aiWorkflow": "Ai Work Flow",
+    "callAiHelp": "Call AI Help You",
     "internalCustomerChat": "Customer chat test"
   },
   "brand": {
@@ -53,5 +54,14 @@
   },
   "theme": {
     "toggle": "Toggle theme"
+  },
+  "navbar": {
+    "search": "Search everything...",
+    "feedback": "Feedback",
+    "docs": "Docs",
+    "ask": "Ask",
+    "files": "Knowledge",
+    "goTo": "Go to",
+    "noResults": "No results found."
   }
 }

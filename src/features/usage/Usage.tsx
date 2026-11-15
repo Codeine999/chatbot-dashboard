@@ -1,31 +1,20 @@
-import {
-  Bot,
-  CheckCircle2,
-  Send,
-  ShieldCheck,
-  Sparkles,
-  type LucideIcon,
-} from "lucide-react";
-import {
-  Avatar,
-  AvatarFallback,
-} from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CheckCircle2, RefreshCw } from "lucide-react";
 import { getApiErrorMessage } from "@/api/api";
 import { PageContainer } from "@/components/common/PageContainer";
-import { PageHeader } from "@/components/common/PageHeader";
 import { useAdminUsage } from "./hooks/useAdminUsage";
 import { useLinePushMessageUsage } from "./hooks/useLinePushMessageUsage";
 import { useUsageAccounts } from "./hooks/useUsageAccounts";
 import type { UsageAccountItem } from "./services/usage.service";
 import { useTranslation } from "react-i18next";
-import { formatNumber as formatLocaleNumber } from "@/i18n/format";
+import { formatNumber as formatLocaleNumber, getIntlLocale } from "@/i18n/format";
+import { useState } from "react";
+import {
+  TOKEN_CHANNEL_MOCK,
+  TOKEN_CHANNELS,
+  TOKEN_LOG_MOCK,
+  type TokenChannel,
+  type TokenChannelMock,
+} from "./mock/tokenChannel.mock";
 
 const formatNumber = (value: number) =>
   formatLocaleNumber(value, { maximumFractionDigits: 2 });
@@ -37,146 +26,113 @@ const getPercent = (used: number, limit: number) =>
 const formatPercent = (percent: number) =>
   percent > 0 && percent < 1 ? percent.toFixed(2) : Math.round(percent).toString();
 
-const statusStyle: Record<UsageAccountItem["status"], string> = {
-  active:
-    "bg-green-50 text-green-700 ring-green-200 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20",
-  trial:
-    "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20",
-  inactive: "bg-muted text-mini ring-border",
+const statusDot: Record<UsageAccountItem["status"], string> = {
+  active: "bg-[#16a34a]",
+  trial: "bg-[#f59e0b]",
+  inactive: "bg-[#a3a3a3]",
 };
 
-function StatusBadge({ status }: { status: UsageAccountItem["status"] }) {
-  const { t } = useTranslation("usage");
-
-  return (
-    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${statusStyle[status]}`}>
-      {t(`status.${status}`)}
-    </span>
-  );
-}
-
-function ProgressBar({
-  value,
-  color,
-}: {
-  value: number;
-  color: string;
-}) {
-  return (
-    <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
-      <div
-        className={`h-full rounded-full transition-all duration-500 ${color}`}
-        style={{ width: `${value}%` }}
-      />
-    </div>
-  );
-}
-
-function UsageOverviewRow({
+function TokenColumn({
   title,
   description,
   used,
   limit,
-  icon: Icon,
-  iconClassName,
-  progressClassName,
+  color,
+  first,
 }: {
   title: string;
   description: string;
   used: number;
   limit: number;
-  icon: LucideIcon;
-  iconClassName: string;
-  progressClassName: string;
+  color: string;
+  first?: boolean;
 }) {
   const { t } = useTranslation("usage");
   const percent = getPercent(used, limit);
   const remaining = Math.max(limit - used, 0);
 
   return (
-    <div className="group px-5 py-6 sm:px-7 sm:py-7">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-center gap-3.5">
-          <div
-            className={`flex size-12 shrink-0 items-center justify-center rounded-2xl ring-1 ring-inset transition-transform duration-300 group-hover:scale-105 ${iconClassName}`}
-          >
-            <Icon className="size-5" strokeWidth={2.2} />
-          </div>
-          <div>
-            <p className="text-base font-semibold tracking-tight text-normal">{title}</p>
-            <p className="mt-1 text-sm text-mini">{description}</p>
-          </div>
-        </div>
-
-        <div className="pl-[3.75rem] sm:pl-0 sm:text-right">
-          <p className="text-3xl font-semibold tracking-[-0.04em] text-normal">
-            {formatNumber(remaining)}
-          </p>
-          <p className="mt-1 text-xs font-medium text-mini">
-            {t("token.remainingOf", { limit: formatNumber(limit) })}
-          </p>
-        </div>
+    <div className={`px-7 ${first ? "border-l-0 pl-0" : "border-l"}`}>
+      <div className="flex items-center gap-2 text-[13px] text-normal">
+        <span className="size-2 rounded-[2px]" style={{ background: color }} />
+        {title}
       </div>
-
-      <div className="mt-6">
-        <div className="h-2.5 overflow-hidden rounded-full bg-muted/80 ring-1 ring-inset ring-black/[0.03] dark:ring-white/[0.04]">
-          <div
-            className={`h-full rounded-full bg-gradient-to-r shadow-[0_0_16px_rgba(124,58,237,0.28)] transition-[width] duration-700 ease-out ${progressClassName}`}
-            style={{ width: `${percent}%` }}
-          />
-        </div>
-
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
-          <p className="font-semibold text-normal">
-            {t("token.used", { used: formatNumber(used) })}{" "}
-            <span className="mx-1 text-mini">·</span> {formatPercent(percent)}%
-          </p>
-          <p className="flex items-center gap-1.5 font-medium text-mini">
-            <CheckCircle2 className="size-3.5 text-emerald-500" />
-            {t("token.withinAllowance")}
-          </p>
-        </div>
+      <p className="mt-3 text-[34px] font-semibold leading-none tracking-[-0.03em] text-foreground">
+        {formatNumber(remaining)}
+      </p>
+      <p className="mt-2 text-[13px] text-muted-foreground">
+        {t("token.remainingOf", { limit: formatNumber(limit) })}
+      </p>
+      <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-[#f0f0f0] dark:bg-white/10">
+        <div
+          className="h-full rounded-full transition-[width] duration-500"
+          style={{
+            width: `${percent}%`,
+            minWidth: percent > 0 ? 3 : 0,
+            background: color,
+          }}
+        />
       </div>
-    </div>
-  );
-}
-
-function CreditUsageRow({
-  label,
-  used,
-  limit,
-  color,
-}: {
-  label: string;
-  used: number;
-  limit: number;
-  color: string;
-}) {
-  const { t } = useTranslation("usage");
-  const percent = getPercent(used, limit);
-
-  return (
-    <div className="space-y-2.5">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-normal">{label}</p>
-          <p className="mt-0.5 text-xs text-mini">
-            {t("account.credits", {
-              used: formatNumber(used),
-              limit: formatNumber(limit),
-            })}
-          </p>
-        </div>
-        <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-normal">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span className="text-foreground">
+          {t("token.used", { used: formatNumber(used) })}
+          <span className="mx-1.5 text-muted-foreground">·</span>
           {formatPercent(percent)}%
         </span>
+        <span className="flex items-center gap-1 text-muted-foreground">
+          <CheckCircle2 className="size-3.5 text-[#16a34a]" />
+          {t("token.withinAllowance")}
+        </span>
       </div>
-      <ProgressBar value={percent} color={color} />
+      <p className="mt-3 text-xs text-muted-foreground">{description}</p>
     </div>
   );
 }
 
-function AccountUsageCard({ account }: { account: UsageAccountItem }) {
+function ChannelFilterTabs({
+  value,
+  onChange,
+  label,
+}: {
+  value: TokenChannel;
+  onChange: (value: TokenChannel) => void;
+  label: string;
+}) {
+  const { t } = useTranslation("usage");
+  return (
+    <div role="tablist" aria-label={label} className="flex w-fit gap-0.5 rounded-[10px] bg-muted p-[3px]">
+      {TOKEN_CHANNELS.map((item) => {
+        const isActive = item === value;
+        return (
+          <button
+            key={item}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => onChange(item)}
+            className={`cursor-pointer h-8 rounded-lg px-3 text-[13px] outline-none transition-all focus-visible:ring-[3px] focus-visible:ring-ring/50 ${
+              isActive
+                ? "bg-background font-medium text-foreground shadow-[rgba(0,0,0,0.4)_0px_0px_1px,rgba(0,0,0,0.04)_0px_4px_4px]"
+                : "font-medium text-normal hover:text-foreground"
+            }`}
+          >
+            {t(`token.channels.${item}`)}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+const formatLogTime = (value: string) =>
+  new Intl.DateTimeFormat(getIntlLocale(), {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(value));
+
+function AdminRow({ account }: { account: UsageAccountItem }) {
   const { t } = useTranslation("usage");
   const initials = account.username
     .split(" ")
@@ -184,53 +140,51 @@ function AccountUsageCard({ account }: { account: UsageAccountItem }) {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+  const limit = account.aiLimit ?? 0;
+  const percent = getPercent(account.aiUsed, limit);
 
   return (
-    <Card className="group transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-      <CardHeader className="px-5 pt-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Avatar className="size-12 border bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-500/10 dark:to-blue-500/10">
-              <AvatarFallback className="bg-transparent text-sm font-semibold text-normal">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <CardTitle className="text-base text-normal">{account.username}</CardTitle>
-              <CardDescription className="mt-1 whitespace-normal text-xs">
-                {account.role}
-              </CardDescription>
-            </div>
+    <tr className="border-b border-black/5 transition-colors hover:bg-[#fafafa] dark:border-white/5 dark:hover:bg-white/[0.03]">
+      <td className="py-3.5 pr-4">
+        <div className="flex items-center gap-3">
+          <span className="flex size-[34px] shrink-0 items-center justify-center rounded-full bg-[#f5f5f5] text-xs font-semibold text-foreground dark:bg-white/10">
+            {initials}
+          </span>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium text-foreground">{account.username}</p>
+            <p className="truncate text-xs text-muted-foreground">{account.role}</p>
           </div>
-          <StatusBadge status={account.status} />
         </div>
-      </CardHeader>
-
-      <CardContent className="space-y-5 px-5 pb-5 pt-2.5">
-        <CreditUsageRow
-          label={t("account.aiCredit")}
-          used={account.aiUsed}
-          limit={account.aiLimit ?? 0}
-          color="bg-orange-500"
-        />
-        {account.chatUsed !== null && (
-          <CreditUsageRow
-            label={t("account.chatCredit")}
-            used={account.chatUsed}
-            limit={account.chatLimit ?? 0}
-            color="bg-blue-500"
-          />
-        )}
-
-        <div className="flex items-center justify-between rounded-xl border bg-muted px-3 py-2.5 text-xs text-mini">
-          <span>{t("account.health")}</span>
-          <span className="flex items-center gap-1.5 font-semibold text-green-600 dark:text-green-400">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            {t("account.operational")}
+      </td>
+      <td className="py-3.5 pr-4">
+        <span className="flex items-center gap-2 text-[13px] text-normal">
+          <span className={`size-1.5 rounded-full ${statusDot[account.status]}`} />
+          {t(`status.${account.status}`)}
+        </span>
+      </td>
+      <td className="py-3.5 pr-4">
+        <div className="flex items-center gap-3">
+          <div className="h-1 flex-1 overflow-hidden rounded-full bg-[#f0f0f0] dark:bg-white/10">
+            <div
+              className="h-full rounded-full bg-[#ea580c]"
+              style={{ width: `${percent}%`, minWidth: percent > 0 ? 3 : 0 }}
+            />
+          </div>
+          <span className="w-44 shrink-0 text-right text-[13px] tabular-nums text-normal">
+            {formatNumber(account.aiUsed)} / {formatNumber(limit)}
+            <span className="ml-2 font-mono text-xs text-muted-foreground">
+              {formatPercent(percent)}%
+            </span>
           </span>
         </div>
-      </CardContent>
-    </Card>
+      </td>
+      <td className="py-3.5 text-right">
+        <span className="inline-flex items-center gap-1.5 text-[13px] text-[#15803d] dark:text-green-400">
+          <CheckCircle2 className="size-3.5" />
+          {t("account.operational")}
+        </span>
+      </td>
+    </tr>
   );
 }
 
@@ -240,101 +194,250 @@ export const Usage = () => {
     data: adminUsage,
     isLoading: isAdminUsageLoading,
     isError: isAdminUsageError,
+    refetch: refetchAdmin,
   } = useAdminUsage();
   const {
     data: usageAccounts = [],
     isLoading: isAccountsLoading,
     isError: isAccountsError,
     error: accountsError,
+    refetch: refetchAccounts,
   } = useUsageAccounts();
   const {
     data: linePushUsage,
     isLoading: isLinePushLoading,
     isError: isLinePushError,
+    refetch: refetchLine,
   } = useLinePushMessageUsage();
 
-  const totalChatUsed = linePushUsage?.used ?? 0;
-  const totalChatLimit = linePushUsage?.limit ?? 0;
+  const activeAccounts = usageAccounts.filter((item) => item.status === "active").length;
+
+  // real totals for "overall"; per-channel values are mock until the API splits them by channel
+  const [tokenChannel, setTokenChannel] = useState<TokenChannel>("overall");
   const aiChatUsed = adminUsage?.company.used ?? 0;
   const aiChatLimit = adminUsage?.company.balance ?? 0;
   const adminUsed = adminUsage?.admin.used ?? 0;
   // admin wallet has no balance of its own, fall back to the company balance when uncapped
   const adminLimit = adminUsage?.admin.limit ?? adminUsage?.company.balance ?? 0;
-  const activeAccounts = usageAccounts.filter((item) => item.status === "active").length;
+  const totalChatUsed = linePushUsage?.used ?? 0;
+  const totalChatLimit = linePushUsage?.limit ?? 0;
+  const tokenValues: TokenChannelMock =
+    tokenChannel === "overall"
+      ? {
+          aiChat: { used: aiChatUsed, limit: aiChatLimit },
+          lineSend: { used: totalChatUsed, limit: totalChatLimit },
+          admin: { used: adminUsed, limit: adminLimit },
+        }
+      : TOKEN_CHANNEL_MOCK[tokenChannel];
+  const visibleLog =
+    tokenChannel === "overall" ? TOKEN_LOG_MOCK : TOKEN_LOG_MOCK.filter((item) => item.channel === tokenChannel);
+  const totalPersonTokens = usageAccounts.reduce((sum, item) => sum + item.aiUsed, 0);
+
+  const syncing = isAdminUsageLoading || isLinePushLoading;
+  const refresh = () => {
+    void refetchAdmin();
+    void refetchAccounts();
+    void refetchLine();
+  };
+  const noteClass = "mt-6 text-sm text-muted-foreground";
 
   return (
-    <PageContainer>
-      <PageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        actions={
-          <div className="flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-medium text-mini shadow-sm">
-            <Sparkles className="h-4 w-4 text-orange-500" />
-            {isAdminUsageLoading || isLinePushLoading
+    <PageContainer className="mx-auto max-w-[1160px] pt-6 pb-16">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[28px] font-semibold tracking-[-0.02em] text-foreground">{t("title")}</h1>
+          <p className="mt-1.5 text-sm text-normal">{t("subtitle")}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-[13px] text-muted-foreground">
+            {syncing
               ? t("sync.syncing")
               : isAdminUsageError || isLinePushError
                 ? t("sync.fallback")
                 : t("sync.updated")}
-          </div>
-        }
-      />
+          </span>
+          <button
+            type="button"
+            onClick={refresh}
+            aria-label={t("refresh")}
+            className="flex size-[38px] cursor-pointer items-center justify-center rounded-[10px] border text-normal transition-colors hover:bg-muted"
+          >
+            <RefreshCw className={`size-4 ${syncing ? "animate-spin" : ""}`} />
+          </button>
+        </div>
+      </div>
 
-      <Card className="mt-6">
-        <div className="flex flex-col gap-3 border-b border-white/50 px-5 py-5 dark:border-border sm:flex-row sm:items-center sm:justify-between sm:px-7">
-          <div>
-            <p className="text-base font-semibold tracking-tight text-normal">{t("token.title")}</p>
-            <p className="mt-1 text-xs text-mini">{t("token.subtitle")}</p>
-          </div>
-          <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-200/70 bg-emerald-50/70 px-3 py-1.5 text-xs font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
-            <span className="size-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.12)]" />
+      <div className="mt-11 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">{t("token.title")}</h2>
+          <p className="mt-1 text-[13px] text-muted-foreground">{t("token.subtitle")}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="flex items-center gap-2 text-[13px] text-normal">
+            <span className="size-2 rounded-full bg-[#16a34a] shadow-[0_0_0_3px_rgba(22,163,74,0.15)]" />
             {t("token.connected", { active: activeAccounts, total: usageAccounts.length })}
-          </div>
+          </span>
+          <ChannelFilterTabs value={tokenChannel} onChange={setTokenChannel} label={t("token.log.filter")} />
         </div>
+      </div>
 
-        <div className="grid divide-y divide-white/50 dark:divide-border xl:grid-cols-3 xl:divide-x xl:divide-y-0">
-          <UsageOverviewRow
-            title={t("token.aiChat")}
-            description={t("token.aiChatDesc")}
-            used={aiChatUsed}
-            limit={aiChatLimit}
-            icon={Bot}
-            iconClassName="border border-border bg-transparent text-icons dark:border-transparent"
-            progressClassName="from-primary to-primary/70"
-          />
-          <UsageOverviewRow
-            title={t("token.lineSend")}
-            description={t("token.lineSendDesc")}
-            used={totalChatUsed}
-            limit={totalChatLimit}
-            icon={Send}
-            iconClassName="bg-emerald-50/80 text-emerald-600 ring-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20"
-            progressClassName="from-emerald-500 via-teal-400 to-cyan-400"
-          />
-          <UsageOverviewRow
-            title={t("token.admin")}
-            description={t("token.adminDesc")}
-            used={adminUsed}
-            limit={adminLimit}
-            icon={ShieldCheck}
-            iconClassName="bg-orange-50/80 text-orange-600 ring-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:ring-orange-500/20"
-            progressClassName="from-orange-500 via-amber-400 to-yellow-400"
-          />
-        </div>
-      </Card>
+      <div className="mt-7 grid gap-y-8 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+        <TokenColumn
+          first
+          title={t("token.aiChat")}
+          description={t("token.aiChatDesc")}
+          used={tokenValues.aiChat.used}
+          limit={tokenValues.aiChat.limit}
+          color="#8b5cf6"
+        />
+        <TokenColumn
+          title={t("token.lineSend")}
+          description={t("token.lineSendDesc")}
+          used={tokenValues.lineSend.used}
+          limit={tokenValues.lineSend.limit}
+          color="#16a34a"
+        />
+        <TokenColumn
+          title={t("token.admin")}
+          description={t("token.adminDesc")}
+          used={tokenValues.admin.used}
+          limit={tokenValues.admin.limit}
+          color="#ea580c"
+        />
+      </div>
+
+      <div className="mt-12 flex items-baseline justify-between gap-3">
+        <h3 className="text-[15px] font-semibold text-foreground">{t("token.perPerson.title")}</h3>
+        <span className="text-[13px] text-muted-foreground">
+          {t("token.perPerson.total", { used: formatNumber(totalPersonTokens) })}
+        </span>
+      </div>
 
       {isAccountsLoading ? (
-        <Card className="mt-6 px-5 py-8 text-sm text-mini">{t("account.loading")}</Card>
+        <p className="mt-4 text-sm text-muted-foreground">{t("account.loading")}</p>
       ) : isAccountsError ? (
-        <Card className="mt-6 px-5 py-8 text-sm text-mini">
+        <p className="mt-4 text-sm text-muted-foreground">
           {t("account.error", { message: getApiErrorMessage(accountsError) })}
-        </Card>
+        </p>
       ) : usageAccounts.length === 0 ? (
-        <Card className="mt-6 px-5 py-8 text-sm text-mini">{t("account.empty")}</Card>
+        <p className="mt-4 text-sm text-muted-foreground">{t("account.empty")}</p>
       ) : (
-        <div className="mt-6 grid gap-5 xl:grid-cols-2">
-          {usageAccounts.map((account) => (
-            <AccountUsageCard key={account.id} account={account} />
-          ))}
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full min-w-[640px] border-collapse text-left">
+            <thead>
+              <tr className="border-b text-xs font-medium text-muted-foreground">
+                <th className="py-2.5 pr-4 font-medium">{t("table.admin")}</th>
+                <th className="py-2.5 pr-4 font-medium">{t("token.perPerson.used")}</th>
+                <th className="py-2.5 pr-4 font-medium">{t("token.perPerson.limit")}</th>
+                <th className="py-2.5 pr-4 font-medium">{t("token.perPerson.share")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usageAccounts.map((account) => {
+                const limit = account.aiLimit ?? 0;
+                const percent = getPercent(account.aiUsed, limit);
+                return (
+                  <tr
+                    key={account.id}
+                    className="border-b border-black/5 transition-colors hover:bg-[#fafafa] dark:border-white/5 dark:hover:bg-white/[0.03]"
+                  >
+                    <td className="py-3 pr-4">
+                      <p className="truncate text-sm font-medium text-foreground">{account.username}</p>
+                      <p className="truncate text-xs text-muted-foreground">{account.role}</p>
+                    </td>
+                    <td className="py-3 pr-4 text-[13px] tabular-nums text-normal">{formatNumber(account.aiUsed)}</td>
+                    <td className="py-3 pr-4 text-[13px] tabular-nums text-normal">{formatNumber(limit)}</td>
+                    <td className="py-3 pr-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-1 w-32 overflow-hidden rounded-full bg-[#f0f0f0] dark:bg-white/10">
+                          <div
+                            className="h-full rounded-full bg-[#8b5cf6]"
+                            style={{ width: `${percent}%`, minWidth: percent > 0 ? 3 : 0 }}
+                          />
+                        </div>
+                        <span className="font-mono text-xs text-muted-foreground">{formatPercent(percent)}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-[15px] font-semibold text-foreground">{t("token.log.title")}</h3>
+      </div>
+
+      <div className="mt-3 overflow-x-auto">
+        <table className="w-full min-w-[640px] border-collapse text-left">
+          <thead>
+            <tr className="border-b text-xs font-medium text-muted-foreground">
+              <th className="py-2.5 pr-4 font-medium">{t("token.log.time")}</th>
+              <th className="py-2.5 pr-4 font-medium">{t("token.log.channel")}</th>
+              <th className="py-2.5 pr-4 font-medium">{t("token.log.respondedBy")}</th>
+              <th className="py-2.5 pr-4 text-right font-medium">{t("token.log.input")}</th>
+              <th className="py-2.5 pr-4 text-right font-medium">{t("token.log.output")}</th>
+              <th className="py-2.5 text-right font-medium">{t("token.log.total")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visibleLog.map((entry) => (
+              <tr
+                key={entry.id}
+                className="border-b border-black/5 transition-colors hover:bg-[#fafafa] dark:border-white/5 dark:hover:bg-white/[0.03]"
+              >
+                <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">{formatLogTime(entry.createdAt)}</td>
+                <td className="py-3 pr-4 text-[13px] text-normal">{t(`token.channels.${entry.channel}`)}</td>
+                <td className="py-3 pr-4 text-[13px] text-normal">
+                  {entry.respondedBy === "AI" ? t("token.log.ai") : entry.respondedBy}
+                </td>
+                <td className="py-3 pr-4 text-right text-[13px] tabular-nums text-normal">
+                  {formatNumber(entry.inputTokens)}
+                </td>
+                <td className="py-3 pr-4 text-right text-[13px] tabular-nums text-normal">
+                  {formatNumber(entry.outputTokens)}
+                </td>
+                <td className="py-3 text-right text-[13px] font-medium tabular-nums text-foreground">
+                  {formatNumber(entry.inputTokens + entry.outputTokens)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-16 flex items-baseline gap-3">
+        <h2 className="text-lg font-semibold text-foreground">{t("adminTitle")}</h2>
+        <span className="text-[13px] text-muted-foreground">
+          {t("people", { count: usageAccounts.length })}
+        </span>
+      </div>
+
+      {isAccountsLoading ? (
+        <p className={noteClass}>{t("account.loading")}</p>
+      ) : isAccountsError ? (
+        <p className={noteClass}>{t("account.error", { message: getApiErrorMessage(accountsError) })}</p>
+      ) : usageAccounts.length === 0 ? (
+        <p className={noteClass}>{t("account.empty")}</p>
+      ) : (
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full min-w-[720px] border-collapse text-left">
+            <thead>
+              <tr className="border-b text-xs font-medium text-muted-foreground">
+                <th className="py-2.5 pr-4 font-medium">{t("table.admin")}</th>
+                <th className="py-2.5 pr-4 font-medium">{t("table.status")}</th>
+                <th className="w-[38%] py-2.5 pr-4 font-medium">{t("table.aiCredit")}</th>
+                <th className="py-2.5 text-right font-medium">{t("table.accountStatus")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usageAccounts.map((account) => (
+                <AdminRow key={account.id} account={account} />
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </PageContainer>

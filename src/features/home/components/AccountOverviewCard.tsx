@@ -21,8 +21,9 @@ import {
   useUpdateAdminAiProviderSetting,
 } from "../hooks/useLineOaDashboard";
 import { useTranslation } from "react-i18next";
-import { formatDate, formatTime } from "@/i18n/format";
+import { formatDate, formatNumber, formatTime } from "@/i18n/format";
 import { useAuthUser } from "@/features/auth/store/auth.store";
+import { useAdminUsage } from "@/features/usage/hooks/useAdminUsage";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +48,9 @@ const getInitials = (name: string) =>
     .map((part) => part[0]?.toUpperCase())
     .join("") || "?";
 
+type AccountChannel = "Line" | "Facebook" | "Api";
+const ACCOUNT_CHANNELS: AccountChannel[] = ["Line", "Facebook", "Api"];
+
 const capitalize = (value: string) =>
   value.charAt(0).toUpperCase() + value.slice(1);
 
@@ -56,6 +60,9 @@ const modelValue = (provider: string, model: string) =>
 const AccountOverviewCard = () => {
   const { t } = useTranslation("home");
   const user = useAuthUser();
+  const { data: adminUsage } = useAdminUsage();
+  const creditLimit = adminUsage?.admin.limit ?? 0;
+  const creditRemaining = Math.max(creditLimit - (adminUsage?.admin.used ?? 0), 0);
   const {
     data: account,
     isLoading,
@@ -65,6 +72,7 @@ const AccountOverviewCard = () => {
     isFetching,
   } = useLineOaInfo();
   const [copied, setCopied] = useState(false);
+  const [channel, setChannel] = useState<AccountChannel>("Line");
   const [modelDialogOpen, setModelDialogOpen] = useState(false);
   const [selectedModelValue, setSelectedModelValue] = useState("");
   const canChangeAiModel = ["dev", "owner", "admin"].includes(
@@ -138,11 +146,6 @@ const AccountOverviewCard = () => {
           editable: true,
         },
         {
-          icon: MessagesSquare,
-          label: t("account.chatMode"),
-          value: capitalize(account.chatMode),
-        },
-        {
           icon: Eye,
           label: t("account.markAsReadMode"),
           value: capitalize(account.markAsReadMode),
@@ -164,12 +167,12 @@ const AccountOverviewCard = () => {
     : [];
 
   return (
-    <Card className="flex h-full min-h-[384px] flex-col overflow-auto p-6">
+    <Card variant="flat" className="flex h-full min-h-[340px] flex-col">
       <div className="flex items-center justify-between">
-        <CardTitle>{t("account.title")}</CardTitle>
+        <CardTitle className="text-lg font-semibold text-foreground">{t("account.title")}</CardTitle>
         <Button
-          variant="ghost"
-          className="rounded-full border text-xs gap-1.5"
+          variant="pill"
+          className="h-9 rounded-full px-3.5 text-[13px] font-medium gap-1.5"
           onClick={() => refetch()}
           disabled={isFetching}
         >
@@ -182,6 +185,28 @@ const AccountOverviewCard = () => {
 
       {account && (
         <>
+          <div role="tablist" className="mt-4 flex w-fit gap-0.5 rounded-[10px] bg-muted p-[3px]">
+            {ACCOUNT_CHANNELS.map((item) => {
+              const isActive = item === channel;
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setChannel(item)}
+                  className={`cursor-pointer h-8 rounded-lg px-3 text-[13px] outline-none transition-all focus-visible:ring-[3px] focus-visible:ring-ring/50 ${
+                    isActive
+                      ? "bg-background font-medium text-foreground shadow-[rgba(0,0,0,0.4)_0px_0px_1px,rgba(0,0,0,0.04)_0px_4px_4px]"
+                      : "font-medium text-normal hover:text-foreground"
+                  }`}
+                >
+                  {item}
+                </button>
+              );
+            })}
+          </div>
+
           <div className="mt-6 flex items-center gap-4">
             {account.pictureUrl ? (
               <img
@@ -199,14 +224,14 @@ const AccountOverviewCard = () => {
             )}
 
             <div className="min-w-0">
-              <p className="truncate text-base font-semibold text-normal">
+              <p className="truncate text-base font-semibold text-foreground">
                 {account.displayName}
               </p>
 
               <button
                 type="button"
                 onClick={handleCopyId}
-                className="mt-0.5 flex items-center gap-1.5 text-sm text-mini transition hover:text-normal"
+                className="mt-0.5 flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
               >
                 {account.basicId}
                 {copied ? (
@@ -225,18 +250,18 @@ const AccountOverviewCard = () => {
             </div>
           </div>
 
-          <div className="mt-5 flex-1 border-t pt-2">
+          <div className="mt-6 flex-1 border-t pt-2">
             {infoRows.map(({ icon: Icon, label, value, status, editable }) => (
               <div
                 key={label}
                 className="flex items-center justify-between py-2.5"
               >
                 <div className="flex items-center gap-2.5">
-                  <Icon className="h-4 w-4 text-mini" />
-                  <span className="text-sm text-mini">{label}</span>
+                  <Icon className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{label}</span>
                 </div>
 
-                <div className="flex items-center gap-2 text-sm font-medium text-normal">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                   {status && (
                     <span className="h-2 w-2 rounded-full bg-green-500" />
                   )}
@@ -261,6 +286,21 @@ const AccountOverviewCard = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="border-t pt-4">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">{t("account.aiCredit")}</span>
+              <Link to="/usage" className="font-medium text-foreground underline underline-offset-4">
+                {t("account.viewUsage")}
+              </Link>
+            </div>
+            <p className="mt-1 text-xl font-semibold tabular-nums text-foreground">
+              {formatNumber(creditRemaining)}
+              <span className="ml-1 text-sm font-normal text-muted-foreground">
+                / {formatNumber(creditLimit)}
+              </span>
+            </p>
           </div>
         </>
       )}
@@ -291,13 +331,13 @@ const AccountOverviewCard = () => {
       )}
 
       {isError && (
-        <div className="flex flex-1 flex-col items-center justify-center gap-1 py-6 text-center">
-          <img src={ErrorFace} alt="" className="mb-4 size-32 opacity-40" />
-          <p className="text-lg font-semibold text-normal">
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 py-6 text-center">
+          <img src={ErrorFace} alt="" className="mb-3 size-24 opacity-40" />
+          <p className="mt-3.5 text-lg font-semibold text-foreground">
             {t("account.notConnectedTitle")}
           </p>
-          <p className="text-sm text-mini">{t("account.notConnectedDescription")}</p>
-          <Button asChild className="mt-4 rounded-full bg-slate-900 px-6 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+          <p className="text-sm leading-normal text-muted-foreground">{t("account.notConnectedDescription")}</p>
+          <Button asChild className="mt-3.5 h-11 rounded-full bg-black px-[26px] text-[15px] font-medium text-white hover:bg-black/85 dark:bg-white dark:text-black dark:hover:bg-white/85">
             <Link to="/setting/connection">{t("account.goConnect")}</Link>
           </Button>
         </div>

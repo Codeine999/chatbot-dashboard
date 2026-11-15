@@ -34,7 +34,7 @@
     "title": "AI Setting",
     "subtitle": "Configure AI RAG behavior, models, tone, and fallback responses.",
     "cancel": "Cancel",
-    "save": "Save Changes",
+    "save": "Save",
     "model": {
       "title": "AI Model",
       "subtitle": "Choose which model is used for user-facing and admin-facing flows.",
@@ -91,7 +91,17 @@
     "loadError": "Could not load AI settings",
     "retry": "Retry",
     "saved": "Settings saved",
-    "saveError": "Could not save settings"
+    "saveError": "Could not save settings",
+    "unsaved": "You have unsaved changes",
+    "section": {
+      "personaTitle": "Persona & instructions",
+      "personaDesc": "Define how the AI responds, its tone and personality.",
+      "skillsTitle": "Skills",
+      "skillsNote": "Skill Object Array · {{count}} items",
+      "skillsDesc": "Define what the AI can help with.",
+      "fallbackTitle": "Fallback response",
+      "fallbackDesc": "Message used when the AI cannot answer."
+    }
   },
   "dialog": {
     "title": "Settings",
@@ -228,6 +238,7 @@
         "description": "Check the Channel ID, secret and access token, then try again",
         "keepsPrevious": "Your previous connection still works"
       }
-    }
+    },
+    "pageSubtitle": "Connect your LINE Official Account to receive messages and reply to customers automatically."
   }
 }

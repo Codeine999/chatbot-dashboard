@@ -34,7 +34,7 @@
     "title": "ตั้งค่า AI",
     "subtitle": "ตั้งค่าการทำงานของ AI RAG โมเดล โทนการตอบ และข้อความสำรอง",
     "cancel": "ยกเลิก",
-    "save": "บันทึกการเปลี่ยนแปลง",
+    "save": "บันทึก",
     "model": {
       "title": "โมเดล AI",
       "subtitle": "เลือกโมเดลที่ใช้กับฝั่งลูกค้าและฝั่งแอดมิน",
@@ -91,7 +91,17 @@
     "loadError": "โหลดการตั้งค่า AI ไม่สำเร็จ",
     "retry": "ลองใหม่",
     "saved": "บันทึกการตั้งค่าแล้ว",
-    "saveError": "บันทึกการตั้งค่าไม่สำเร็จ"
+    "saveError": "บันทึกการตั้งค่าไม่สำเร็จ",
+    "unsaved": "มีการเปลี่ยนแปลงที่ยังไม่บันทึก",
+    "section": {
+      "personaTitle": "บุคลิกและคำสั่ง",
+      "personaDesc": "กำหนดวิธีตอบ โทน และบุคลิกของ AI",
+      "skillsTitle": "Skills",
+      "skillsNote": "Skill Object Array · {{count}} รายการ",
+      "skillsDesc": "กำหนดสิ่งที่ AI ช่วยได้",
+      "fallbackTitle": "ข้อความสำรอง",
+      "fallbackDesc": "ข้อความที่ใช้เมื่อ AI ตอบไม่ได้"
+    }
   },
   "dialog": {
     "title": "ตั้งค่า",
@@ -228,6 +238,7 @@
         "description": "ตรวจสอบ Channel ID, secret และ access token อีกครั้ง แล้วลองใหม่",
         "keepsPrevious": "การเชื่อมต่อเดิมยังใช้งานได้ตามปกติ"
       }
-    }
+    },
+    "pageSubtitle": "เชื่อมต่อ LINE Official Account เพื่อรับข้อความและตอบลูกค้าอัตโนมัติ"
   }
 }

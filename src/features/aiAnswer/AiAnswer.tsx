@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/common/PageContainer";
-import { PageHeader } from "@/components/common/PageHeader";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -139,37 +138,48 @@ export const AiAnswer = () => {
     );
 
   return (
-    <PageContainer>
-      <PageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        actions={
-          <>
-            <Button variant="ghost" className="border gap-1.5" onClick={() => setTab(TABS[2])}>
-              <Upload className="h-4 w-4 text-icons" />
-              {t("bulkImport")}
-            </Button>
+    <PageContainer className="min-w-0">
+      <div className="flex flex-wrap items-end justify-between gap-4 pt-2">
+        <div className="flex flex-col gap-1.5">
+          <h1 className="text-[28px] font-semibold leading-[1.2] tracking-[-0.025em] text-foreground">
+            {t("title")}
+          </h1>
+          <p className="text-sm text-normal">{t("subtitle")}</p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="h-10 gap-2 rounded-[10px] px-3.5 text-sm font-medium shadow-none"
+            onClick={() => setTab(TABS[2])}
+          >
+            <Upload className="size-4" />
+            {t("bulkImport")}
+          </Button>
 
-            <Button className="gap-1.5" onClick={handleAdd}>
-              <Plus className="h-4 w-4" />
-              {tab === "micro" ? t("micro.add") : t("add")}
-            </Button>
-          </>
-        }
-      />
+          <Button
+            className="h-10 gap-2 rounded-[10px] bg-foreground pl-3.5 pr-4 text-sm font-medium text-background hover:bg-foreground/85"
+            onClick={handleAdd}
+          >
+            <Plus className="size-4" />
+            {tab === "micro" ? t("micro.add") : t("add")}
+          </Button>
+        </div>
+      </div>
 
       {(() => {
         const tabsBar = (
-          <div className="flex gap-6 border-b mt-4">
+          <div role="tablist" className="flex gap-6 overflow-x-auto border-b">
             {TABS.map((name) => (
               <button
                 key={name}
                 type="button"
                 onClick={() => setTab(name)}
-                className={`-mb-px border-b-2 pb-2 text-sm transition ${
+                role="tab"
+                aria-selected={tab === name}
+                className={`-mb-px h-11 shrink-0 cursor-pointer border-b-2 text-sm font-medium transition-colors ${
                   tab === name
-                    ? "border-button-primary font-medium text-button-primary"
-                    : "border-transparent text-mini hover:text-normal"
+                    ? "border-foreground text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t(`tab.${name}`)}
@@ -181,11 +191,11 @@ export const AiAnswer = () => {
         if (tab === "micro") {
           return (
             <>
-              <div className="mt-5">
+              <div className="mt-8">
                 <KnowledgeStatsCards stats={microStats} />
               </div>
-              <div className="mt-6">{tabsBar}</div>
-              <div className="mt-4">
+              <div className="mt-9">{tabsBar}</div>
+              <div className="mt-5">
                 <MicroKnowledgeTab
                   categories={categoryOptions}
                   isCategoriesLoading={isCategoriesLoading}
@@ -203,29 +213,29 @@ export const AiAnswer = () => {
         if (tab !== TABS[0]) {
           return (
             <>
-              <div className="mt-5">
+              <div className="mt-8">
                 <KnowledgeStatsCards stats={stats} />
               </div>
-              <div className="mt-6">{tabsBar}</div>
-              <Card className="mt-4 p-10 text-center">
-                <p className="text-sm text-normal">{t(`tab.${tab}`)}</p>
-                <p className="mt-1 text-xs text-mini">{t("tabTodo")}</p>
+              <div className="mt-9">{tabsBar}</div>
+              <Card variant="flat" className="mt-5 p-10 text-center">
+                <p className="text-sm text-foreground">{t(`tab.${tab}`)}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("tabTodo")}</p>
               </Card>
             </>
           );
         }
 
         return (
-          <div className="mt-5 grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
-            <div className="flex min-w-0 flex-col gap-4">
+          <div className="mt-8 grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_420px] xl:gap-0">
+            <div className="flex min-w-0 flex-col xl:pr-8">
               <KnowledgeStatsCards stats={stats} />
-              {tabsBar}
+              <div className="mt-9">{tabsBar}</div>
 
-              <Card className="flex min-w-0 flex-col p-4">
+              <Card variant="flat" className="mt-5 flex min-w-0 flex-col">
                 {/* Filters */}
                 <div className="flex flex-wrap items-center gap-2">
                   <div className="relative min-w-45 flex-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-mini" />
+                    <Search className="absolute left-3 top-1/2 size-[15px] -translate-y-1/2 text-muted-foreground" />
                     <Input
                       value={search}
                       onChange={(event) => {
@@ -233,7 +243,7 @@ export const AiAnswer = () => {
                         setPage(1);
                       }}
                       placeholder={t("filter.searchPlaceholder")}
-                      className="pl-9"
+                      className="h-10 rounded-[10px] border-0 bg-muted pl-9 text-sm shadow-none focus-visible:ring-1"
                     />
                   </div>
 
@@ -245,7 +255,7 @@ export const AiAnswer = () => {
                       setPage(1);
                     }}
                   >
-                    <SelectTrigger className="w-40">
+                    <SelectTrigger className="h-10 rounded-[10px] text-[13px] font-medium shadow-none w-40">
                       <SelectValue placeholder={t("filter.allCategories")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -267,7 +277,7 @@ export const AiAnswer = () => {
                   </Select>
 
                   <Select value={status} onValueChange={setStatus}>
-                    <SelectTrigger className="w-36">
+                    <SelectTrigger className="h-10 rounded-[10px] text-[13px] font-medium shadow-none w-36">
                       <SelectValue placeholder={t("filter.allStatuses")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -278,7 +288,7 @@ export const AiAnswer = () => {
                   </Select>
 
                   <Select value={priority} onValueChange={setPriority}>
-                    <SelectTrigger className="w-36">
+                    <SelectTrigger className="h-10 rounded-[10px] text-[13px] font-medium shadow-none w-44">
                       <SelectValue placeholder={t("filter.priorityAll")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -307,8 +317,8 @@ export const AiAnswer = () => {
                 </div>
 
                 {/* Pagination */}
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t pt-3">
-                  <p className="text-xs text-mini">
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-[13px] text-muted-foreground">
+                  <p>
                     {t("pagination.showing", {
                       from: filtered.length === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1,
                       to: Math.min(currentPage * rowsPerPage, filtered.length),
@@ -318,7 +328,7 @@ export const AiAnswer = () => {
 
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-mini">{t("pagination.rowsPerPage")}</span>
+                      <span>{t("pagination.rowsPerPage")}</span>
                       <Select
                         value={String(rowsPerPage)}
                         onValueChange={(value) => {
@@ -326,7 +336,7 @@ export const AiAnswer = () => {
                           setPage(1);
                         }}
                       >
-                        <SelectTrigger className="w-18">
+                        <SelectTrigger className="h-9 w-[72px] rounded-lg text-[13px] shadow-none">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -341,8 +351,9 @@ export const AiAnswer = () => {
 
                     <div className="flex items-center gap-1">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="icon"
+                        className="size-9 rounded-lg shadow-none"
                         disabled={currentPage === 1}
                         onClick={() => setPage(currentPage - 1)}
                         aria-label={t("pagination.previous")}
@@ -350,13 +361,14 @@ export const AiAnswer = () => {
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
 
-                      <span className="px-2 text-xs text-normal">
+                      <span className="px-2 font-mono text-foreground">
                         {currentPage} / {totalPages}
                       </span>
 
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="icon"
+                        className="size-9 rounded-lg shadow-none"
                         disabled={currentPage === totalPages}
                         onClick={() => setPage(currentPage + 1)}
                         aria-label={t("pagination.next")}
@@ -370,7 +382,7 @@ export const AiAnswer = () => {
             </div>
 
             <div
-              className={`relative min-h-0 xl:self-stretch ${
+              className={`relative min-h-0 xl:min-h-[calc(100svh-15rem)] xl:self-stretch xl:border-l ${
                 panelOpen ? "h-[calc(100svh-2rem)] xl:h-auto" : "hidden xl:block"
               }`}
             >
@@ -383,11 +395,11 @@ export const AiAnswer = () => {
                   onPublish={handlePublish}
                 />
               ) : (
-                <Card className="absolute inset-0 flex items-center justify-center p-10 text-center">
+                <Card variant="flat" className="absolute inset-0 flex items-center justify-center p-10 text-center">
                   <div>
-                    <BookOpen className="mx-auto h-8 w-8 text-mini" />
-                    <p className="mt-3 text-sm text-normal">{t("emptyPanel.title")}</p>
-                    <p className="mt-1 text-xs text-mini">{t("emptyPanel.hint")}</p>
+                    <BookOpen className="mx-auto h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
+                    <p className="mt-3 text-sm font-medium text-foreground">{t("emptyPanel.title")}</p>
+                    <p className="mt-1 text-[13px] text-muted-foreground">{t("emptyPanel.hint")}</p>
                   </div>
                 </Card>
               )}

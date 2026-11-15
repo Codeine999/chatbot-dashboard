@@ -16,7 +16,12 @@
     "inactive": "Inactive Users",
     "lineUsers": "LINE Users",
     "registeredHint": "{{percent}}% of all contacts",
-    "lineUsersHint": "Not registered yet"
+    "lineUsersHint": "Not registered yet",
+    "signedUp": "Signed up",
+    "messagesOnPage": "Total messages",
+    "messagesHint": "From {{count}} users on this page",
+    "activeWeek": "Active in 7 days",
+    "noneActive": "No active users in this period"
   },
   "filter": {
     "allPlans": "All Plans",
@@ -63,5 +68,8 @@
     "showing": "Showing {{from}}–{{to}} of {{total}} users",
     "previous": "Previous page",
     "next": "Next page"
-  }
+  },
+  "tabsLabel": "User type",
+  "searchLabel": "Search users",
+  "sortBy": "Sort"
 }

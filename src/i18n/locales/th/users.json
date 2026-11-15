@@ -16,7 +16,12 @@
     "inactive": "ผู้ใช้ที่ไม่ได้ใช้งาน",
     "lineUsers": "ผู้ใช้ LINE",
     "registeredHint": "{{percent}}% ของผู้ติดต่อทั้งหมด",
-    "lineUsersHint": "ยังไม่ได้สมัครสมาชิก"
+    "lineUsersHint": "ยังไม่ได้สมัครสมาชิก",
+    "signedUp": "สมัครแล้ว",
+    "messagesOnPage": "ข้อความทั้งหมด",
+    "messagesHint": "จากผู้ใช้ {{count}} คนในหน้านี้",
+    "activeWeek": "ใช้งานใน 7 วัน",
+    "noneActive": "ยังไม่มีผู้ใช้ในช่วงนี้"
   },
   "filter": {
     "allPlans": "ทุกแพ็กเกจ",
@@ -63,5 +68,8 @@
     "showing": "แสดง {{from}}–{{to}} จาก {{total}} รายการ",
     "previous": "หน้าก่อนหน้า",
     "next": "หน้าถัดไป"
-  }
+  },
+  "tabsLabel": "ประเภทผู้ใช้",
+  "searchLabel": "ค้นหาผู้ใช้",
+  "sortBy": "เรียง"
 }

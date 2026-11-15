@@ -55,6 +55,7 @@
     "assistant": "AI Assistant"
   },
   "sidebar": {
+    "exit": "Exit",
     "recent": "Recent chats",
     "loading": "Loading chats",
     "error": "Could not load chat history",
@@ -103,7 +104,7 @@
     "selectConversation": "Select a conversation",
     "lastActive": "Last active {{time}}",
     "loadingOlder": "Loading older messages...",
-    "replyPlaceholder": "Type a reply... Enter to send, Shift+Enter for new line",
+    "replyPlaceholder": "Type a reply...",
     "connected": "Connected to LINE conversation API",
     "sending": "Sending...",
     "send": "Send",
@@ -159,7 +160,35 @@
           "hint": "Stop the bot in this chat until you turn it back on."
         }
       }
-    }
+    },
+    "inbox": "Inbox",
+    "inboxSubtitle": "All channels in one inbox",
+    "newChat": "New chat",
+    "comingSoon": "Coming soon",
+    "viewing": "Viewing",
+    "allChannels": "All channels",
+    "waitingCount": "{{count}} waiting",
+    "sendHint": "Enter to send · Shift+Enter for new line",
+    "panel": {
+      "title": "Customer info",
+      "close": "Close customer panel",
+      "status": "Status",
+      "conversation": "Conversation",
+      "handler": "Handled by",
+      "lastActive": "Last active",
+      "totalMessages": "Total messages",
+      "customer": "Customer",
+      "admin": "Admin",
+      "info": "Details",
+      "platform": "Platform",
+      "copyUserId": "Copy User ID",
+      "botMode": {
+        "auto": "AI",
+        "admin": "Admin",
+        "paused": "Paused"
+      }
+    },
+    "customerInfo": "Customer info"
   },
   "customerTest": {
     "title": "Customer chat test",

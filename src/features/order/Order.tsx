@@ -259,7 +259,7 @@ const Order = () => {
                   <Checkbox id="terms" />
                   <div className="flex flex-col">
                     <div className="flex gap-4">
-                      <p className="text-sm text-normal font-bold">
+                      <p className="text-sm text-normal font-semibold">
                         {cutText(items.name, maxLength())}
                       </p>
                       <Button

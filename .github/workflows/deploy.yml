@@ -2,7 +2,7 @@ name: deploy-dashboard
 
 on:
   push:
-    branches: [main]
+    branches: [newUi]
   workflow_dispatch:
 
 env:

@@ -32,20 +32,20 @@ export const ChipEditor = ({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 rounded-lg border p-2">
+    <div className="flex flex-wrap items-center gap-1.5">
       {values.map((value) => (
         <span
           key={value}
-          className="inline-flex items-center gap-1 rounded-md bg-hover px-2 py-1 text-xs text-normal"
+          className="inline-flex h-[30px] items-center gap-1 rounded-lg bg-muted pl-2.5 pr-1 text-[13px] text-foreground"
         >
           {value}
           <button
             type="button"
             onClick={() => onChange(values.filter((item) => item !== value))}
             aria-label={`Remove ${value}`}
-            className="text-mini transition hover:text-red-500"
+            className="flex size-[22px] cursor-pointer items-center justify-center rounded-md text-muted-foreground transition hover:bg-accent hover:text-foreground"
           >
-            <X className="h-3 w-3" />
+            <X className="size-[11px]" strokeWidth={2.4} />
           </button>
         </span>
       ))}
@@ -66,15 +66,15 @@ export const ChipEditor = ({
               setAdding(false);
             }
           }}
-          className="w-28 bg-transparent px-1 text-xs text-normal outline-none"
+          className="h-[30px] w-32 rounded-lg border border-dashed bg-transparent px-2.5 text-[13px] text-foreground outline-none focus:border-foreground"
         />
       ) : (
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-icons transition hover:bg-hover"
+          className="inline-flex h-[30px] cursor-pointer items-center gap-1 rounded-lg border border-dashed px-2.5 text-[13px] text-normal transition hover:bg-accent"
         >
-          <Plus className="h-3 w-3" />
+          <Plus className="size-3" />
           {addLabel}
         </button>
       )}
@@ -92,9 +92,9 @@ export const Field = ({
   children: React.ReactNode;
 }) => (
   <div>
-    <p className="mb-1.5 text-xs font-medium text-normal">
+    <p className="mb-1.5 text-[13px] font-medium text-foreground">
       {label}
-      {required && <span className="ml-0.5 text-red-500">*</span>}
+      {required && <span className="ml-0.5 text-[#dc2626]">*</span>}
     </p>
     {children}
   </div>
@@ -151,12 +151,12 @@ export const CategorySelect = ({
         <button
           type="button"
           aria-expanded={open}
-          className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm text-normal shadow-xs outline-none transition focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-[10px] border bg-background px-3 text-sm text-foreground outline-none transition hover:bg-accent/50 focus-visible:border-foreground"
         >
-          <span className={value ? "truncate" : "truncate text-mini"}>
+          <span className={value ? "truncate" : "truncate text-muted-foreground"}>
             {value || t("panel.categoryPlaceholder")}
           </span>
-          <ChevronDown className="size-4 shrink-0 text-mini" />
+          <ChevronDown className="size-[13px] shrink-0 text-muted-foreground" />
         </button>
       </PopoverTrigger>
 

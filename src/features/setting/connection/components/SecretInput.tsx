@@ -34,7 +34,7 @@ export const SecretInput = ({
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
         onBlur={onBlur}
-        className="!h-11 rounded-xl pr-11"
+        className="!h-[42px] rounded-[10px] pr-11"
       />
       <button
         type="button"

@@ -9,23 +9,24 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import {
-  Bot,
+  ArrowRight,
   ChevronLeft,
   Eye,
   EyeOff,
   LoaderCircle,
   LockKeyhole,
   Mail,
-  ShieldCheck,
+  UserRound,
 } from "lucide-react";
 
-import { Background } from "@/components/BackGround";
 import { useLogin } from "./hooks/useAuth";
+import { LoginBrandPanel } from "./components/LoginBrandPanel";
 import type { LoginPayload } from "./types/auth.type";
 import { useTranslation } from "react-i18next";
 
@@ -40,8 +41,25 @@ const loginSchema = z.object({
 // จึงปล่อยให้ react-hook-form infer type จาก schema แล้ว map เป็น LoginPayload ตอน submit
 type LoginForm = z.infer<typeof loginSchema>;
 
+/** ช่องกรอกสูง 44px ขอบบาง โฟกัสแล้วขอบเป็นสีดำพร้อมวงแหวนจาง ตามดีไซน์ */
 const fieldClassName =
-  "h-13 rounded-2xl border-white/80 bg-white/70 pl-11 pr-4 text-[15px] text-slate-800 shadow-[0_8px_22px_rgba(88,70,148,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] placeholder:text-slate-400 focus-visible:border-primary/40 focus-visible:bg-white/90 focus-visible:ring-4 focus-visible:ring-primary/15 dark:!bg-white/70";
+  "h-11 rounded-[10px] border-border bg-background pl-10 pr-3 text-sm text-foreground shadow-none placeholder:text-mini focus-visible:border-foreground focus-visible:ring-[3px] focus-visible:ring-foreground/10 dark:bg-background";
+
+const fieldIconClassName = "pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-mini";
+
+const labelClassName = "text-[13px] leading-[1.45] font-medium text-foreground";
+
+const submitClassName =
+  "mt-6 h-[46px] w-full gap-2 rounded-full bg-foreground text-[15px] font-medium text-background shadow-none hover:bg-foreground/85 active:bg-foreground/75 disabled:opacity-100";
+
+const BrandMark = () => (
+  <span className="flex items-center gap-2.5">
+    <span className="flex size-[34px] items-center justify-center rounded-[10px] bg-foreground text-[17px] font-semibold text-background">
+      k
+    </span>
+    <span className="text-[21px] leading-none font-semibold tracking-[-0.035em] text-foreground">keeLa</span>
+  </span>
+);
 
 const Login = () => {
   const { t } = useTranslation("auth");
@@ -85,128 +103,226 @@ const Login = () => {
     }
   };
 
+  const linkClassName = "underline-offset-[3px] hover:underline";
+
   return (
-    <main className="relative isolate flex min-h-svh items-center justify-center overflow-hidden bg-[#fcf8f7] px-4 py-8 text-slate-900 sm:px-6">
-      <Background />
+    <div className="flex min-h-svh flex-row-reverse bg-background text-foreground">
+      {/* ============ FORM SIDE ============ */}
+      <div className="flex min-w-0 flex-[7_1_0%] flex-col px-6 py-7 sm:px-10">
+        <BrandMark />
 
-      <section className="relative w-full max-w-[36rem] overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/65
-       px-6 py-8 shadow-[0_28px_70px_rgba(90,90,135,0.16),inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-[0px] sm:px-25 sm:py-13">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/95" />
+        <main className="flex flex-1 items-center justify-center py-10">
+          <motion.div
+            key={isForgotPassword ? "forgot" : "login"}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+            className="w-full max-w-[380px]"
+          >
+            {isForgotPassword ? (
+              <div className="flex flex-col">
+                <button
+                  type="button"
+                  onClick={() => setForgotPassword(false)}
+                  className="mb-6 inline-flex cursor-pointer items-center gap-1 self-start text-[13px] font-medium text-normal transition-colors hover:text-foreground"
+                >
+                  <ChevronLeft className="size-4" /> {t("reset.backToSignIn")}
+                </button>
 
-        <motion.div
-          key={isForgotPassword ? "forgot" : "login"}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28, ease: "easeOut" }}
-          className="mx-auto w-full max-w-[35rem] pt-14"
-        >
-          {isForgotPassword ? (
-            <div>
-              <button type="button" onClick={() => setForgotPassword(false)} className="mb-7 inline-flex items-center gap-1 text-sm font-medium text-slate-500 transition hover:text-primary">
-                <ChevronLeft className="size-4" /> {t("reset.backToSignIn")}
-              </button>
-              <div className="text-center">
-                <div className="mx-auto flex w-fit items-center gap-2 rounded-full border border-white/80 bg-white/70 px-4 py-2 text-sm font-semibold text-primary shadow-sm">
-                  <Mail className="size-4" /> {t("reset.badge")}
-                </div>
-                <h1 className="mt-6 text-3xl font-bold tracking-[-0.04em] text-slate-900 sm:text-4xl">{t("reset.title")}</h1>
-                <p className="mx-auto mt-3 max-w-sm text-[15px] leading-6 text-slate-500">{t("reset.subtitle")}</p>
+                <span className="inline-flex h-7 items-center gap-2 self-start rounded-full bg-[#f5f2ef] pl-2 pr-3 text-xs font-medium text-normal dark:bg-muted">
+                  <Mail className="size-3.5" /> {t("reset.badge")}
+                </span>
+                <h1 className="mt-[18px] text-[30px] leading-[1.2] font-semibold tracking-[-0.025em]">
+                  {t("reset.title")}
+                </h1>
+                <p className="mt-2 text-sm leading-[1.5] text-normal">{t("reset.subtitle")}</p>
+
+                <Form {...formReset}>
+                  <form onSubmit={formReset.handleSubmit(resetPassword)} className="mt-8 flex flex-col">
+                    <FormField
+                      control={formReset.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="gap-1.5">
+                          <FormLabel className={labelClassName}>{t("reset.email")}</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className={fieldIconClassName} strokeWidth={1.7} />
+                              <Input
+                                type="email"
+                                autoComplete="email"
+                                placeholder={t("reset.emailPlaceholder")}
+                                {...field}
+                                className={fieldClassName}
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage className="text-xs" />
+                        </FormItem>
+                      )}
+                    />
+
+                    {isSent && (
+                      <p className="mt-4 rounded-xl bg-emerald-50 px-4 py-3 text-center text-sm text-emerald-700">
+                        {t("reset.sent")}
+                      </p>
+                    )}
+
+                    <Button type="submit" disabled={loading} className={submitClassName}>
+                      {loading ? (
+                        <LoaderCircle className="size-5 animate-spin" role="status" aria-label={t("login.loading")} />
+                      ) : (
+                        t("reset.submit")
+                      )}
+                    </Button>
+                    <p className="mt-4 text-center text-xs text-mini">{t("reset.spamHint")}</p>
+                  </form>
+                </Form>
               </div>
+            ) : (
+              <div className="flex flex-col">
+                <span className="inline-flex h-7 items-center gap-2 self-start rounded-full bg-[#f5f2ef] pl-2 pr-3 text-xs font-medium text-normal dark:bg-muted">
+                  <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden>
+                    <path
+                      d="M12 2c.6 5.4 4.6 9.4 10 10-5.4.6-9.4 4.6-10 10-.6-5.4-4.6-9.4-10-10 5.4-.6 9.4-4.6 10-10z"
+                      fill="#4f46e5"
+                    />
+                  </svg>
+                  {t("login.badge")}
+                </span>
 
-              <Form {...formReset}>
-                <form onSubmit={formReset.handleSubmit(resetPassword)} className="mx-auto mt-10 max-w-[31rem] space-y-5">
-                  <FormField control={formReset.control} name="email" render={({ field }) => (
-                    <FormItem>
-                      <label className="mb-2 block text-sm font-semibold text-slate-700">{t("reset.email")}</label>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
-                          <Input type="email" autoComplete="email" placeholder={t("reset.emailPlaceholder")} {...field} className={fieldClassName} />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="px-1 text-xs" />
-                    </FormItem>
-                  )} />
-                  {isSent && <p className="rounded-xl bg-emerald-50 px-4 py-3 text-center text-sm text-emerald-700">{t("reset.sent")}</p>}
-                  <Button type="submit" disabled={loading} className="h-13 w-full rounded-2xl disabled:opacity-100 bg-gradient-to-r from-primary to-primary/80 text-[15px] font-semibold text-white shadow-[0_12px_24px_rgba(116,66,235,0.32),inset_0_1px_1px_rgba(255,255,255,0.45)] transition hover:brightness-105">
-                    {loading ? <LoaderCircle className="size-5 animate-spin" role="status" aria-label={t("login.loading")} /> : t("reset.submit")}
-                  </Button>
-                  <p className="text-center text-xs text-slate-400">{t("reset.spamHint")}</p>
-                </form>
-              </Form>
-            </div>
-          ) : (
-            <div>
-              <div className="text-center mb-14">
-                <div className="-mt-12 flex justify-center">
-                  <div className="flex items-center gap-3 rounded-full border border-white/90 bg-white/75 py-1 pl-3 pr-5 text-[22px] font-bold tracking-[-0.04em] text-primary shadow-[0_7px_22px_rgba(123,92,229,0.18),inset_0_1px_1px_rgba(255,255,255,0.95)] backdrop-blur-md">
-                    <span className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-primary/70 to-primary text-white shadow-[0_4px_12px_rgba(132,83,235,0.38)]">
-                      <Bot className="size-5" strokeWidth={2} />
-                    </span>
-                      <p className="text-[17px]">{t("login.brand")}</p>
-                  </div>
-                </div>
-                <h1 className="mt-6 text-3xl font-bold tracking-[-0.045em] text-slate-900 sm:text-4xl">{t("login.title")}</h1>
-                <p className="mt-3 text-[15px] text-slate-500">{t("login.subtitle")}</p>
+                <h1 className="mt-[18px] text-[30px] leading-[1.2] font-semibold tracking-[-0.025em]">
+                  {t("login.title")}
+                </h1>
+                <p className="mt-2 text-sm leading-[1.5] text-normal">{t("login.subtitle")}</p>
+
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 flex flex-col">
+                    <div className="flex flex-col gap-[18px]">
+                      <FormField
+                        control={form.control}
+                        name="username"
+                        render={({ field }) => (
+                          <FormItem className="gap-1.5">
+                            <FormLabel className={labelClassName}>{t("login.username")}</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <UserRound className={fieldIconClassName} strokeWidth={1.7} />
+                                <Input
+                                  type="text"
+                                  autoComplete="username"
+                                  placeholder={t("login.usernamePlaceholder")}
+                                  {...field}
+                                  className={fieldClassName}
+                                />
+                              </div>
+                            </FormControl>
+                            <FormMessage className="text-xs" />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem className="gap-1.5">
+                            <div className="flex items-baseline justify-between">
+                              <FormLabel className={labelClassName}>{t("login.password")}</FormLabel>
+                              <button
+                                type="button"
+                                onClick={() => setForgotPassword(true)}
+                                className={`cursor-pointer text-[13px] text-normal ${linkClassName} hover:text-foreground`}
+                              >
+                                {t("login.forgotPassword")}
+                              </button>
+                            </div>
+                            <FormControl>
+                              <div className="relative">
+                                <LockKeyhole className={fieldIconClassName} strokeWidth={1.7} />
+                                <Input
+                                  type={showPassword ? "text" : "password"}
+                                  autoComplete="current-password"
+                                  placeholder={t("login.passwordPlaceholder")}
+                                  {...field}
+                                  className={`${fieldClassName} pr-12`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPassword((visible) => !visible)}
+                                  className="absolute right-1 top-1/2 flex size-9 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg text-mini transition-colors hover:bg-muted"
+                                  aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
+                                >
+                                  {showPassword ? (
+                                    <EyeOff className="size-4" strokeWidth={1.7} />
+                                  ) : (
+                                    <Eye className="size-4" strokeWidth={1.7} />
+                                  )}
+                                </button>
+                              </div>
+                            </FormControl>
+                            <FormMessage className="text-xs" />
+                          </FormItem>
+                        )}
+                      />
+
+                      <label className="flex min-h-8 cursor-pointer items-center gap-2.5 text-sm text-normal">
+                        <Checkbox
+                          checked={rememberMe}
+                          onCheckedChange={(checked) => setRememberMe(checked === true)}
+                          className="size-4 rounded-[4px] border-border data-[state=checked]:border-foreground data-[state=checked]:bg-foreground data-[state=checked]:text-background"
+                        />
+                        {t("login.rememberMe")}
+                      </label>
+                    </div>
+
+                    {errorMessage && (
+                      <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-center text-sm text-red-600">
+                        {errorMessage}
+                      </p>
+                    )}
+
+                    <Button type="submit" disabled={isPending} className={submitClassName}>
+                      {isPending ? (
+                        <LoaderCircle className="size-5 animate-spin" role="status" aria-label={t("login.loading")} />
+                      ) : (
+                        <>
+                          {t("login.submit")}
+                          <ArrowRight className="size-[15px]" strokeWidth={2} />
+                        </>
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+
+                <p className="mt-6 text-center text-[13px] text-mini">
+                  {t("login.noAccount")}{" "}
+                  <a href="#" className={`font-medium text-foreground ${linkClassName}`}>
+                    {t("login.contactAdmin")}
+                  </a>
+                </p>
               </div>
+            )}
+          </motion.div>
+        </main>
 
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto mt-10 max-w-[31rem] space-y-5">
-                  <FormField control={form.control} name="username" render={({ field }) => (
-                    <FormItem>
-                      <label className="mb-2 block text-sm font-semibold text-slate-700">{t("login.username")}</label>
-                      <FormControl>
-                        <div className="relative">
-                          <Mail className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
-                          <Input type="text" autoComplete="username" placeholder={t("login.usernamePlaceholder")} {...field} className={fieldClassName} />
-                        </div>
-                      </FormControl>
-                      <FormMessage className="px-1 text-xs" />
-                    </FormItem>
-                  )} />
-                  <FormField control={form.control} name="password" render={({ field }) => (
-                    <FormItem>
-                      <label className="mb-2 block text-sm font-semibold text-slate-700">{t("login.password")}</label>
-                      <FormControl>
-                        <div className="relative">
-                          <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
-                          <Input type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder={t("login.passwordPlaceholder")} {...field} className={`${fieldClassName} pr-12`} />
-                          <button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-primary/10 hover:text-primary" aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}>
-                            {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage className="px-1 text-xs" />
-                    </FormItem>
-                  )} />
+        <footer className="flex flex-wrap justify-between gap-2 text-xs text-mini">
+          <span>{t("footer.copyright", { year: new Date().getFullYear() })}</span>
+          <span>
+            <a href="#" className={linkClassName}>
+              {t("footer.terms")}
+            </a>{" "}
+            ·{" "}
+            <a href="#" className={linkClassName}>
+              {t("footer.privacy")}
+            </a>
+          </span>
+        </footer>
+      </div>
 
-                  <div className="flex items-center justify-between gap-4 pt-0.5">
-                    <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium text-slate-600">
-                      <Checkbox checked={rememberMe} onCheckedChange={(checked) => setRememberMe(checked === true)} className="size-5 rounded-md border-slate-300 bg-white/75 data-[state=checked]:border-primary data-[state=checked]:bg-primary dark:!bg-white/75 dark:data-[state=checked]:!bg-primary" />
-                      {t("login.rememberMe")}
-                    </label>
-                    <button type="button" onClick={() => setForgotPassword(true)} className="text-sm font-semibold text-primary transition hover:text-primary/80">{t("login.forgotPassword")}</button>
-                  </div>
-
-                  {errorMessage && <p className="rounded-xl bg-red-50 px-4 py-3 text-center text-sm text-red-600">{errorMessage}</p>}
-
-                  <Button 
-                    type="submit" 
-                    disabled={isPending} 
-                    className="h-13 w-full mt-12 disabled:opacity-100">
-                    {isPending ? <LoaderCircle className="size-5 animate-spin" role="status" aria-label={t("login.loading")} /> : t("login.submit")}
-                  </Button>
-                </form>
-              </Form>
-            </div>
-          )}
-        </motion.div>
-
-        {/* <div className="mx-auto mt-8 flex max-w-[31rem] items-center justify-center gap-2 border-t border-slate-200/70 pt-6 text-sm text-slate-400">
-          <ShieldCheck className="size-4" /> Secure admin access
-        </div> */}
-      </section>
-    </main>
+      {/* ============ BRAND SIDE ============ */}
+      <LoginBrandPanel />
+    </div>
   );
 };
 

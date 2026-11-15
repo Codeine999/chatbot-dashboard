@@ -1,36 +1,27 @@
 import { useTranslation } from "react-i18next";
 import { formatNumber } from "@/i18n/format";
-import { BookOpen, CircleCheck, Folder } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { CircleCheck, Folder, MessageSquare, type LucideIcon } from "lucide-react";
 import type { KnowledgeStats } from "../type/knowledge.type";
-
-type StatCardProps = {
-  label: string;
-  value: string;
-  hint: React.ReactNode;
-  icon: React.ElementType;
-  tone: string;
-};
-
-const StatCard = ({ label, value, hint, icon: Icon, tone }: StatCardProps) => (
-  <Card className="flex items-start justify-between gap-3 p-5">
-    <div className="min-w-0">
-      <p className="text-sm text-mini">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-normal">{value}</p>
-      <div className="mt-2 text-xs text-mini">{hint}</div>
-    </div>
-
-    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${tone}`}>
-      <Icon className="h-5 w-5" />
-    </div>
-  </Card>
-);
 
 type Props = {
   stats: KnowledgeStats;
   onManageCategories?: () => void;
 };
 
+const Label = ({ icon: Icon, color, children }: { icon: LucideIcon; color: string; children: React.ReactNode }) => (
+  <span className="flex items-center gap-2 text-[13px] text-normal">
+    <Icon className="size-4 shrink-0" style={{ color }} strokeWidth={1.7} />
+    {children}
+  </span>
+);
+
+const Value = ({ children }: { children: React.ReactNode }) => (
+  <span className="text-[30px] font-semibold leading-none tracking-[-0.025em] text-foreground tabular-nums">
+    {children}
+  </span>
+);
+
+/** สถิติแบบไม่มีกรอบ 3 ช่อง คั่นด้วยเส้นตั้ง */
 const KnowledgeStatsCards = ({ stats, onManageCategories }: Props) => {
   const { t } = useTranslation("knowledge");
   const activePercent = stats.total
@@ -38,38 +29,35 @@ const KnowledgeStatsCards = ({ stats, onManageCategories }: Props) => {
     : 0;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-      <StatCard
-        label={t("stats.total")}
-        value={formatNumber(stats.total)}
-        hint={t("stats.totalHint")}
-        icon={BookOpen}
-        tone="bg-primary/10 text-icons"
-      />
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-y-6">
+      <div className="flex flex-col gap-2 pr-6">
+        <Label icon={MessageSquare} color="#8b5cf6">{t("stats.total")}</Label>
+        <Value>{formatNumber(stats.total)}</Value>
+        <span className="text-[13px] text-muted-foreground">{t("stats.totalHint")}</span>
+      </div>
 
-      <StatCard
-        label={t("stats.active")}
-        value={formatNumber(stats.active)}
-        hint={t("stats.activeHint", { percent: activePercent })}
-        icon={CircleCheck}
-        tone="bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400"
-      />
+      <div className="flex flex-col gap-2 border-l px-6">
+        <Label icon={CircleCheck} color="#16a34a">{t("stats.active")}</Label>
+        <Value>{formatNumber(stats.active)}</Value>
+        <span className="flex items-center gap-2 text-[13px] text-muted-foreground">
+          <span className="h-1 w-16 overflow-hidden rounded-sm bg-muted">
+            <span className="block h-1 bg-[#16a34a]" style={{ width: `${activePercent}%` }} />
+          </span>
+          {t("stats.activeHint", { percent: activePercent })}
+        </span>
+      </div>
 
-      <StatCard
-        label={t("stats.categories")}
-        value={String(stats.categories)}
-        hint={
-          <button
-            type="button"
-            onClick={onManageCategories}
-            className="text-icons hover:underline"
-          >
-            {t("stats.manageCategories")}
-          </button>
-        }
-        icon={Folder}
-        tone="bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
-      />
+      <div className="flex flex-col gap-2 border-l pl-6">
+        <Label icon={Folder} color="#2563eb">{t("stats.categories")}</Label>
+        <Value>{String(stats.categories)}</Value>
+        <button
+          type="button"
+          onClick={onManageCategories}
+          className="w-fit cursor-pointer text-[13px] font-medium text-foreground underline underline-offset-[3px]"
+        >
+          {t("stats.manageCategories")}
+        </button>
+      </div>
     </div>
   );
 };

@@ -55,6 +55,7 @@
     "assistant": "AI Assistant"
   },
   "sidebar": {
+    "exit": "ออก",
     "recent": "แชทล่าสุด",
     "loading": "กำลังโหลดรายการแชท",
     "error": "โหลดประวัติแชทไม่สำเร็จ",
@@ -102,7 +103,7 @@
     "selectConversation": "เลือกบทสนทนา",
     "lastActive": "ใช้งานล่าสุด {{time}}",
     "loadingOlder": "กำลังโหลดข้อความก่อนหน้า...",
-    "replyPlaceholder": "พิมพ์ข้อความตอบกลับ... Enter เพื่อส่ง, Shift+Enter ขึ้นบรรทัดใหม่",
+    "replyPlaceholder": "พิมพ์ข้อความตอบกลับ...",
     "connected": "เชื่อมต่อกับ LINE conversation API แล้ว",
     "sending": "กำลังส่ง...",
     "send": "ส่ง",
@@ -158,7 +159,35 @@
           "hint": "หยุดบอทในแชทนี้จนกว่าคุณจะเปิดกลับ"
         }
       }
-    }
+    },
+    "inbox": "กล่องข้อความ",
+    "inboxSubtitle": "Inbox รวมทุกช่องทาง",
+    "newChat": "เริ่มแชทใหม่",
+    "comingSoon": "เร็วๆ นี้",
+    "viewing": "กำลังดู",
+    "allChannels": "ทุกช่องทาง",
+    "waitingCount": "รอตอบ {{count}}",
+    "sendHint": "Enter ส่ง · Shift+Enter ขึ้นบรรทัดใหม่",
+    "panel": {
+      "title": "ข้อมูลลูกค้า",
+      "close": "ปิดแผงข้อมูลลูกค้า",
+      "status": "สถานะ",
+      "conversation": "บทสนทนา",
+      "handler": "ผู้ดูแล",
+      "lastActive": "ใช้งานล่าสุด",
+      "totalMessages": "ข้อความทั้งหมด",
+      "customer": "ลูกค้า",
+      "admin": "แอดมิน",
+      "info": "ข้อมูล",
+      "platform": "แพลตฟอร์ม",
+      "copyUserId": "คัดลอก User ID",
+      "botMode": {
+        "auto": "AI",
+        "admin": "แอดมิน",
+        "paused": "หยุดชั่วคราว"
+      }
+    },
+    "customerInfo": "ข้อมูลลูกค้า"
   },
   "customerTest": {
     "title": "ทดสอบแชทลูกค้า",

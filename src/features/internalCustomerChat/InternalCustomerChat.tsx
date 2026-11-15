@@ -32,13 +32,18 @@ export default function InternalCustomerChat() {
   const tabs = <ChannelTabs value={channel} onChange={select} />;
 
   return (
-    <div className="py-6">
-      <div className="mb-6">
-        <p className="mb-2 text-xs font-medium uppercase tracking-widest text-primary">
-          Customer chat · Internal test
-        </p>
-        <h1 className="text-2xl font-semibold">{t("customerTest.title")}</h1>
-        <p className="mt-2 text-sm text-muted-foreground">{t("customerTest.subtitle")}</p>
+    <div className="pb-8 pt-2">
+      <div className="border-b pb-5">
+        <div className="flex items-center gap-2.5">
+          <span className="rounded-md border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-normal">
+            Internal test
+          </span>
+          <span className="text-[13px] text-muted-foreground">Customer chat</span>
+        </div>
+        <h1 className="mt-3 text-[28px] font-semibold tracking-[-0.02em] text-foreground">
+          {t("customerTest.title")}
+        </h1>
+        <p className="mt-1.5 text-sm text-normal">{t("customerTest.subtitle")}</p>
       </div>
 
       <LinePreviewChat active={channel === "line"} tabs={tabs} />

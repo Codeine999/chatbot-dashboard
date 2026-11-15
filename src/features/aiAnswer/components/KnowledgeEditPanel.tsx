@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { BookOpen, ChevronUp, CircleAlert, Sparkles, X } from "lucide-react";
+import { ChevronUp, CircleAlert, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -89,31 +89,30 @@ const KnowledgeEditPanel = ({
   const topMatch = retrieval.data?.[0];
 
   return (
-    <aside className="absolute inset-0 flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-card">
-      <div className="flex shrink-0 items-start justify-between gap-2 border-b bg-card p-4">
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-4 w-4 text-icons" />
-          <div>
-            <p className="text-sm font-semibold text-normal">
-              {item ? t("panel.editTitle") : t("panel.newTitle")}
-            </p>
-            {item && <p className="text-xs text-mini">ID: {item.id}</p>}
-          </div>
+    <aside className="absolute inset-0 flex min-h-0 flex-col overflow-hidden bg-background">
+      <div className="flex min-h-16 shrink-0 items-start justify-between gap-3 border-b py-3.5 pl-6 pr-4">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <h2 className="text-[15px] font-semibold text-foreground">
+            {item ? t("panel.editTitle") : t("panel.newTitle")}
+          </h2>
+          {item && (
+            <span className="truncate font-mono text-[11px] text-muted-foreground">{item.id}</span>
+          )}
         </div>
 
-        <Button variant="ghost" size="icon" onClick={onClose} aria-label={t("panel.close")}>
-          <X className="h-4 w-4 text-mini" />
+        <Button variant="ghost" size="icon" onClick={onClose} aria-label={t("panel.close")} className="size-9 shrink-0 rounded-lg text-normal">
+          <X className="size-4" />
         </Button>
       </div>
 
-      <div className="min-h-0 flex-1 touch-pan-y space-y-4 overflow-y-auto overscroll-contain p-4">
-        <p className="text-xs font-semibold text-normal">{t("panel.basicInfo")}</p>
+      <div className="min-h-0 flex-1 touch-pan-y space-y-5 overflow-y-auto overscroll-contain px-6 py-5">
 
         <Field label={t("panel.title")} required>
           <Input
             value={draft.title}
             onChange={(event) => set("title", event.target.value)}
             placeholder={t("panel.titlePlaceholder")}
+            className="h-10 rounded-[10px] border bg-background px-3 text-sm shadow-none focus-visible:border-foreground focus-visible:ring-0"
           />
         </Field>
 
@@ -122,10 +121,10 @@ const KnowledgeEditPanel = ({
             value={draft.description}
             maxLength={DESCRIPTION_MAX}
             onChange={(event) => set("description", event.target.value)}
-            className="min-h-20 resize-none"
+            className="min-h-[72px] resize-y rounded-[10px] border bg-background px-3 py-2.5 text-sm leading-normal shadow-none focus-visible:border-foreground focus-visible:ring-0"
             placeholder={t("panel.descriptionPlaceholder")}
           />
-          <p className="mt-1 text-right text-[11px] text-mini">
+          <p className="mt-1 text-right font-mono text-[11px] text-muted-foreground">
             {draft.description.length}/{DESCRIPTION_MAX}
           </p>
         </Field>
@@ -145,14 +144,14 @@ const KnowledgeEditPanel = ({
                 value={draft.intentKey}
                 onChange={(event) => set("intentKey", event.target.value)}
                 placeholder="member.register"
-                className="pr-10"
+                className="h-10 rounded-[10px] border bg-background pl-3 pr-9 font-mono text-[13px] shadow-none focus-visible:border-foreground focus-visible:ring-0"
               />
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     type="button"
                     aria-label={t("panel.intentKeyHelp")}
-                    className="absolute right-2.5 -mt-13 flex size-6 
+                    className="absolute right-2.5 top-1/2 flex size-6 
                     -translate-y-1/2 items-center justify-center rounded-md 
                     text-mini transition hover:bg-hover hover:text-icons cursor-pointer
                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -201,10 +200,10 @@ const KnowledgeEditPanel = ({
             value={draft.answer}
             maxLength={ANSWER_MAX}
             onChange={(event) => set("answer", event.target.value)}
-            className="min-h-32 resize-none"
+            className="min-h-32 resize-y rounded-[10px] border bg-background px-3 py-3 text-sm leading-relaxed shadow-none focus-visible:border-foreground focus-visible:ring-0"
             placeholder={t("panel.answerPlaceholder")}
           />
-          <p className="mt-1 text-right text-[11px] text-mini">
+          <p className="mt-1 text-right font-mono text-[11px] text-muted-foreground">
             {draft.answer.length}/{ANSWER_MAX}
           </p>
         </Field>
@@ -217,6 +216,7 @@ const KnowledgeEditPanel = ({
               max={100}
               value={draft.priority}
               onChange={(event) => set("priority", Number(event.target.value))}
+              className="h-10 rounded-[10px] border bg-background px-3 text-sm shadow-none focus-visible:border-foreground focus-visible:ring-0"
             />
           </Field>
 
@@ -224,11 +224,11 @@ const KnowledgeEditPanel = ({
             <button
               type="button"
               onClick={() => set("active", !draft.active)}
-              className="flex h-9 items-center gap-2"
+              className="flex h-10 cursor-pointer items-center gap-2"
             >
               <span
                 className={`relative h-5 w-9 rounded-full transition ${
-                  draft.active ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
+                  draft.active ? "bg-[#16a34a]" : "bg-gray-300 dark:bg-gray-600"
                 }`}
               >
                 <span
@@ -237,20 +237,20 @@ const KnowledgeEditPanel = ({
                   }`}
                 />
               </span>
-              <span className="text-sm text-normal">
+              <span className="text-sm text-foreground">
                 {draft.active ? t("panel.active") : t("panel.inactive")}
               </span>
             </button>
           </Field>
         </div>
 
-        <div className="rounded-xl border p-3">
+        <div className="rounded-[10px] border p-3">
           <button
             type="button"
             onClick={() => setShowPreview((value) => !value)}
             className="flex w-full items-center justify-between"
           >
-            <span className="text-xs font-semibold text-normal">
+            <span className="text-[13px] font-medium text-foreground">
               {t("panel.preview")}
             </span>
             <ChevronUp
@@ -271,11 +271,12 @@ const KnowledgeEditPanel = ({
                     }
                   }}
                   placeholder={t("panel.previewPlaceholder")}
-                  className="text-xs"
+                  className="h-10 rounded-[10px] text-[13px] shadow-none focus-visible:border-foreground focus-visible:ring-0"
                 />
                 <Button
                   onClick={() => question.trim() && retrieval.mutate(question.trim())}
                   disabled={!question.trim() || retrieval.isPending}
+                  className="h-10 rounded-[10px] bg-foreground px-4 text-background hover:bg-foreground/85"
                 >
                   {t("panel.test")}
                 </Button>
@@ -317,13 +318,14 @@ const KnowledgeEditPanel = ({
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center justify-end gap-2 border-t bg-card p-4">
-        <Button variant="ghost" className="border" onClick={onClose}>
+      <div className="flex shrink-0 items-center justify-end gap-2 border-t px-6 py-3.5">
+        <Button variant="outline" className="h-10 rounded-[10px] px-4 text-sm font-medium shadow-none" onClick={onClose}>
           {t("panel.cancel")}
         </Button>
         <Button
           disabled={!canPublish || isSaving}
           onClick={() => onPublish(draft)}
+          className="h-10 rounded-[10px] bg-foreground px-[18px] text-sm font-medium text-background hover:bg-foreground/85"
         >
           {isSaving ? t("panel.publishing") : t("panel.publish")}
         </Button>

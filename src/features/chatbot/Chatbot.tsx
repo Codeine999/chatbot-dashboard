@@ -1,26 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, Plus, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { useSidebar } from "@/components/ui/sidebar";
 import { useAuthUser } from "@/features/auth/store/auth.store";
-import ChatHistorySidebar from "./components/ChatHistorySidebar";
 import { ChatComposer } from "./components/ChatComposer";
 import { ChatEmptyState } from "./components/ChatEmptyState";
 import { ChatModelBar } from "./components/ChatModelPicker";
 import { MessageRow, PendingUserMessage, ThinkingRow } from "./components/ChatMessages";
 import { useChatModel } from "./hooks/useChatModel";
 import { useChatSession } from "./hooks/useChatSession";
-import { useLockedSidebar } from "./hooks/useLockedSidebar";
+import { useChatSidebarStore } from "./store/chatSidebar.store";
 import { useChatTitleStore } from "./store/chatTitle.store";
 
 const Chatbot = () => {
   const { t } = useTranslation("chat");
   const user = useAuthUser();
-  const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false);
-
-  useLockedSidebar();
+  const { setOpenMobile } = useSidebar();
 
   const model = useChatModel();
   const chat = useChatSession(model.aiEnabled);
@@ -34,14 +31,15 @@ const Chatbot = () => {
   useEffect(() => setChatTitle(activeTitle), [activeTitle, setChatTitle]);
   useEffect(() => () => setChatTitle(null), [setChatTitle]);
 
+  // บนมือถือรายการแชทอยู่ใน sidebar แบบ sheet เลือกห้องแล้วต้องปิดให้
   const selectRoom = (roomId: string) => {
     chat.selectRoom(roomId);
-    setMobileHistoryOpen(false);
+    setOpenMobile(false);
   };
 
   const startNewChat = () => {
     chat.startNewChat();
-    setMobileHistoryOpen(false);
+    setOpenMobile(false);
   };
 
   const sidebarProps = {
@@ -55,6 +53,13 @@ const Chatbot = () => {
     onRetry: () => roomsQuery.refetch(),
     deletingRoomId: chat.deletingRoomId,
   };
+
+  // รายการแชทแสดงใน sidebar หลัก (นอกหน้านี้) จึงส่งข้อมูลผ่าน store
+  // ไม่ล้างตอนออกจากหน้า เพราะ sidebar แชทยังเล่นอนิเมชันพับเก็บอยู่ ถ้าล้างจะกลายเป็น skeleton วาบขึ้นมา
+  const setSidebarProps = useChatSidebarStore((state) => state.setProps);
+  useEffect(() => {
+    setSidebarProps(sidebarProps);
+  });
 
   const composer = (
     <div className="w-full">
@@ -137,23 +142,14 @@ const Chatbot = () => {
 
   return (
     <div className="-mx-4 flex h-[calc(100svh-4rem)] min-h-[38rem] overflow-hidden md:-mx-6 xl:-mx-10">
-      <ChatHistorySidebar {...sidebarProps} />
-
-      <Sheet open={mobileHistoryOpen} onOpenChange={setMobileHistoryOpen}>
-        <SheetContent side="left" className="w-[19rem] gap-0 p-0 [&>button]:hidden">
-          <SheetTitle className="sr-only">{t("header.history")}</SheetTitle>
-          <ChatHistorySidebar {...sidebarProps} mobile />
-        </SheetContent>
-      </Sheet>
-
       <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-background">
-        <header className="flex h-14 shrink-0 items-center gap-2 px-4 sm:px-6 lg:hidden">
+        <header className="flex h-14 shrink-0 items-center gap-2 px-4 sm:px-6 md:hidden">
           <div className="flex items-center gap-1">
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => setMobileHistoryOpen(true)}
+              onClick={() => setOpenMobile(true)}
               className="size-9 rounded-full"
               aria-label={t("header.openHistory")}
             >

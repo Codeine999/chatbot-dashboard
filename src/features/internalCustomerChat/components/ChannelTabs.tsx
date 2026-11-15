@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { PillTabs } from "@/components/common/PillTabs";
 import type { ChatChannelType } from "../type";
 
 type Props = {
@@ -7,19 +6,35 @@ type Props = {
   onChange: (value: ChatChannelType) => void;
 };
 
-/** สลับช่องทางแชททดสอบ วางไว้บนสุดของแถบด้านซ้ายของแต่ละช่อง */
+/** สลับช่องทางแชททดสอบ วางไว้บนสุดของแถบด้านซ้ายของแต่ละช่อง (underline tabs) */
 export function ChannelTabs({ value, onChange }: Props) {
   const { t } = useTranslation("chat");
+  const tabs: { value: ChatChannelType; label: string }[] = [
+    { value: "line", label: t("customerTest.channel.line") },
+    { value: "line-application", label: t("customerTest.channel.application") },
+  ];
 
   return (
-    <PillTabs<ChatChannelType>
-      className="mb-4 flex-nowrap gap-1"
-      tabs={[
-        { value: "line", label: t("customerTest.channel.line") },
-        { value: "line-application", label: t("customerTest.channel.application") },
-      ]}
-      value={value}
-      onChange={onChange}
-    />
+    <div role="tablist" className="flex gap-5 border-b">
+      {tabs.map((tab) => {
+        const active = tab.value === value;
+        return (
+          <button
+            key={tab.value}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(tab.value)}
+            className={`-mb-px h-11 cursor-pointer whitespace-nowrap border-b-2 text-sm transition-colors ${
+              active
+                ? "border-foreground font-medium text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {tab.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }

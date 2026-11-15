@@ -1,13 +1,9 @@
 import { useTranslation } from "react-i18next";
-import { MessageCircle, UsersRound } from "lucide-react";
 import { formatNumber } from "@/i18n/format";
 import { cn } from "@/lib/utils";
 import type { UserTab } from "../type";
 
-const TABS: { value: UserTab; icon: React.ElementType }[] = [
-  { value: "line", icon: MessageCircle },
-  { value: "registered", icon: UsersRound },
-];
+const TABS: UserTab[] = ["line", "registered"];
 
 export const UserTabs = ({
   value,
@@ -23,30 +19,32 @@ export const UserTabs = ({
   const { t } = useTranslation("users");
 
   return (
-    <div className={cn("flex gap-6 overflow-x-auto border-b", className)}>
-      {TABS.map(({ value: tab, icon: Icon }) => {
+    <div
+      role="tablist"
+      aria-label={t("tabsLabel")}
+      className={cn("flex gap-6 overflow-x-auto border-b border-border", className)}
+    >
+      {TABS.map((tab) => {
         const isActive = tab === value;
 
         return (
           <button
             key={tab}
             type="button"
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onChange(tab)}
-            aria-current={isActive ? "page" : undefined}
             className={cn(
-              "-mb-px flex cursor-pointer items-center gap-2 whitespace-nowrap border-b-2 pb-3 text-sm transition",
-              isActive
-                ? "border-button-primary font-medium text-button-primary"
-                : "border-transparent text-mini hover:text-normal"
+              "-mb-px flex h-11 cursor-pointer items-center gap-2 whitespace-nowrap border-b-2 text-sm font-medium transition-colors",
+              isActive ? "border-foreground text-foreground" : "border-transparent text-mini hover:text-foreground"
             )}
           >
-            <Icon className="size-4" />
             {t(`tab.${tab}`)}
             {counts && (
               <span
                 className={cn(
-                  "rounded-md px-1.5 py-0.5 text-xs font-medium",
-                  isActive ? "bg-button-primary/10 text-button-primary" : "bg-muted text-mini"
+                  "rounded-full px-1.5 py-px font-mono text-[11px]",
+                  isActive ? "bg-muted text-normal" : "bg-muted/60 text-mini"
                 )}
               >
                 {formatNumber(counts[tab])}

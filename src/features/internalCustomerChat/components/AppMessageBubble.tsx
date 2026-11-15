@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { formatTime } from "@/i18n/format";
+import { messageBubbleClass } from "./TestChatParts";
 import type { AppHistoryMessage } from "../type";
 
 /**
@@ -23,23 +24,15 @@ export function AppMessageBubble({ message }: { message: AppHistoryMessage }) {
 
   return (
     <div className={`flex ${isCustomer ? "justify-end" : "justify-start"}`}>
-      <div
-        className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-          isCustomer
-            ? "rounded-br-sm bg-primary text-primary-foreground"
-            : sender === "admin"
-              ? "rounded-bl-sm border border-primary/30 bg-primary/5"
-              : "rounded-bl-sm border bg-card"
-        }`}
-      >
-        <p className="mb-1 flex items-center gap-2 text-[10px] opacity-70">
+      <div className={messageBubbleClass(isCustomer ? "customer" : "other")}>
+        <p className="mb-1 flex items-center gap-2 text-[11px] text-muted-foreground">
           {label}
           {sender === "ai" && source && (
-            <span className="rounded bg-hover px-1.5 py-0.5 font-mono uppercase">{source}</span>
+            <span className="rounded bg-background px-1.5 py-0.5 font-mono uppercase">{source}</span>
           )}
-          <span>{formatTime(message.createdAt)}</span>
+          <span className="font-mono">{formatTime(message.createdAt)}</span>
         </p>
-        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{message.text}</p>
+        <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-inherit">{message.text}</p>
         {message.metadata?.handoff && (
           <p className="mt-2 text-[10px] text-amber-600">{t("appChat.handoff")}</p>
         )}

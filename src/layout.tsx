@@ -1,27 +1,32 @@
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/navbar/Navbar";
 import Sidebar from "@/components/Sidebar"
 import { AdminToolChat } from "@/components/AdminToolChat";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { isSidebarLockedRoute } from "@/lib/sidebarLock";
+import { isAiChatRoute, useReturnPathStore } from "@/features/chatbot/lib/chatRoute";
 import { Background } from "@/components/BackGround";
 
 const MainLayout = () => {
   const location = useLocation();
 
-  // หน้าที่ล็อก sidebar ต้องเริ่มด้วยสถานะปิดตั้งแต่ render แรก
-  // ถ้าไปสั่งปิดทีหลังใน useEffect จะเห็น sidebar กางออกมาแวบนึงตอน refresh
-  const sidebarLocked = isSidebarLockedRoute(location.pathname);
+  // จำหน้าล่าสุดที่ไม่ใช่ AI Chat ไว้ให้ปุ่ม "ออก" ใน sidebar กลับไปได้
+  const setReturnPath = useReturnPathStore((state) => state.setPath);
+  useEffect(() => {
+    if (!isAiChatRoute(location.pathname)) {
+      setReturnPath(`${location.pathname}${location.search}`);
+    }
+  }, [location.pathname, location.search, setReturnPath]);
 
   return (
     <div>
-      <SidebarProvider defaultOpen={!sidebarLocked}>
+      <SidebarProvider>
         <Sidebar />
-        <main className="relative isolate min-h-svh w-full">
+        <main className="relative isolate min-h-svh w-full min-w-0">
           <Background />
           <div className="relative">
             <Navbar />
-            <div className="xl:px-10 md:px-6 px-4">
+            <div className="xl:px-6 md:px-6 px-4">
               <Outlet />
             </div>
             <AdminToolChat />

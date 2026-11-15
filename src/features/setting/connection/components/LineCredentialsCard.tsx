@@ -6,7 +6,6 @@ import {
   Info,
   Loader2,
   LockKeyhole,
-  MessageCircle,
   Pencil,
   Plug,
   ShieldCheck,
@@ -45,19 +44,14 @@ const Header = () => {
 
   return (
     <div className="flex items-start justify-between gap-3">
-      <div className="flex items-start gap-3">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-green-500 text-white">
-          <MessageCircle className="size-5" />
-        </span>
-        <div>
-          <h2 className="text-base font-semibold text-normal">
-            {t("connection.line.title")}
-          </h2>
-          <p className="mt-0.5 text-sm text-mini">{t("connection.line.subtitle")}</p>
-        </div>
+      <div>
+        <h2 className="text-[15px] font-semibold text-foreground">
+          {t("connection.line.title")}
+        </h2>
+        <p className="mt-1.5 text-[13px] text-muted-foreground">{t("connection.line.subtitle")}</p>
       </div>
 
-      <Button type="button" variant="outline" className="rounded-full" asChild>
+      <Button type="button" variant="outline" className="h-[38px] rounded-[10px]" asChild>
         <a href={LINE_DEVELOPERS_URL} target="_blank" rel="noreferrer">
           {t("connection.line.openConsole")}
           <ExternalLink />
@@ -86,14 +80,14 @@ const LockedFields = ({ state }: { state: LineChannelState | undefined }) => {
     <div className="flex flex-col gap-5">
       {rows.map((row) => (
         <div key={row.label}>
-          <p className="mb-1.5 text-sm font-medium text-normal">{row.label}</p>
+          <p className="mb-2 text-sm font-medium text-foreground">{row.label}</p>
           <div className="relative">
             <Input
               readOnly
               disabled
               value={row.value}
               aria-label={row.label}
-              className="!h-11 rounded-xl pr-11 font-mono"
+              className="!h-[42px] rounded-[10px] pr-11 font-mono"
             />
             <LockKeyhole className="absolute inset-y-0 right-3.5 my-auto size-4 text-mini" />
           </div>
@@ -122,7 +116,7 @@ const EditableFields = ({ form }: { form: UseFormReturn<LineCredentialsForm> }) 
               autoComplete="off"
               aria-invalid={fieldState.invalid}
               placeholder={t("connection.line.channelIdPlaceholder")}
-              className="!h-11 rounded-xl"
+              className="!h-[42px] rounded-[10px]"
             />
           </CredentialField>
         )}
@@ -135,7 +129,7 @@ const EditableFields = ({ form }: { form: UseFormReturn<LineCredentialsForm> }) 
           <CredentialField
             label={t("connection.line.channelSecret")}
             badge={
-              <span className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium text-icons">
+              <span className="rounded-md border px-1.5 py-0.5 text-[11px] font-medium text-normal">
                 {t("connection.line.recommended")}
               </span>
             }
@@ -194,7 +188,7 @@ export const LineCredentialsCard = ({
   const usesServerEnv = state?.source === "env" && !locked;
 
   return (
-    <Card className="p-6">
+    <Card variant="flat" className="border-t py-8">
       <Header />
 
       <Form {...form}>
@@ -208,7 +202,7 @@ export const LineCredentialsCard = ({
           }}
         >
           {usesServerEnv && (
-            <div className="flex items-start gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-blue-800 dark:border-blue-500/20 dark:bg-blue-500/10 dark:text-blue-300">
+            <div className="flex items-start gap-2 rounded-xl border border-0 bg-muted px-4 py-2.5 text-[13px] text-normal">
               <Info className="mt-0.5 size-4 shrink-0" />
               {t("connection.line.envNote")}
             </div>
@@ -226,7 +220,7 @@ export const LineCredentialsCard = ({
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex items-center gap-2 rounded-xl bg-hover px-4 py-3 text-xs text-mini">
+          <div className="flex items-center gap-2 rounded-xl bg-muted px-4 py-3 text-xs text-muted-foreground">
             <ShieldCheck className="size-4 shrink-0" />
             {t(locked ? "connection.line.lockedNote" : "connection.line.encryptedNote")}
           </div>
@@ -235,10 +229,9 @@ export const LineCredentialsCard = ({
             {locked ? (
               <Button
                 type="button"
-                size="lg"
                 variant="outline"
                 onClick={onEdit}
-                className="rounded-xl"
+                className="h-[38px] rounded-[10px]"
               >
                 <Pencil />
                 {t("connection.line.edit")}
@@ -247,9 +240,8 @@ export const LineCredentialsCard = ({
               <>
                 <Button
                   type="submit"
-                  size="lg"
                   disabled={!canSubmit}
-                  className="rounded-xl shadow-md shadow-primary/30"
+                  className="h-[38px] rounded-[10px] bg-foreground text-background hover:bg-foreground/90"
                 >
                   {isSaving ? <Loader2 className="animate-spin" /> : <Plug />}
                   {t(isSaving ? "connection.line.testing" : "connection.line.submit")}

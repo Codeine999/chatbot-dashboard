@@ -53,8 +53,7 @@ export const BotModeSelect = ({ conversation }: Props) => {
     : undefined;
   const minutesLeft = resumesAt ? Math.max(1, Math.ceil((resumesAt - now) / 60_000)) : 0;
   const current = MODES.find((item) => item.id === mode) ?? MODES[0];
-  const CurrentIcon = current.icon;
-
+  
   // ห้องที่ค้าง waiting_admin ก็ปลดได้: resume-bot ตั้งสถานะกลับเป็น open ให้
   const canResume = mode !== "auto" || conversation.status === "waiting_admin";
 
@@ -64,16 +63,15 @@ export const BotModeSelect = ({ conversation }: Props) => {
         <Button
           variant="outline"
           size="sm"
-          className="h-7 gap-1.5 rounded-full px-2.5 text-[11px] font-medium"
+          className="h-[38px] gap-2 rounded-[10px] px-3 text-[13px] font-medium shadow-none"
           disabled={resumeBot.isPending}
         >
           {resumeBot.isPending ? (
             <Loader2 className="size-3.5 animate-spin" />
           ) : (
-            <span className={cn("size-2 rounded-full", current.dot)} />
+            <span className={cn("size-[7px] rounded-full ring-[3px] ring-black/5", current.dot)} />
           )}
-          <CurrentIcon className="size-3.5 text-mini" />
-          <span>{t(`line.bot.mode.${mode}.label`)}</span>
+                    <span>{t(`line.bot.mode.${mode}.label`)}</span>
           {mode === "admin" && (
             <span className="text-mini">
               · {t("line.bot.minutesShort", { minutes: minutesLeft })}

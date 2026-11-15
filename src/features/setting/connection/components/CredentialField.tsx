@@ -16,7 +16,7 @@ export const CredentialField = ({
   children: ReactNode;
 }) => (
   <FormItem className="min-w-0 gap-0">
-    <p className="mb-1.5 flex items-center gap-2 text-sm font-medium text-normal">
+    <p className="mb-2 flex items-center gap-2 text-sm font-medium text-foreground">
       {label}
       <span className="text-red-500" aria-hidden>
         *
@@ -28,9 +28,9 @@ export const CredentialField = ({
 
     <FormMessage className="mt-1.5 text-xs" />
     <div className="mt-1.5 flex items-start justify-between gap-3">
-      <p className="text-xs text-mini">{hint}</p>
+      <p className="text-xs text-muted-foreground">{hint}</p>
       {counter && (
-        <p className="shrink-0 text-xs tabular-nums text-mini">{counter}</p>
+        <p className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{counter}</p>
       )}
     </div>
   </FormItem>

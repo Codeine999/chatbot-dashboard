@@ -1,6 +1,5 @@
-import { LoaderCircle, MessageCircle, Plus } from "lucide-react";
+import { LoaderCircle, Plus, Smartphone } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { formatDate, formatTime } from "@/i18n/format";
 import type { AppConversation } from "../type";
 
@@ -33,16 +32,21 @@ export function AppRoomList({
   const { t } = useTranslation("chat");
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col pt-4">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold">{t("appChat.rooms")}</h3>
-        <Button variant="outline" size="sm" disabled={newDisabled} onClick={onNew}>
+        <h3 className="text-xs text-muted-foreground">{t("appChat.rooms")}</h3>
+        <button
+          type="button"
+          disabled={newDisabled}
+          onClick={onNew}
+          className="inline-flex h-[34px] cursor-pointer items-center gap-1.5 rounded-[10px] border px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+        >
           <Plus className="size-3.5" />
           {t("appChat.newRoom")}
-        </Button>
+        </button>
       </div>
 
-      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 space-y-0.5 overflow-y-auto">
         {isLoading ? (
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <LoaderCircle className="size-4 animate-spin" />
@@ -63,42 +67,44 @@ export function AppRoomList({
                 type="button"
                 onClick={() => onSelect(room.id)}
                 aria-current={room.id === selectedId}
-                className={`w-full cursor-pointer rounded-xl border p-3 text-left transition-colors ${
-                  room.id === selectedId
-                    ? "border-primary/40 bg-primary/10"
-                    : "border-transparent hover:bg-hover"
+                className={`flex w-full cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-colors ${
+                  room.id === selectedId ? "bg-muted" : "hover:bg-muted/60"
                 }`}
               >
-                <span className="flex items-center justify-between gap-2">
-                  <span className="flex min-w-0 items-center gap-2">
-                    <MessageCircle className="size-4 shrink-0 text-primary" />
-                    <span className="truncate text-sm font-medium">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f5f5f5] text-normal dark:bg-white/10">
+                  <Smartphone className="size-4" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="truncate text-sm font-semibold text-foreground">
                       {room.contact.displayName || room.contact.id.slice(0, 8)}
                     </span>
-                  </span>
-                  <span className="shrink-0 text-[10px] text-muted-foreground">
-                    {isToday(room.lastMessageAt)
-                      ? formatTime(room.lastMessageAt)
-                      : formatDate(room.lastMessageAt)}
-                  </span>
-                </span>
-                <span className="mt-1 block truncate text-xs text-muted-foreground">
-                  {room.lastMessage}
-                </span>
-                <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                  {room.id === mineId && (
-                    <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary">
-                      {t("appChat.mine")}
+                    <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
+                      {isToday(room.lastMessageAt)
+                        ? formatTime(room.lastMessageAt)
+                        : formatDate(room.lastMessageAt)}
                     </span>
-                  )}
-                  {waiting && (
-                    <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] text-amber-700 dark:bg-amber-500/10 dark:text-amber-400">
-                      {t("appChat.waitingAdmin")}
-                    </span>
-                  )}
-                  {room.unreadCount > 0 && (
-                    <span className="rounded-full bg-primary px-1.5 py-0.5 text-[10px] text-primary-foreground">
-                      {room.unreadCount}
+                  </span>
+                  <span className="mt-0.5 flex items-center justify-between gap-2">
+                    <span className="truncate text-[13px] text-muted-foreground">{room.lastMessage}</span>
+                    {room.unreadCount > 0 && (
+                      <span className="flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-full bg-foreground px-1.5 text-[11px] font-medium text-background">
+                        {room.unreadCount}
+                      </span>
+                    )}
+                  </span>
+                  {(room.id === mineId || waiting) && (
+                    <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                      {room.id === mineId && (
+                        <span className="rounded-md border px-1.5 py-0.5 text-[11px] text-normal">
+                          {t("appChat.mine")}
+                        </span>
+                      )}
+                      {waiting && (
+                        <span className="rounded-md bg-[#f5f2ef] px-1.5 py-0.5 text-[11px] text-[#c2410c] dark:bg-white/10">
+                          {t("appChat.waitingAdmin")}
+                        </span>
+                      )}
                     </span>
                   )}
                 </span>

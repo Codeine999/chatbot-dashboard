@@ -17,7 +17,10 @@
     "sync": "Sync info",
     "loading": "Loading LINE OA info…",
     "active": "Active",
-    "chatMode": "Chat mode",
+    "online": "Online",
+    "aiCredit": "AI credit remaining",
+    "viewUsage": "View usage",
+    "chatMode": "Status",
     "replyWith": "Reply with",
     "markAsReadMode": "Mark as read mode",
     "webhook": "Webhook",
@@ -53,7 +56,7 @@
     "model": "model from Gemini",
     "greeting": "Hi there, how can I help you? :)",
     "typing": "AI is typing...",
-    "inputPlaceholder": "Type your message...",
+    "inputPlaceholder": "Ask keeLa AI, e.g. what did customers ask about most this week?",
     "noContent": "No content",
     "error": "Something went wrong contacting the API"
   },
@@ -68,5 +71,12 @@
     "status": "Status",
     "total": "Total",
     "edit": "Edit"
+  },
+  "unanswered": {
+    "title": "Questions AI could not answer",
+    "subtitle": "Last 7 days · Add as knowledge so AI can answer next time",
+    "library": "Knowledge library",
+    "sentToAdmin": "Handed to admin",
+    "add": "Add knowledge"
   }
 }

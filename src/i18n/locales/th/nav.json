@@ -28,6 +28,7 @@
     "settingConnection": "การเชื่อมต่อ",
     "settingClearSession": "ล้าง session",
     "aiWorkflow": "AI Work Flow",
+    "callAiHelp": "ให้ AI ช่วยคุณ",
     "internalCustomerChat": "ทดสอบแชทลูกค้า"
   },
   "brand": {
@@ -53,5 +54,14 @@
   },
   "theme": {
     "toggle": "สลับธีมสว่าง/มืด"
+  },
+  "navbar": {
+    "search": "ค้นหาทุกอย่าง...",
+    "feedback": "ส่งความเห็น",
+    "docs": "คู่มือ",
+    "ask": "ถาม AI",
+    "files": "คลังความรู้",
+    "goTo": "ไปที่",
+    "noResults": "ไม่พบผลลัพธ์"
   }
 }

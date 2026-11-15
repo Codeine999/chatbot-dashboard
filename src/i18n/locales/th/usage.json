@@ -10,6 +10,31 @@
     "title": "ภาพรวมโทเคน",
     "subtitle": "การใช้โทเคนรายเดือนของทั้ง workspace",
     "connected": "ใช้งานอยู่ {{active}} · เชื่อมต่อ {{total}}",
+    "channels": {
+      "overall": "ภาพรวม",
+      "line": "Line",
+      "facebook": "Facebook",
+      "api": "Api"
+    },
+    "channelTabs": "ช่องทางโทเคน",
+    "perPerson": {
+      "title": "การใช้โทเคนรายคน",
+      "total": "รวม {{used}} โทเคน",
+      "used": "ใช้ไป",
+      "limit": "โควตา",
+      "share": "สัดส่วน"
+    },
+    "log": {
+      "title": "บันทึกการตอบรายครั้ง",
+      "filter": "กรองตามช่องทาง",
+      "time": "เวลา",
+      "channel": "ช่องทาง",
+      "respondedBy": "ผู้ตอบ",
+      "ai": "AI",
+      "input": "โทเคนรับเข้า",
+      "output": "โทเคนที่ตอบ",
+      "total": "รวม"
+    },
     "aiChat": "โทเคนแชท AI",
     "aiChatDesc": "บทสนทนาและคำตอบที่ AI สร้าง",
     "lineSend": "โทเคนส่ง LINE",
@@ -99,7 +124,6 @@
   "chart": {
     "vsPrev": "เทียบกับ{{unit}}ก่อนหน้า",
     "noActivity": "ไม่มีความเคลื่อนไหวในช่วงนี้",
-    "noActivityHint": "API ส่งข้อมูลของ{{window}}มาแล้ว แต่เป็นศูนย์ทั้งหมด",
     "showData": "ดูข้อมูล",
     "hideData": "ซ่อนข้อมูล",
     "period": "ช่วงเวลา",
@@ -114,5 +138,20 @@
     "unmappedHint": "API ส่งมา {{count}} แถว แต่ไม่มีแถวไหนตรงกับฟิลด์ที่คาดไว้",
     "sample": "ข้อมูลตัวอย่าง",
     "sampleHint": "API ไม่มีข้อมูลในช่วงเวลานี้"
+  },
+  "people": "{{count}} คน",
+  "refresh": "รีเฟรช",
+  "table": {
+    "admin": "ผู้ดูแล",
+    "status": "สถานะ",
+    "aiCredit": "เครดิต AI",
+    "accountStatus": "สถานะบัญชี"
+  },
+  "adminTitle": "การใช้งานรายผู้ดูแล",
+  "handoff": {
+    "aiHandled": "AI ตอบเองได้",
+    "toAdmin": "ส่งต่อแอดมิน",
+    "avgResponse": "เวลาตอบเฉลี่ย",
+    "seconds": "วิ"
   }
 }

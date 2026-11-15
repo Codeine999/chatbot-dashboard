@@ -25,21 +25,9 @@ import {
 } from "@/components/ui/collapsible";
 
 import {
-  Calendar,
-  Home,
-  Inbox,
-  Search,
-  Settings,
   ChevronDown,
-  UsersRound,
-  MessagesSquare,
-  ChartPie,
-  MessageCircle,
-  Receipt,
+  Sparkles,
   Workflow,
-  LayoutGrid,
-  ShieldCheck,
-  type LucideIcon,
 } from "lucide-react";
 
 import NextIcons from "@/assets/nexticon.svg"
@@ -49,88 +37,13 @@ import { useCompanyBrandInfo } from "@/features/company/hooks/useCompany";
 import { resolveImageUrl } from "@/lib/url";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChatSidebarPanel } from "@/features/chatbot/components/ChatSidebarPanel";
+import { AI_CHAT_URL, useIsAiChatRoute } from "@/features/chatbot/lib/chatRoute";
 import { useAuthUser } from "@/features/auth/store/auth.store";
+import { navGroups } from "@/config/navigation";
 import type { AdminRole } from "@/features/auth/types/auth.type";
 
-
-type NavItem = {
-  /** key ใน namespace "nav" ไม่ใช่ข้อความจริง แปลตอน render */
-  titleKey: string;
-  url: string;
-  icon: LucideIcon;
-  /** ถ้าระบุไว้ เมนูจะขึ้นเฉพาะ role ที่อยู่ในลิสต์ ไม่ระบุ = เห็นทุก role */
-  roles?: AdminRole[];
-  /** ป้ายเล็กท้ายเมนู เช่น AI / Beta — เป็นชื่อเฉพาะ ไม่ต้องแปล */
-  badge?: string;
-  /** ถ้ามี children เมนูจะกลายเป็น dropdown แทนการลิงก์ตรง */
-  children?: { titleKey: string; url: string; roles?: AdminRole[] }[];
-};
-
-type NavGroup = {
-  labelKey: string;
-  items: NavItem[];
-};
-
-const navGroups: NavGroup[] = [
-  {
-    labelKey: "group.workspace",
-    items: [
-      { titleKey: "item.home", url: "/", icon: Home },
-      { titleKey: "item.richMenu", url: "/rich-menu/setting", icon: LayoutGrid },
-      { titleKey: "item.product", url: "/product", icon: Inbox },
-      // { titleKey: "item.order", url: "/order", icon: Calendar },
-      { titleKey: "item.users", url: "/users", icon: UsersRound },
-    ],
-  },
-  {
-    labelKey: "group.communication",
-    items: [
-      { titleKey: "item.lineChat", url: "/chat/line", icon: MessageCircle },
-      { titleKey: "item.answer", url: "/ai-answer", icon: Search },
-      { titleKey: "item.internalCustomerChat", url: "/ai/internal-customer-chat", icon: MessageCircle },
-      { titleKey: "item.aiChatbot", url: "/ai-chat", icon: MessagesSquare, badge: "AI" },
-    ],
-  },
-  {
-    labelKey: "group.insights",
-    items: [
-      // { titleKey: "item.overview", url: "../", icon: Search },
-      {
-        titleKey: "item.usage",
-        url: "/usage",
-        icon: ChartPie,
-        children: [
-          { titleKey: "item.usageOverall", url: "/usage" },
-          { titleKey: "item.usageGraph", url: "/usage/Graph" },
-        ],
-      },
-      { titleKey: "item.bill", url: "/bill", icon: Receipt },
-      {
-        titleKey: "item.adminList",
-        url: "/admin-list",
-        icon: ShieldCheck,
-        roles: ["admin", "owner", "dev"],
-      },
-    ],
-  },
-  {
-    labelKey: "group.system",
-    items: [
-      {
-        titleKey: "item.setting",
-        url: "/setting",
-        icon: Settings,
-        children: [
-          // { titleKey: "item.settingOverall", url: "/setting/admin/over-all" },
-          // { titleKey: "item.settingSelectMenu", url: "/setting/admin/select-menu" },
-          { titleKey: "item.settingAi", url: "/setting/admin/ai-setting" },
-          { titleKey: "item.settingConnection", url: "/setting/connection" },
-          { titleKey: "item.settingClearSession", url: "/setting/clear-session", roles: ["owner", "dev"] },
-        ],
-      },
-    ],
-  },
-];
 
 /** active = พื้นแดงอ่อน + ตัวอักษรแดง + แถบแดงชิดขอบซ้ายของ sidebar
  *  ต้องใส่ ! เพราะ variant `default` ของ SidebarMenuButton มี !bg/!text ของตัวเองอยู่ */
@@ -147,6 +60,8 @@ const menuButtonClass = cn(
 const groupLabelClass =
   "px-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground";
 
+const SWAP_TRANSITION = { duration: 0.35, ease: [0.4, 0, 0.2, 1] as const };
+
 const NavBadge = ({ children }: { children: string }) => (
   <span className="ml-auto rounded-md bg-button-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-button-primary">
     {children}
@@ -162,6 +77,10 @@ const SidebarNavigation = () => {
   const { data: brandInfo } = useCompanyBrandInfo();
   const { t } = useTranslation("nav");
   const user = useAuthUser();
+  const isAiChatActive = location.pathname === AI_CHAT_URL;
+  const isChatRoute = useIsAiChatRoute();
+  // แถบไอคอนไม่มีที่พอสำหรับรายการแชท จึงสลับเป็นโหมดแชทเฉพาะตอน sidebar กางอยู่ (มือถือกางเสมอ)
+  const showChatPanel = isChatRoute && (isMobile || !isCollapsed);
 
   /** ไม่ระบุ roles = เห็นทุก role */
   const canSee = (roles?: AdminRole[]) => !roles || (!!user && roles.includes(user.role));
@@ -179,6 +98,28 @@ const SidebarNavigation = () => {
       className={`transition-width duration-300 ease-in-out `}
 
     >
+      {/* สลับเนื้อ sidebar แบบม่านรูดจากล่างขึ้นบน: เมนูเดิมพับเก็บขึ้นบน แล้ว sidebar ของ AI Chat โผล่แทน */}
+      <AnimatePresence mode="wait" initial={false}>
+        {showChatPanel ? (
+          <motion.div
+            key="chat"
+            className="flex min-h-0 flex-1 flex-col"
+            initial={{ clipPath: "inset(100% 0% 0% 0%)" }}
+            animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+            exit={{ clipPath: "inset(0% 0% 100% 0%)" }}
+            transition={SWAP_TRANSITION}
+          >
+            <ChatSidebarPanel onExit={handleClose} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="nav"
+            className="flex min-h-0 flex-1 flex-col"
+            initial={{ clipPath: "inset(0% 0% 100% 0%)" }}
+            animate={{ clipPath: "inset(0% 0% 0% 0%)" }}
+            exit={{ clipPath: "inset(0% 0% 100% 0%)" }}
+            transition={SWAP_TRANSITION}
+          >
       <SidebarHeader className="py-3">
         <SidebarMenu>
           <SidebarMenuItem>
@@ -329,6 +270,20 @@ const SidebarNavigation = () => {
           <SidebarGroupLabel className={groupLabelClass}>{t("group.build")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
+              {/* เมนูแยกเดี่ยว ไม่อยู่ใน dropdown AI Work Flow */}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isAiChatActive}
+                  className={menuButtonClass}
+                >
+                  <NavLink to={AI_CHAT_URL} onClick={handleClose}>
+                    <Sparkles className="w-4.5 h-4.5" />
+                    <span>{t("item.callAiHelp")}</span>
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
               <Collapsible asChild className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
@@ -361,6 +316,9 @@ const SidebarNavigation = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <SidebarFooter />
     </SidebarRoot>
   );

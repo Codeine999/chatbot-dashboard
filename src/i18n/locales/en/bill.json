@@ -16,7 +16,13 @@
     "error": "Unable to load billing history.",
     "empty": "No billing history found.",
     "defaultDescription": "Credit purchase",
-    "showing": "Showing {{from}} to {{to}} of {{total}} entries"
+    "showing": "Showing {{from}} to {{to}} of {{total}} entries",
+    "heading": "History",
+    "tabTopup": "Top-up history",
+    "searchPlaceholder": "Search payments",
+    "statusLabel": "Status",
+    "previous": "Previous",
+    "next": "Next"
   },
   "filter": {
     "all": "All",

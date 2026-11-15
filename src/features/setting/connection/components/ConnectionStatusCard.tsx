@@ -25,7 +25,7 @@ const DetailRow = ({
   children: React.ReactNode;
 }) => (
   <div className="flex items-center gap-2.5 text-sm text-normal">
-    <Icon className="size-4 shrink-0 text-mini" />
+    <Icon className="size-4 shrink-0 text-muted-foreground" />
     <span className="min-w-0 truncate">{children}</span>
   </div>
 );
@@ -51,8 +51,8 @@ export const ConnectionStatusCard = ({
         );
 
   return (
-    <Card className="p-6">
-      <h2 className="text-base font-semibold text-normal">{t("connection.status.title")}</h2>
+    <Card variant="flat" className="py-8 lg:border-l lg:pl-8">
+      <h2 className="text-[15px] font-semibold text-foreground">{t("connection.status.title")}</h2>
 
       {loading ? (
         <div className="mt-6 flex flex-col items-center gap-3" aria-busy>
@@ -74,7 +74,7 @@ export const ConnectionStatusCard = ({
           >
             <StatusVisual status={status} celebrate={celebrate} />
 
-            <p className="text-base font-semibold text-normal">
+            <p className="text-base font-semibold text-foreground">
               {t(`connection.status.${status}.title`)}
             </p>
             <p className="text-xs leading-relaxed text-mini">{description}</p>
@@ -85,7 +85,7 @@ export const ConnectionStatusCard = ({
 
             {status === "connected" && state && (
               <motion.ul
-                className="mt-2 flex w-full flex-col gap-2.5 rounded-xl bg-hover px-4 py-3 text-left"
+                className="mt-2 flex w-full flex-col gap-2.5 rounded-xl bg-muted px-4 py-3 text-left"
                 initial={reduceMotion ? false : "hidden"}
                 animate="shown"
                 variants={{ shown: { transition: { staggerChildren: 0.08, delayChildren: 0.5 } } }}

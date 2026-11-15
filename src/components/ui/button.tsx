@@ -23,6 +23,9 @@ const buttonVariants = cva(
           "text-primary underline-offset-4 hover:underline",
         nav:
           "border rounded-full shadow-xs text-[#879da7] hover:bg-gray-50",
+        /* ปุ่มขอบบางพื้นขาวแบบ navbar สไตล์ ElevenLabs ใช้ซ้ำกับ toolbar อื่นได้ */
+        pill:
+          "border bg-background text-foreground shadow-xs hover:bg-accent dark:bg-input/30 dark:hover:bg-input/50",
         add:
           "text-white border rounded-xl bg-add-button",
         items:
@@ -37,6 +40,8 @@ const buttonVariants = cva(
         sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
         lg: "h-10 rounded-md px-6 has-[>svg]:px-4",
         icon: "size-9",
+        pill: "h-10 rounded-xl px-4 text-[15px] has-[>svg]:px-3.5",
+        "pill-icon": "size-10 rounded-xl",
       },
     },
     defaultVariants: {

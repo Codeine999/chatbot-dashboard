@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { LoaderCircle, MessageCircle, Pause, Play, RefreshCw, Send } from "lucide-react";
+import { LoaderCircle, MessageCircle, Pause, Play, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { EmptyState } from "@/components/common/EmptyState";
 import {
   useAppBotMode,
   useAppConversations,
@@ -15,6 +14,16 @@ import {
 import type { AppHistoryMessage } from "../type";
 import { AppMessageBubble } from "./AppMessageBubble";
 import { AppRoomList } from "./AppRoomList";
+import {
+  DashedAvatar,
+  EmptyConversation,
+  NoticeBox,
+  SendButton,
+  SendingNote,
+  composerBoxClass,
+  composerTextareaClass,
+  messageBubbleClass,
+} from "./TestChatParts";
 
 type SendAs = "customer" | "admin";
 
@@ -113,12 +122,12 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
 
   return (
     <div className={active ? undefined : "hidden"}>
-      <p className="mb-5 rounded-xl border border-amber-300 p-3 text-xs leading-relaxed text-amber-700 dark:border-transparent dark:bg-amber-500/10 dark:text-amber-400">
-        {t("appChat.creditNote")}
-      </p>
+      <div className="pt-5">
+        <NoticeBox>{t("appChat.creditNote")}</NoticeBox>
+      </div>
 
-      <div className="grid items-start gap-5 lg:grid-cols-[300px_1fr]">
-        <aside className="flex h-[min(900px,calc(100svh-10rem))] min-h-[520px] flex-col rounded-2xl border bg-card p-5">
+      <div className="mt-5 grid h-[min(900px,calc(100svh-18rem))] min-h-[520px] lg:grid-cols-[340px_minmax(0,1fr)]">
+        <aside className="flex min-h-0 flex-col border-b pb-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-5">
           {tabs}
           <AppRoomList
             rooms={rooms.data}
@@ -135,13 +144,13 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
           />
         </aside>
 
-        <section className="flex h-[min(900px,calc(100svh-10rem))] min-h-[520px] flex-col overflow-hidden rounded-2xl border bg-card">
-          <header className="flex flex-wrap items-center gap-3 border-b p-4">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <MessageCircle />
-            </div>
+        <section className="flex min-h-0 flex-col">
+          <header className="flex min-h-16 flex-wrap items-center gap-3 border-b px-6">
+            <DashedAvatar>
+              <MessageCircle className="size-[18px]" />
+            </DashedAvatar>
             <div className="min-w-0 flex-1">
-              <h2 className="truncate font-semibold">
+              <h2 className="truncate text-[15px] font-semibold text-foreground">
                 {room
                   ? room.contact.displayName || room.contact.id.slice(0, 8)
                   : t("appChat.newCustomer")}
@@ -159,6 +168,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
                 <Button
                   variant="outline"
                   size="sm"
+                  className="rounded-[10px]"
                   disabled={botMode.pause.isPending}
                   onClick={() => botMode.pause.mutate()}
                 >
@@ -168,6 +178,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
                 <Button
                   variant="outline"
                   size="sm"
+                  className="rounded-[10px]"
                   disabled={botMode.resume.isPending}
                   onClick={() => botMode.resume.mutate()}
                 >
@@ -178,7 +189,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
             )}
           </header>
 
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-muted/30 p-5" role="log" aria-live="polite">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5" role="log" aria-live="polite">
             {messagesQuery.hasNextPage && (
               <div className="flex justify-center">
                 <Button
@@ -202,11 +213,9 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
                 {t("appChat.historyError")}
               </p>
             ) : messages.length === 0 && !showPending ? (
-              <EmptyState
-                icon={MessageCircle}
+              <EmptyConversation
                 title={roomId ? t("appChat.emptyRoom") : t("customerTest.empty")}
-                description={roomId ? undefined : t("appChat.emptyHint")}
-                className="h-full justify-center"
+                hint={roomId ? undefined : t("appChat.emptyHint")}
               />
             ) : null}
 
@@ -216,30 +225,27 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
 
             {showPending && (
               <div className="flex justify-end">
-                <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-4 py-3 text-primary-foreground opacity-70">
-                  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">{pending.text}</p>
+                <div className={`${messageBubbleClass("customer")} opacity-70`}>
+                  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-inherit">
+                    {pending.text}
+                  </p>
                 </div>
               </div>
             )}
 
-            {guest.isSending && (
-              <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                <LoaderCircle className="size-4 animate-spin" />
-                {t("customerTest.sending")}
-              </p>
-            )}
+            {guest.isSending && <SendingNote />}
             <div ref={endRef} />
           </div>
 
           <form
-            className="border-t p-4"
+            className="px-6 pb-5 pt-2"
             onSubmit={(event) => {
               event.preventDefault();
               void submit();
             }}
           >
             {guest.error && (
-              <div role="alert" className="mb-3 flex flex-wrap items-center gap-3 text-sm text-destructive">
+              <div role="alert" className="mx-auto mb-3 flex max-w-[880px] flex-wrap items-center gap-3 text-sm text-destructive">
                 <span>{guest.error}</span>
                 {guest.failedSend && (
                   <Button
@@ -256,53 +262,56 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
               </div>
             )}
 
-            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
-              <span className="text-muted-foreground">{t("appChat.sendAs")}</span>
-              {(["customer", "admin"] as const).map((value) => {
-                const allowed = value === "customer" ? canCustomer : canAdmin;
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    disabled={!allowed || busy}
-                    aria-pressed={mode === value}
-                    onClick={() => setSendAs(value)}
-                    className={`rounded-full px-3 py-1 transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-                      mode === value
-                        ? "bg-primary/10 font-semibold text-primary"
-                        : "text-muted-foreground hover:bg-hover"
-                    }`}
-                  >
-                    {t(value === "customer" ? "appChat.asCustomer" : "appChat.asAdmin")}
-                  </button>
-                );
-              })}
-              {!canCustomer && (
-                <span className="text-muted-foreground">{t("appChat.realCustomerRoom")}</span>
-              )}
-            </div>
+            <div className={composerBoxClass}>
+              <div className="mb-2 flex flex-wrap items-center gap-2.5 px-1 text-xs">
+                <span className="text-muted-foreground">{t("appChat.sendAs")}</span>
+                <div role="radiogroup" className="flex rounded-[10px] bg-muted p-[3px]">
+                  {(["customer", "admin"] as const).map((value) => {
+                    const allowed = value === "customer" ? canCustomer : canAdmin;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        role="radio"
+                        disabled={!allowed || busy}
+                        aria-checked={mode === value}
+                        onClick={() => setSendAs(value)}
+                        className={`h-7 cursor-pointer rounded-[7px] px-3 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
+                          mode === value
+                            ? "bg-background font-medium text-foreground shadow-[0_0_1px_rgba(0,0,0,0.4),0_4px_4px_rgba(0,0,0,0.04)]"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {t(value === "customer" ? "appChat.asCustomer" : "appChat.asAdmin")}
+                      </button>
+                    );
+                  })}
+                </div>
+                {!canCustomer && (
+                  <span className="text-muted-foreground">{t("appChat.realCustomerRoom")}</span>
+                )}
+              </div>
 
-            <Textarea
-              aria-label={t(mode === "admin" ? "appChat.placeholderAdmin" : "customerTest.placeholder")}
-              placeholder={t(mode === "admin" ? "appChat.placeholderAdmin" : "customerTest.placeholder")}
-              value={draft}
-              maxLength={mode === "admin" ? 5000 : 2000}
-              disabled={busy}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
-                  event.preventDefault();
-                  void submit();
-                }
-              }}
-              className="min-h-20 resize-none"
-            />
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <p className="text-xs text-muted-foreground">{t("customerTest.enterHint")}</p>
-              <Button type="submit" disabled={busy || !draft.trim()}>
-                <Send className="size-4" />
-                {t("customerTest.send")}
-              </Button>
+              <Textarea
+                aria-label={t(mode === "admin" ? "appChat.placeholderAdmin" : "customerTest.placeholder")}
+                placeholder={t(mode === "admin" ? "appChat.placeholderAdmin" : "customerTest.placeholder")}
+                value={draft}
+                rows={2}
+                maxLength={mode === "admin" ? 5000 : 2000}
+                disabled={busy}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+                    event.preventDefault();
+                    void submit();
+                  }
+                }}
+                className={composerTextareaClass}
+              />
+              <div className="mt-2 flex items-center justify-between gap-3 px-1">
+                <p className="text-xs text-muted-foreground">{t("customerTest.enterHint")}</p>
+                <SendButton disabled={busy || !draft.trim()} label={t("customerTest.send")} />
+              </div>
             </div>
           </form>
         </section>

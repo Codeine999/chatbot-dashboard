@@ -121,7 +121,7 @@ export const OwnerRegister = () => {
             transition={{ duration: 0.4 }}
           >
             <div className="text-center">
-              <h1 className="text-xl font-bold">{t(`register.step${step}.title`)}</h1>
+              <h1 className="text-xl font-semibold">{t(`register.step${step}.title`)}</h1>
               <p className="mt-2 text-gray-400 text-[13px]">
                 {t(`register.step${step}.subtitle`)}
                 <br />

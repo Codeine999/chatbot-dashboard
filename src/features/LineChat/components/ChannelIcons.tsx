@@ -39,3 +39,39 @@ export const ApplicationIcon = ({ className }: IconProps) => (
     <path d="M11 15.8h2" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
 );
+
+/** ไอคอน LINE แบบสี่เหลี่ยมมน ใช้ในชิปช่องทางของ Inbox */
+export const LineSquareIcon = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden>
+    <rect width="24" height="24" rx="7" fill="#06C755" />
+    <path
+      d="M12 5.8c-3.7 0-6.5 2.3-6.5 5.3 0 2.7 2.3 4.9 5.5 5.3.2 0 .5.2.5.4v.9l1.5-1.3c2-.3 3.5-1.7 3.5-3.4 0-3-2.8-5.2-6.5-5.2z"
+      fill="#fff"
+    />
+  </svg>
+);
+
+/** Messenger ที่ยังไม่เปิดใช้ — โทนม่วงอ่อนซีด */
+export const MessengerSoonIcon = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden>
+    <defs>
+      <linearGradient id="messenger-soon" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#b8bfe6" />
+        <stop offset="1" stopColor="#d3c4e3" />
+      </linearGradient>
+    </defs>
+    <circle cx="12" cy="12" r="12" fill="url(#messenger-soon)" />
+    <path d="M6.5 14.6l3.4-4.6 2.5 2.4 4.1-2.8-3.3 4.7-2.5-2.4z" fill="#fff" fillOpacity=".85" />
+  </svg>
+);
+
+/** TikTok ที่ยังไม่เปิดใช้ — เทาทึบ */
+export const TikTokSoonIcon = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden>
+    <rect width="24" height="24" rx="7" fill="#9b9b9b" />
+    <path
+      d="M13 6.2h1.9c.2 1.6 1.2 2.7 2.8 2.9v1.9c-1 0-1.9-.3-2.8-.8v3.9c0 2.2-1.7 3.9-3.9 3.9s-3.9-1.7-3.9-3.9 1.7-3.9 3.9-3.9h.5v2c-.2 0-.3-.1-.5-.1-1.1 0-1.9.8-1.9 1.9s.8 1.9 1.9 1.9 1.9-.8 1.9-1.9V6.2z"
+      fill="#fff"
+    />
+  </svg>
+);

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
+import { useAdminToolChatStore } from "@/stores/adminToolChat.store";
 
 type AdminToolMessage = {
   id: string;
@@ -59,7 +60,8 @@ function getMockAiResponse(input: string) {
 export function AdminToolChat() {
   const { t } = useTranslation("adminTool");
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useAdminToolChatStore((state) => state.isOpen);
+  const setIsOpen = useAdminToolChatStore((state) => state.setIsOpen);
   const [messages, setMessages] = useState<AdminToolMessage[]>(() => [
     { id: "welcome", role: "ai", content: i18n.t("adminTool:welcome") },
   ]);
@@ -68,7 +70,10 @@ export function AdminToolChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const isHiddenRoute =
-    location.pathname === "/" || location.pathname.startsWith("/ai-chat");
+    location.pathname === "/" ||
+    location.pathname.startsWith("/ai-chat") ||
+    // ปุ่มลอยทับปุ่มส่งของหน้าแชท LINE
+    location.pathname.startsWith("/chat/line");
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

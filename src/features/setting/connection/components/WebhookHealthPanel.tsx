@@ -44,7 +44,7 @@ export const WebhookHealthPanel = ({
   });
 
   return (
-    <div className="mt-5 rounded-xl border bg-card/60 p-4">
+    <div className="mt-5 rounded-xl border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-semibold text-normal">
           {t("connection.webhook.health.title")}
@@ -64,6 +64,7 @@ export const WebhookHealthPanel = ({
             type="button"
             variant="outline"
             size="sm"
+            className="rounded-[10px]"
             disabled={test.isPending}
             onClick={() => test.mutate()}
           >

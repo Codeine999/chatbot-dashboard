@@ -20,22 +20,24 @@ type Props = {
   onChange: (patch: Partial<UserListParams>) => void;
 };
 
+/** ช่องค้นหาพื้นเทาไม่มีขอบ และปุ่มเรียงมีขอบ ตามดีไซน์ */
 export const UserFilters = ({ params, showStatus, sorts, onChange }: Props) => {
   const { t } = useTranslation("users");
 
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-      <div className="relative min-w-0 lg:w-1/2">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-mini" />
+    <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="relative min-w-0 flex-1 basis-72">
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-mini" />
         <Input
           value={params.search}
           onChange={(event) => onChange({ search: event.target.value })}
           placeholder={t("searchPlaceholder")}
-          className="!h-11 bg-white pl-9 dark:bg-card"
+          aria-label={t("searchLabel")}
+          className="h-10 rounded-[10px] border-0 bg-muted pl-9 text-sm shadow-none focus-visible:ring-[3px]"
         />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         {showStatus && (
           <Select
             value={params.status}
@@ -43,7 +45,7 @@ export const UserFilters = ({ params, showStatus, sorts, onChange }: Props) => {
               onChange({ status: value as UserListParams["status"] })
             }
           >
-            <SelectTrigger className="!h-11 w-40">
+            <SelectTrigger className="h-10 w-40 rounded-[10px] text-[13px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -61,9 +63,12 @@ export const UserFilters = ({ params, showStatus, sorts, onChange }: Props) => {
           value={params.sort}
           onValueChange={(value) => onChange({ sort: value as UserSort })}
         >
-          <SelectTrigger className="!h-11 w-40">
-            <ArrowUpDown className="size-4 text-mini" />
-            <SelectValue />
+          <SelectTrigger className="h-10 w-auto gap-2 rounded-[10px] px-3 text-[13px] text-normal shadow-none">
+            <ArrowUpDown className="size-3.5 text-mini" />
+            <span>{t("sortBy")}:</span>
+            <span className="text-foreground">
+              <SelectValue />
+            </span>
           </SelectTrigger>
           <SelectContent>
             {sorts.map((sort) => (

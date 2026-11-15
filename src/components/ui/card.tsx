@@ -2,7 +2,22 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+type CardProps = React.ComponentProps<"div"> & {
+  /** flat = ไม่มีกรอบ/เงา/พื้น ใช้กับหน้าที่แบ่งส่วนด้วยช่องว่างแบบ ElevenLabs */
+  variant?: "default" | "flat"
+}
+
+function Card({ className, variant = "default", ...props }: CardProps) {
+  if (variant === "flat") {
+    return (
+      <div
+        data-slot="card"
+        className={cn("relative text-card-foreground", className)}
+        {...props}
+      />
+    )
+  }
+
   return (
     <div
       data-slot="card"
@@ -36,7 +51,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-title"
-      className={cn("leading-none font-medium text-normal text-md", className)}
+      className={cn("text-[17px] leading-[1.3] font-semibold tracking-[-0.01em] text-foreground", className)}
       {...props}
     />
   )
@@ -46,7 +61,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-mini text-xs whitespace-nowrap", className)}
+      className={cn("text-mini text-[13px] leading-[1.45] whitespace-nowrap", className)}
       {...props}
     />
   )

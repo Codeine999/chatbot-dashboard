@@ -12,10 +12,10 @@ import { useTranslation } from "react-i18next";
 
 const toneClass: Record<ActivityTone, string> = {
   green: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
-  indigo: "border border-border bg-transparent text-icons dark:border-transparent",
-  purple: "border border-border bg-transparent text-icons dark:border-transparent",
+  indigo: "bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400",
+  purple: "bg-orange-50 text-orange-500 dark:bg-orange-500/10 dark:text-orange-400",
   blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
-  orange: "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
+  orange: "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
 };
 
 const iconByType = {
@@ -75,39 +75,39 @@ const RecentActivityCard = () => {
   const activities = activityMock;
 
   return (
-    <Card className="flex h-[474px] flex-col p-6">
+    <Card variant="flat" className="flex flex-col">
       <div className="flex items-center justify-between">
-        <CardTitle>{t("activity.title")}</CardTitle>
-        <Button variant="ghost" className="text-sm font-medium text-icons">
+        <CardTitle className="text-lg font-semibold text-foreground">{t("activity.title")}</CardTitle>
+        <Button
+          variant="link"
+          className="h-auto p-0 text-sm font-medium text-foreground underline underline-offset-[3px]"
+        >
           {t("activity.viewAll")}
         </Button>
       </div>
 
-      <div className="mt-3 flex-1 space-y-1 overflow-y-auto">
+      <div className="mt-2 flex-1">
         {activities.map((activity) => {
           const Icon = iconByType[activity.type];
 
           return (
-            <div
-              key={activity.id}
-              className="flex items-center gap-3 rounded-xl px-1 py-2.5 transition hover:bg-hover"
-            >
+            <div key={activity.id} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-3 transition-colors hover:bg-accent/50">
               <div
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                className={`flex size-[34px] shrink-0 items-center justify-center rounded-full ${
                   toneClass[activity.tone]
                 }`}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="size-4" />
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-normal">
+                <p className="truncate text-sm font-medium text-foreground">
                   {activity.title}
                 </p>
-                <p className="truncate text-xs text-mini">{activity.description}</p>
+                <p className="truncate text-[13px] text-normal">{activity.description}</p>
               </div>
 
-              <span className="shrink-0 text-xs text-mini">{activity.time}</span>
+              <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{activity.time}</span>
             </div>
           );
         })}

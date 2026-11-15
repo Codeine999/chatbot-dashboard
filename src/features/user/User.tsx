@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Download, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/common/PageContainer";
-import { PageHeader } from "@/components/common/PageHeader";
 import { UserFilters } from "./components/UserFilters";
 import { UserPagination } from "./components/UserPagination";
 import { UserStatsCards } from "./components/UserStatsCards";
@@ -85,26 +83,42 @@ const User = () => {
     );
 
   return (
-    <PageContainer className="flex flex-col gap-5">
-      <PageHeader
-        title={t("title")}
-        subtitle={t("subtitle")}
-        actions={
-          <>
-            <Button variant="outline" className="gap-1.5">
-              <Download className="size-4" />
-              {t("common:actions.export")}
-            </Button>
+    <PageContainer className="mx-auto flex w-full max-w-[1320px] flex-col pt-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <header>
+          <p className="text-sm text-muted-foreground">{t("title")}</p>
+          <h1 className="mt-1.5 text-[30px] font-semibold leading-[1.2] tracking-[-0.025em] text-foreground">
+            {t("subtitle")}
+          </h1>
+        </header>
 
-            <Button className="gap-1.5">
-              <Plus className="size-4" />
-              {t("add")}
-            </Button>
-          </>
-        }
+        <div className="flex gap-2">
+          <Button variant="outline" className="h-10 gap-2 rounded-[10px] px-3.5 text-sm font-medium shadow-none">
+            <Download className="size-[15px]" />
+            {t("common:actions.export")}
+          </Button>
+
+          <Button className="h-10 gap-2 rounded-[10px] bg-foreground pl-3.5 pr-4 text-sm font-medium text-background shadow-none hover:bg-foreground/85">
+            <Plus className="size-[15px]" />
+            {t("add")}
+          </Button>
+        </div>
+      </div>
+
+      <UserStatsCards
+        counts={counts}
+        lineUsers={lineQuery.data?.items ?? []}
+        isLoading={isCountsLoading}
       />
 
-      <UserStatsCards counts={counts} isLoading={isCountsLoading} />
+      {/* แท็บคั่นด้วยเส้นล่าง ไม่มีกรอบการ์ด ตามดีไซน์ */}
+      <div className="mt-11">
+        <UserTabs
+          value={tab}
+          counts={counts && { registered: counts.registered, line: counts.line }}
+          onChange={handleTabChange}
+        />
+      </div>
 
       <UserFilters
         params={params}
@@ -113,16 +127,7 @@ const User = () => {
         onChange={patchParams}
       />
 
-      {/* พื้นขาวทึบ ไม่ใช้พื้นโปร่งของ Card เพื่อให้แถวในตารางอ่านง่าย */}
-      <Card className="overflow-hidden bg-white p-0 dark:bg-card">
-        {/* แท็บอยู่ในการ์ดเดียวกับตาราง จะได้อ่านว่ากำลังเลือกข้อมูลชุดไหนมาแสดง */}
-        <UserTabs
-          value={tab}
-          counts={counts && { registered: counts.registered, line: counts.line }}
-          className="px-4 pt-3"
-          onChange={handleTabChange}
-        />
-
+      <div className="mt-2">
         {tab === "registered" ? (
           <UserTable
             users={registeredUsers}
@@ -153,7 +158,7 @@ const User = () => {
           total={total}
           onPageChange={(next) => patchParams({ page: next })}
         />
-      </Card>
+      </div>
     </PageContainer>
   );
 };

@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Box, LoaderCircle } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { LoaderCircle } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -11,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuthUser } from "@/features/auth/store/auth.store";
-import { SettingField } from "./SettingField";
+import { SettingField, SettingSection } from "./SettingField";
 import {
   useAiProviderCatalog,
   useAiProviderSettings,
@@ -47,9 +46,16 @@ const ModelSelect = ({ value, catalog, disabled, loading, onChange }: ModelSelec
     disabled={disabled}
     onValueChange={(next) => onChange(fromValue(next))}
   >
-    <SelectTrigger className="w-full !h-10">
-      {/* ใน trigger แสดงเฉพาะชื่อรุ่น ส่วน provider อยู่เป็นหัวข้อในลิสต์ */}
-      <SelectValue>{value?.model}</SelectValue>
+    <SelectTrigger className="w-full !h-[42px] rounded-[10px]">
+      {/* ใน trigger แสดงชื่อ provider เป็นชิป + ชื่อรุ่น */}
+      {value && (
+        <span className="rounded-md border px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+          {catalog.find((item) => item.provider === value.provider)?.label ?? value.provider}
+        </span>
+      )}
+      <SelectValue className="flex-1 justify-start">
+        <span className="text-left font-mono text-[13px]">{value?.model}</span>
+      </SelectValue>
       {loading && <LoaderCircle className="ml-auto size-4 animate-spin text-mini" />}
     </SelectTrigger>
     <SelectContent>
@@ -109,42 +115,25 @@ export const AiModelCard = () => {
   };
 
   return (
-    <Card>
-      <CardContent className="p-5">
-        <div className="flex items-start gap-3">
-          <div className="rounded-xl bg-primary/10 p-2.5 text-primary">
-            <Box className="size-5" />
-          </div>
-          <div>
-            <p className="text-base font-semibold text-normal">
-              {t("aiSetting.model.title")}
-            </p>
-            <p className="mt-0.5 text-xs text-mini">
-              {canEdit
-                ? t("aiSetting.model.subtitle")
-                : t("aiSetting.model.readOnly")}
-            </p>
-          </div>
-        </div>
+    <SettingSection
+      title={t("aiSetting.model.title")}
+      description={canEdit ? t("aiSetting.model.subtitle") : t("aiSetting.model.readOnly")}
+    >
+      <SettingField
+        label={t("aiSetting.model.userModel")}
+        required
+        hint={t("aiSetting.model.userModelHint")}
+      >
+        {renderSelect("USER")}
+      </SettingField>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <SettingField
-            label={t("aiSetting.model.userModel")}
-            required
-            hint={t("aiSetting.model.userModelHint")}
-          >
-            {renderSelect("USER")}
-          </SettingField>
-
-          <SettingField
-            label={t("aiSetting.model.adminModel")}
-            required
-            hint={t("aiSetting.model.adminModelHint")}
-          >
-            {renderSelect("ADMIN")}
-          </SettingField>
-        </div>
-      </CardContent>
-    </Card>
+      <SettingField
+        label={t("aiSetting.model.adminModel")}
+        required
+        hint={t("aiSetting.model.adminModelHint")}
+      >
+        {renderSelect("ADMIN")}
+      </SettingField>
+    </SettingSection>
   );
 };

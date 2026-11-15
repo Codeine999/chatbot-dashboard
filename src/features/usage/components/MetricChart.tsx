@@ -68,6 +68,8 @@ const Y_AXIS_WIDTH = 52;
 type Props = {
   metric: MetricDef;
   points: AnalyticsPoint[];
+  /** false = ไม่วาด legend ใต้กราฟ (ผู้เรียกวางเอง) */
+  showLegend?: boolean;
 };
 
 /**
@@ -87,11 +89,17 @@ type Props = {
  * ใช้ series.color ตรง ๆ ไม่ใช่ var(--color-xxx) เพราะตัวหลังถูกประกาศไว้
  * ใน scope ของ ChartContainer เท่านั้น ออกมาข้างนอกแล้วจะไม่มีค่า
  */
-const ChartLegendRow = ({ metric }: { metric: MetricDef }) => {
+export const ChartLegendRow = ({
+  metric,
+  className = "mt-1 justify-center",
+}: {
+  metric: MetricDef;
+  className?: string;
+}) => {
   const { t } = useTranslation("usage");
 
   return (
-    <div className="mt-1 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5">
+    <div className={`flex flex-wrap items-center gap-x-4 gap-y-1.5 ${className}`}>
       {metric.series.map((series) => (
         <span
           key={series.key}
@@ -154,7 +162,7 @@ const ChartScroller = ({
   );
 };
 
-export const MetricChart = ({ metric, points }: Props) => {
+export const MetricChart = ({ metric, points, showLegend = true }: Props) => {
   const { t } = useTranslation("usage");
   const config = buildChartConfig(metric, t);
   const hasBreakdown = metric.series.length > 1;
@@ -313,7 +321,7 @@ export const MetricChart = ({ metric, points }: Props) => {
         </ChartContainer>
       </ChartScroller>
 
-      {hasBreakdown && <ChartLegendRow metric={metric} />}
+      {hasBreakdown && showLegend && <ChartLegendRow metric={metric} />}
     </div>
   );
 };

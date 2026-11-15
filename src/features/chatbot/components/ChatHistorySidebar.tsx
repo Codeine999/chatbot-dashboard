@@ -25,7 +25,7 @@ import { groupRoomsByDate } from "../utils/groupRooms";
 const INITIAL_VISIBLE_COUNT = 10;
 const LOAD_MORE_COUNT = 8;
 
-type ChatHistorySidebarProps = {
+export type ChatHistorySidebarProps = {
   rooms: AdminChatRoom[];
   activeId?: string;
   onSelect: (id: string) => void;
@@ -35,7 +35,6 @@ type ChatHistorySidebarProps = {
   isError?: boolean;
   onRetry?: () => void;
   deletingRoomId?: string;
-  mobile?: boolean;
 };
 
 const ChatHistorySidebar = ({
@@ -48,7 +47,6 @@ const ChatHistorySidebar = ({
   isError = false,
   onRetry,
   deletingRoomId,
-  mobile = false,
 }: ChatHistorySidebarProps) => {
   const { t } = useTranslation("chat");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT);
@@ -103,12 +101,7 @@ const ChatHistorySidebar = ({
   }, [activeId, sortedConversations, visibleCount]);
 
   return (
-    <aside
-      className={cn(
-        "w-[18rem] shrink-0 flex-col bg-inside",
-        mobile ? "flex h-full w-full" : "hidden border-r lg:flex"
-      )}
-    >
+    <div className="flex min-h-0 w-full flex-1 flex-col">
       {/* แถวเมนูบนสุด ไอคอนกับข้อความตรงแนวเดียวกันทุกแถว */}
       <div className="shrink-0 space-y-0.5 px-2 pt-3">
         {/* ไม่มีห้องที่เลือก = อยู่หน้าแชทใหม่ ไฮไลต์แถวนี้ */}
@@ -257,7 +250,7 @@ const ChatHistorySidebar = ({
           </button>
         )}
       </div>
-    </aside>
+    </div>
   );
 };
 

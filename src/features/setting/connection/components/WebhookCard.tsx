@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, ChevronDown, CircleAlert, Copy, Link2 } from "lucide-react";
+import { Check, ChevronDown, CircleAlert, Copy, } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -8,7 +8,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { IconTile } from "@/components/common/IconTile";
 import { DotBadge } from "@/components/common/DotBadge";
 import { cn } from "@/lib/utils";
 
@@ -53,16 +52,13 @@ export const WebhookCard = ({
   };
 
   return (
-    <Card className="p-6">
+    <Card variant="flat" className="border-t py-8 first:border-t-0 first:pt-0">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
-          <IconTile icon={Link2} tone="primary" size="md" />
-          <div>
-            <h2 className="text-base font-semibold text-normal">
-              {t("connection.webhook.title")}
-            </h2>
-            <p className="mt-0.5 text-sm text-mini">{t("connection.webhook.subtitle")}</p>
-          </div>
+        <div>
+          <h2 className="text-[15px] font-semibold text-foreground">
+            {t("connection.webhook.title")}
+          </h2>
+          <p className="mt-1.5 text-[13px] text-muted-foreground">{t("connection.webhook.subtitle")}</p>
         </div>
 
         <DotBadge tone={ready ? "success" : "neutral"}>
@@ -73,7 +69,7 @@ export const WebhookCard = ({
       <div className="mt-5 flex items-center gap-3">
         <code
           className={cn(
-            "min-w-0 flex-1 truncate rounded-xl bg-hover px-4 py-3 font-mono text-sm",
+            "min-w-0 flex-1 truncate rounded-[10px] border bg-muted/50 px-4 py-2.5 font-mono text-[13px]",
             url ? "text-normal" : "text-mini"
           )}
         >
@@ -82,7 +78,7 @@ export const WebhookCard = ({
         <Button
           type="button"
           variant="outline"
-          size="lg"
+          className="h-10 rounded-[10px]"
           disabled={!url}
           onClick={handleCopy}
         >
@@ -92,8 +88,8 @@ export const WebhookCard = ({
       </div>
 
       {needsManual && (
-        <div className="mt-4 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">
-          <CircleAlert className="size-4 shrink-0" />
+        <div className="mt-4 flex items-center gap-2 rounded-xl border border-0 bg-[#f5f2ef] px-4 py-2.5 text-[13px] text-normal dark:bg-white/5">
+          <CircleAlert className="size-4 shrink-0 text-[#c2410c]" />
           {t("connection.webhook.manualNeeded")}
         </div>
       )}
@@ -101,7 +97,7 @@ export const WebhookCard = ({
       {children}
 
       <Collapsible open={guideOpen} onOpenChange={setGuideOpen} className="mt-5">
-        <CollapsibleTrigger className="group flex w-full cursor-pointer items-center justify-between gap-2 text-left text-sm font-semibold text-normal">
+        <CollapsibleTrigger className="group flex w-full cursor-pointer items-center justify-between gap-2 text-left text-sm font-semibold text-foreground">
           {t("connection.webhook.afterCopy")}
           <ChevronDown className="size-4 shrink-0 text-mini transition-transform group-data-[state=open]:rotate-180" />
         </CollapsibleTrigger>
@@ -110,7 +106,7 @@ export const WebhookCard = ({
           <ol className="mt-3 flex flex-col gap-3">
             {STEP_KEYS.map((key, index) => (
               <li key={key} className="flex items-start gap-3 text-sm text-normal">
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-hover text-xs font-medium text-mini">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-medium text-muted-foreground">
                   {index + 1}
                 </span>
                 <span className="pt-0.5">{t(`connection.webhook.steps.${key}`)}</span>
@@ -118,8 +114,8 @@ export const WebhookCard = ({
             ))}
           </ol>
 
-          <div className="mt-5 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">
-            <CircleAlert className="size-4 shrink-0" />
+          <div className="mt-5 flex items-center gap-2 rounded-xl border border-0 bg-[#f5f2ef] px-4 py-2.5 text-[13px] text-normal dark:bg-white/5">
+            <CircleAlert className="size-4 shrink-0 text-[#c2410c]" />
             {t("connection.webhook.warning")}
           </div>
         </CollapsibleContent>
