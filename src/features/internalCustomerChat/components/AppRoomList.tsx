@@ -88,7 +88,7 @@ export function AppRoomList({
                   <span className="mt-0.5 flex items-center justify-between gap-2">
                     <span className="truncate text-[13px] text-muted-foreground">{room.lastMessage}</span>
                     {room.unreadCount > 0 && (
-                      <span className="flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-full bg-foreground px-1.5 text-[11px] font-medium text-background">
+                      <span className="flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-medium text-primary-foreground">
                         {room.unreadCount}
                       </span>
                     )}

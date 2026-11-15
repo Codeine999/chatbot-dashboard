@@ -206,7 +206,7 @@ export function AdminToolChat() {
                 <Button
                   onClick={() => sendMessage()}
                   disabled={!input.trim() || isTyping}
-                  className="h-9 rounded-xl bg-slate-950 text-white hover:bg-slate-800"
+                  className="h-9 rounded-xl bg-primary text-primary-foreground hover:bg-primary/85"
                 >
                   <Send className="h-4 w-4" />
                   {t("send")}
@@ -219,7 +219,7 @@ export function AdminToolChat() {
       <button
         type="button"
         onClick={() => setIsOpen((value) => !value)}
-        className={`pointer-events-auto ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-950 text-white shadow-xl ring-1 ring-slate-800 transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-slate-800 ${
+        className={`pointer-events-auto ml-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl transition-all duration-300 ease-out hover:-translate-y-0.5 hover:bg-primary/85 ${
           isOpen ? "rotate-90 scale-95" : "rotate-0 scale-100"
         }`}
         aria-label={t("open")}

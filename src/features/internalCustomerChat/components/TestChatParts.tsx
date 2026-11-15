@@ -74,7 +74,7 @@ export function SendButton({ disabled, label }: { disabled: boolean; label: stri
     <button
       type="submit"
       disabled={disabled}
-      className="inline-flex h-[38px] cursor-pointer items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+      className="inline-flex h-[38px] cursor-pointer items-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
     >
       <ArrowUp className="size-4" />
       {label}

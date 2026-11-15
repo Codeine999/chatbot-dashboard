@@ -27,7 +27,7 @@ export function ChannelTabs({ value, onChange }: Props) {
             onClick={() => onChange(tab.value)}
             className={`-mb-px h-11 cursor-pointer whitespace-nowrap border-b-2 text-sm transition-colors ${
               active
-                ? "border-foreground font-medium text-foreground"
+                ? "border-primary font-medium text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >

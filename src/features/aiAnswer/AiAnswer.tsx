@@ -157,7 +157,7 @@ export const AiAnswer = () => {
           </Button>
 
           <Button
-            className="h-10 gap-2 rounded-[10px] bg-foreground pl-3.5 pr-4 text-sm font-medium text-background hover:bg-foreground/85"
+            className="h-10 gap-2 rounded-[10px] bg-primary pl-3.5 pr-4 text-sm font-medium text-primary-foreground hover:bg-primary/85"
             onClick={handleAdd}
           >
             <Plus className="size-4" />
@@ -178,7 +178,7 @@ export const AiAnswer = () => {
                 aria-selected={tab === name}
                 className={`-mb-px h-11 shrink-0 cursor-pointer border-b-2 text-sm font-medium transition-colors ${
                   tab === name
-                    ? "border-foreground text-foreground"
+                    ? "border-primary text-foreground"
                     : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >

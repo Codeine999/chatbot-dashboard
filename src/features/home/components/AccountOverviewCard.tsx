@@ -61,8 +61,12 @@ const AccountOverviewCard = () => {
   const { t } = useTranslation("home");
   const user = useAuthUser();
   const { data: adminUsage } = useAdminUsage();
-  const creditLimit = adminUsage?.admin.limit ?? 0;
-  const creditRemaining = Math.max(creditLimit - (adminUsage?.admin.used ?? 0), 0);
+  // limit เป็น null = แอดมินคนนี้ไม่ได้ตั้งเพดาน ให้ใช้เครดิตคงเหลือของบริษัทแทน (ไม่ใช่ 0)
+  const creditLimit = adminUsage?.admin.limit ?? null;
+  const creditRemaining =
+    creditLimit === null
+      ? (adminUsage?.company.balance ?? 0)
+      : Math.max(creditLimit - (adminUsage?.admin.used ?? 0), 0);
   const {
     data: account,
     isLoading,
@@ -297,9 +301,11 @@ const AccountOverviewCard = () => {
             </div>
             <p className="mt-1 text-xl font-semibold tabular-nums text-foreground">
               {formatNumber(creditRemaining)}
-              <span className="ml-1 text-sm font-normal text-muted-foreground">
-                / {formatNumber(creditLimit)}
-              </span>
+              {creditLimit !== null && (
+                <span className="ml-1 text-sm font-normal text-muted-foreground">
+                  / {formatNumber(creditLimit)}
+                </span>
+              )}
             </p>
           </div>
         </>

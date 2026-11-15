@@ -53,7 +53,7 @@ export const AiConfigCard = ({
   const seg = (active: boolean) =>
     `h-[34px] flex-1 cursor-pointer rounded-lg border px-3 text-[13px] transition-colors ${
       active
-        ? "border-foreground bg-foreground font-medium text-background"
+        ? "border-primary bg-primary font-medium text-primary-foreground"
         : "text-normal hover:bg-muted"
     }`;
 

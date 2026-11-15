@@ -30,21 +30,22 @@ const statusOf = (error: unknown) => (axios.isAxiosError(error) ? error.response
 
 const newId = () => crypto.randomUUID();
 
-const readGuest = (): StoredAppGuest | undefined => {
+const MAX_GUESTS = 30;
+
+const readGuests = (): StoredAppGuest[] => {
   try {
-    const raw = sessionStorage.getItem(GUEST_KEY);
-    return raw ? (JSON.parse(raw) as StoredAppGuest) : undefined;
+    const parsed: unknown = JSON.parse(localStorage.getItem(GUEST_KEY) ?? "[]");
+    return Array.isArray(parsed) ? (parsed as StoredAppGuest[]) : [];
   } catch {
-    return undefined;
+    return [];
   }
 };
 
-const storeGuest = (guest?: StoredAppGuest) => {
+const writeGuests = (guests: StoredAppGuest[]) => {
   try {
-    if (guest) sessionStorage.setItem(GUEST_KEY, JSON.stringify(guest));
-    else sessionStorage.removeItem(GUEST_KEY);
+    localStorage.setItem(GUEST_KEY, JSON.stringify(guests.slice(-MAX_GUESTS)));
   } catch {
-    // sessionStorage ถูกบล็อก ก็แค่ refresh แล้วได้ลูกค้าจำลองคนใหม่
+    // localStorage ถูกบล็อก ก็แค่ refresh แล้วได้ลูกค้าจำลองคนใหม่
   }
 };
 
@@ -183,17 +184,27 @@ export function useAppBotMode(conversationId: string | undefined) {
 }
 
 /**
- * ลูกค้าจำลอง (guest) ของแท็บนี้ ใช้ App Message API จริงเหมือนแอปลูกค้า
- * - token เก็บใน sessionStorage (backend แสดงครั้งเดียว) ปิดแท็บแล้วได้ลูกค้าใหม่
+ * ลูกค้าจำลอง (guest) ใช้ App Message API จริงเหมือนแอปลูกค้า
+ * - token ของ guest ทุกห้องเก็บใน localStorage (backend แสดง token ครั้งเดียว) เลือกห้องไหนก็สลับไปใช้ token ของห้องนั้น
+ *   ห้องที่สร้างก่อนมีระบบนี้ไม่มี token เหลือ จึงส่งในนามลูกค้าไม่ได้
  * - ส่งทีละข้อความ; ล้มเหลวแบบ network/5xx เก็บ clientMessageId ไว้ retry โดยไม่ตัดเครดิตซ้ำ
  */
 export function useAppGuest(active: boolean) {
   const queryClient = useQueryClient();
-  const [stored, setStored] = useState(readGuest);
+  const [guests, setGuests] = useState(readGuests);
+  const [currentToken, setCurrentToken] = useState<string | undefined>(() => readGuests().at(-1)?.token);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [failedSend, setFailedSend] = useState<FailedAppSend>();
   const busyRef = useRef(false);
+
+  const stored = guests.find((guest) => guest.token === currentToken);
+
+  const updateGuests = useCallback((update: (list: StoredAppGuest[]) => StoredAppGuest[]) => {
+    const next = update(readGuests());
+    writeGuests(next);
+    setGuests(next);
+  }, []);
 
   const info = useQuery({
     queryKey: appChatKeys.guest(stored?.token),
@@ -203,16 +214,40 @@ export function useAppGuest(active: boolean) {
     refetchInterval: active ? 10_000 : false,
   });
 
-  const forget = useCallback(() => {
-    storeGuest(undefined);
-    setStored(undefined);
-  }, []);
+  // จำว่า token นี้เป็นเจ้าของห้องไหน เพื่อสลับกลับมาตอนเลือกห้อง
+  const knownConversationId = info.data?.conversationId ?? undefined;
+  useEffect(() => {
+    if (!stored || !knownConversationId || stored.conversationId === knownConversationId) return;
+    updateGuests((list) =>
+      list.map((guest) =>
+        guest.token === stored.token ? { ...guest, conversationId: knownConversationId } : guest
+      )
+    );
+  }, [stored, knownConversationId, updateGuests]);
 
-  // session หมดอายุ/ถูกเพิกถอน: ลืม token แล้วข้อความถัดไปจะสร้างลูกค้าใหม่
+  const forget = useCallback(
+    (token?: string) => {
+      if (!token) return;
+      updateGuests((list) => list.filter((guest) => guest.token !== token));
+      setCurrentToken((current) => (current === token ? undefined : current));
+    },
+    [updateGuests]
+  );
+
+  // session หมดอายุ/ถูกเพิกถอน: ลืม token นั้น ห้องกลับไปตอบได้เฉพาะในนามแอดมิน
   const infoStatus = statusOf(info.error);
   useEffect(() => {
-    if (infoStatus === 401) forget();
-  }, [infoStatus, forget]);
+    if (infoStatus === 401) forget(stored?.token);
+  }, [infoStatus, forget, stored?.token]);
+
+  /** เลือกห้อง: ถ้ามี token ของห้องนั้นให้สลับไปใช้ คืนค่า true */
+  const select = (conversationId: string | null) => {
+    const owner = conversationId ? guests.find((guest) => guest.conversationId === conversationId) : undefined;
+    setCurrentToken(owner?.token);
+    setError("");
+    setFailedSend(undefined);
+    return Boolean(owner);
+  };
 
   const send = async (text: string, retry?: FailedAppSend) => {
     const value = text.trim();
@@ -229,8 +264,9 @@ export function useAppGuest(active: boolean) {
       if (!guest) {
         const created = await appChatApi.createGuestSession(GUEST_DISPLAY_NAME);
         guest = { token: created.sessionToken, guestId: created.guestId };
-        storeGuest(guest);
-        setStored(guest);
+        const created_guest = guest;
+        updateGuests((list) => [...list, created_guest]);
+        setCurrentToken(guest.token);
       }
 
       await appChatApi.sendGuestMessage(guest.token, { clientMessageId, text: value });
@@ -249,7 +285,7 @@ export function useAppGuest(active: boolean) {
       return described.conversationId ?? undefined;
     } catch (failure) {
       const status = statusOf(failure);
-      if (status === 401) forget();
+      if (status === 401) forget(stored?.token);
       // 4xx ส่งซ้ำก็ไม่หาย เก็บไว้ retry เฉพาะ network/5xx
       else if (!status || status >= 500) setFailedSend({ clientMessageId, text: value });
       setError(getApiErrorMessage(failure, i18n.t("chat:appChat.sendError")));
@@ -260,14 +296,12 @@ export function useAppGuest(active: boolean) {
     }
   };
 
-  /** ลูกค้าจำลองคนใหม่: เพิกถอน session เดิม (ห้องเดิมยังอยู่ในรายการจนครบ retention) */
-  const restart = async () => {
+  /** ลูกค้าจำลองคนใหม่: ไม่เพิกถอน session เดิม เพื่อให้กลับมาส่งในนามลูกค้าของห้องเดิมได้ */
+  const restart = () => {
     if (busyRef.current) return;
-    const previous = stored;
-    forget();
+    setCurrentToken(undefined);
     setError("");
     setFailedSend(undefined);
-    if (previous) await appChatApi.revokeGuest(previous.token).catch(() => undefined);
   };
 
   return {
@@ -279,5 +313,6 @@ export function useAppGuest(active: boolean) {
     failedSend,
     send,
     restart,
+    select,
   };
 }

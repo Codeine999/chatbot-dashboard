@@ -52,7 +52,7 @@ const AiSettingEditor = ({ record, isDev }: { record?: AiSettingRecord; isDev: b
           {t("aiSetting.cancel")}
         </Button>
         <Button
-          className="h-[38px] rounded-[10px] bg-foreground text-background hover:bg-foreground/90"
+          className="h-[38px] rounded-[10px] bg-primary text-primary-foreground hover:bg-primary/90"
           disabled={!isDirty || !isValid || save.isPending}
           onClick={() => save.mutate(form)}
         >

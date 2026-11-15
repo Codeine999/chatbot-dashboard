@@ -114,7 +114,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
   };
 
   const startNewRoom = async () => {
-    await guest.restart();
+    guest.restart();
     setPicked(null);
     setSendAs("customer");
     setDraft("");
@@ -138,7 +138,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
             newDisabled={busy}
             onSelect={(id) => {
               setPicked(id);
-              setSendAs(id === guest.conversationId ? "customer" : "admin");
+              setSendAs(guest.select(id) ? "customer" : "admin");
             }}
             onNew={() => void startNewRoom()}
           />

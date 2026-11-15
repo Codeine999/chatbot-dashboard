@@ -87,6 +87,6 @@ export type AppGuestSendResult = {
 };
 
 /** guest ทดสอบที่เก็บไว้ใน sessionStorage (token แสดงครั้งเดียวตอนสร้าง) */
-export type StoredAppGuest = { token: string; guestId: string };
+export type StoredAppGuest = { token: string; guestId: string; conversationId?: string };
 
 export type FailedAppSend = { clientMessageId: string; text: string };

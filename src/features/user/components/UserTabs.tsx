@@ -36,7 +36,7 @@ export const UserTabs = ({
             onClick={() => onChange(tab)}
             className={cn(
               "-mb-px flex h-11 cursor-pointer items-center gap-2 whitespace-nowrap border-b-2 text-sm font-medium transition-colors",
-              isActive ? "border-foreground text-foreground" : "border-transparent text-mini hover:text-foreground"
+              isActive ? "border-primary text-foreground" : "border-transparent text-mini hover:text-foreground"
             )}
           >
             {t(`tab.${tab}`)}

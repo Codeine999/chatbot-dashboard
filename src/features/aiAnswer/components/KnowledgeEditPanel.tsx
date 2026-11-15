@@ -276,7 +276,7 @@ const KnowledgeEditPanel = ({
                 <Button
                   onClick={() => question.trim() && retrieval.mutate(question.trim())}
                   disabled={!question.trim() || retrieval.isPending}
-                  className="h-10 rounded-[10px] bg-foreground px-4 text-background hover:bg-foreground/85"
+                  className="h-10 rounded-[10px] bg-primary px-4 text-primary-foreground hover:bg-primary/85"
                 >
                   {t("panel.test")}
                 </Button>
@@ -325,7 +325,7 @@ const KnowledgeEditPanel = ({
         <Button
           disabled={!canPublish || isSaving}
           onClick={() => onPublish(draft)}
-          className="h-10 rounded-[10px] bg-foreground px-[18px] text-sm font-medium text-background hover:bg-foreground/85"
+          className="h-10 rounded-[10px] bg-primary px-[18px] text-sm font-medium text-primary-foreground hover:bg-primary/85"
         >
           {isSaving ? t("panel.publishing") : t("panel.publish")}
         </Button>

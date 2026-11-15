@@ -21,7 +21,7 @@ import { categoryDot, truncate } from "../utils/table";
 import type { KnowledgeItem } from "../type/knowledge.type";
 
 const checkboxClass =
-  "size-4 rounded-[4px] data-[state=checked]:border-foreground data-[state=checked]:bg-foreground data-[state=checked]:text-background";
+  "size-4 rounded-[4px] data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground";
 
 type Props = {
   items: KnowledgeItem[];
@@ -174,7 +174,7 @@ const KnowledgeTable = ({
                   <span className="w-5 font-medium tabular-nums text-foreground">{item.priority}</span>
                   <span className="h-1 w-12 overflow-hidden rounded-sm bg-muted">
                     <span
-                      className="block h-1 bg-foreground"
+                      className="block h-1 bg-primary"
                       style={{ width: `${Math.min(100, Math.max(0, item.priority))}%` }}
                     />
                   </span>

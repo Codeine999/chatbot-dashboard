@@ -98,7 +98,7 @@ const User = () => {
             {t("common:actions.export")}
           </Button>
 
-          <Button className="h-10 gap-2 rounded-[10px] bg-foreground pl-3.5 pr-4 text-sm font-medium text-background shadow-none hover:bg-foreground/85">
+          <Button className="h-10 gap-2 rounded-[10px] bg-primary pl-3.5 pr-4 text-sm font-medium text-primary-foreground shadow-none hover:bg-primary/85">
             <Plus className="size-[15px]" />
             {t("add")}
           </Button>
