@@ -8,6 +8,7 @@ import {
   useAppConversations,
   useAppGuest,
   useAppMessages,
+  useMarkAppConversationRead,
   usePollAppMessages,
   useSendAppAdminMessage,
 } from "../hooks/useAppChat";
@@ -60,6 +61,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
   const endRef = useRef<HTMLDivElement>(null);
 
   const room = rooms.data?.find((item) => item.id === roomId);
+  useMarkAppConversationRead(roomId, room?.unreadCount, active && messagesQuery.isSuccess);
   const isMine = Boolean(roomId) && roomId === guest.conversationId;
   const canCustomer = !roomId || isMine;
   const canAdmin = Boolean(roomId);

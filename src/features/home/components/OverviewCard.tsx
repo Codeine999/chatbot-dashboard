@@ -121,7 +121,7 @@ const OverviewCard = () => {
                         <div className="flex items-end justify-between gap-4">
                             <span
                                 className={cn(
-                                    "text-[32px] font-semibold leading-none tracking-[-0.025em] tabular-nums",
+                                    "text-[28px] font-semibold leading-none tracking-[-0.025em] tabular-nums",
                                     empty ? "text-[#b5b0aa]" : "text-foreground"
                                 )}
                             >

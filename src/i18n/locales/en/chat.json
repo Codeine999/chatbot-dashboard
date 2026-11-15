@@ -152,14 +152,19 @@
         },
         "admin": {
           "label": "Admin handling",
-          "hint": "Turns on automatically when you reply. The bot stays quiet for 10 minutes.",
-          "activeHint": "You replied, so the bot is quiet. It resumes in about {{minutes}} min."
+          "hint": "The bot stays quiet for a while so you can reply, then resumes. Also turns on automatically when you reply.",
+          "activeHint": "The bot is quiet while an admin handles this chat. It resumes in about {{minutes}} min (select again to extend)."
         },
         "paused": {
           "label": "Paused",
-          "hint": "Stop the bot in this chat until you turn it back on."
+          "hint": "Stop the bot in this chat until you turn it back on.",
+          "activeHint": "The bot is paused until {{date}} or until you turn it back on."
         }
-      }
+      },
+      "held": "Set to admin handling. The bot is quiet for now",
+      "holdFailed": "Could not set admin handling",
+      "paused": "Bot paused in this chat",
+      "pauseFailed": "Could not pause the bot"
     },
     "inbox": "Inbox",
     "inboxSubtitle": "All channels in one inbox",

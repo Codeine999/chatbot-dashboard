@@ -69,3 +69,10 @@ export type LineChatHistory = {
 export type BotMode = "auto" | "admin" | "paused";
 
 export type ResumeBotResponse = { status: string };
+
+/** ผลของ admin-hold / pause-bot: ค่าใหม่ของห้อง เอาไปแก้ cache รายการห้องได้ทันที */
+export type BotModeResponse = {
+  status?: string;
+  botMode: BotMode;
+  botMuteUntil: string | null;
+};

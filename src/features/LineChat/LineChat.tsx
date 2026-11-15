@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   useConversationMessages,
   useConversations,
+  useMarkLineConversationRead,
   usePollConversationMessages,
   useSendLineMessage,
 } from "./hooks/useLineChat";
@@ -451,6 +452,12 @@ export const LineChat = () => {
   const messagesQuery = useConversationMessages(selectedConversation?.id);
   const sendMessageMutation = useSendLineMessage(selectedConversation?.id);
   usePollConversationMessages(selectedConversation?.id);
+  // endpoint /line/... ใช้ได้เฉพาะห้อง LINE ช่องทางอื่นยังไม่เรียก
+  useMarkLineConversationRead(
+    selectedConversation?.id,
+    (selectedConversation?.platform ?? "line") === "line" ? selectedConversation?.unreadCount : 0,
+    messagesQuery.isSuccess
+  );
 
   const messages = useMemo(() => {
     const pages = messagesQuery.data?.pages ?? [];

@@ -11,19 +11,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { useResumeBot } from "../hooks/useLineChat";
+import { formatDate, formatTime } from "@/i18n/format";
+import { useChangeBotMode } from "../hooks/useLineChat";
 import type { BotMode, LineConversation } from "../types/lineChat.type";
 
-const MODES: {
-  id: BotMode;
-  icon: React.ElementType;
-  dot: string;
-  /** true = ตั้งจากหน้าจอนี้ไม่ได้ เพราะ backend ยังไม่มี endpoint */
-  unavailable: boolean;
-}[] = [
-  { id: "auto", icon: Bot, dot: "bg-emerald-500", unavailable: false },
-  { id: "admin", icon: UserRound, dot: "bg-blue-500", unavailable: true },
-  { id: "paused", icon: PauseCircle, dot: "bg-slate-400", unavailable: true },
+const MODES: { id: BotMode; icon: React.ElementType; dot: string }[] = [
+  { id: "auto", icon: Bot, dot: "bg-emerald-500" },
+  { id: "admin", icon: UserRound, dot: "bg-blue-500" },
+  { id: "paused", icon: PauseCircle, dot: "bg-slate-400" },
 ];
 
 /** นับถอยหลังต้องขยับเอง ไม่งั้นค่าค้างและไม่กลับเป็น auto ตอนครบเวลา */
@@ -44,7 +39,7 @@ type Props = {
 
 export const BotModeSelect = ({ conversation }: Props) => {
   const { t } = useTranslation("chat");
-  const resumeBot = useResumeBot();
+  const changeMode = useChangeBotMode();
   const now = useNow(15_000);
 
   const mode = conversation.botMode;
@@ -64,9 +59,9 @@ export const BotModeSelect = ({ conversation }: Props) => {
           variant="outline"
           size="sm"
           className="h-[38px] gap-2 rounded-[10px] px-3 text-[13px] font-medium shadow-none"
-          disabled={resumeBot.isPending}
+          disabled={changeMode.isPending}
         >
-          {resumeBot.isPending ? (
+          {changeMode.isPending ? (
             <Loader2 className="size-3.5 animate-spin" />
           ) : (
             <span className={cn("size-[7px] rounded-full ring-[3px] ring-black/5", current.dot)} />
@@ -90,32 +85,33 @@ export const BotModeSelect = ({ conversation }: Props) => {
         {MODES.map((item) => {
           const Icon = item.icon;
           const isCurrent = item.id === mode;
-          // มีเฉพาะ "auto" ที่กดเลือกได้ และต้องมีอะไรให้ปลดจริง
-          const disabled = item.unavailable || (item.id === "auto" && !canResume);
+          // auto ต้องมีอะไรให้ปลดจริง, paused ที่พักอยู่แล้วไม่ต้องกดซ้ำ
+          // admin กดซ้ำได้: ต่อเวลาเงียบใหม่
+          const disabled =
+            changeMode.isPending ||
+            (item.id === "auto" && !canResume) ||
+            (item.id === "paused" && isCurrent);
 
           return (
             <DropdownMenuItem
               key={item.id}
               disabled={disabled}
-              onSelect={() => {
-                if (item.id === "auto" && canResume) resumeBot.mutate(conversation.id);
-              }}
+              onSelect={() => changeMode.mutate({ conversationId: conversation.id, mode: item.id })}
               className="cursor-pointer items-start gap-3 py-2.5"
             >
               <Icon className="mt-0.5 size-4 shrink-0 text-mini" />
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2 text-sm font-medium text-normal">
                   {t(`line.bot.mode.${item.id}.label`)}
-                  {item.id === "paused" && (
-                    <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-mini">
-                      {t("line.soon")}
-                    </span>
-                  )}
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-mini">
                   {item.id === "admin" && isCurrent
                     ? t("line.bot.mode.admin.activeHint", { minutes: minutesLeft })
-                    : item.id === "auto" && canResume
+                    : item.id === "paused" && isCurrent && conversation.botMuteUntil
+                      ? t("line.bot.mode.paused.activeHint", {
+                          date: `${formatDate(conversation.botMuteUntil)} ${formatTime(conversation.botMuteUntil)}`,
+                        })
+                      : item.id === "auto" && canResume
                       ? t("line.bot.mode.auto.resumeHint")
                       : t(`line.bot.mode.${item.id}.hint`)}
                 </p>

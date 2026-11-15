@@ -156,6 +156,39 @@ export function useSendAppAdminMessage(conversationId: string | undefined) {
   });
 }
 
+/** เคลียร์ unreadCount ของห้องที่แอดมินเปิดอยู่ หลังโหลดข้อความแล้ว และเมื่อมีข้อความใหม่เข้ามาขณะเปิดค้างไว้ */
+export function useMarkAppConversationRead(
+  conversationId: string | undefined,
+  unreadCount: number | undefined,
+  ready: boolean
+) {
+  const queryClient = useQueryClient();
+  const sentRef = useRef("");
+  const [retryTick, setRetryTick] = useState(0);
+
+  useEffect(() => {
+    if (!conversationId) return;
+    // กลับเป็น 0 แล้ว: ถ้ามีข้อความใหม่จนได้ค่าเดิมซ้ำ (เช่น 2 -> 0 -> 2) ต้องยิงใหม่ได้
+    if (!unreadCount) {
+      sentRef.current = "";
+      return;
+    }
+    if (!ready) return;
+    const key = `${conversationId}:${unreadCount}`;
+    if (sentRef.current === key) return;
+    sentRef.current = key;
+
+    appChatApi
+      .markRead(conversationId)
+      .then(() => queryClient.invalidateQueries({ queryKey: appChatKeys.conversations }))
+      .catch(() => {
+        // ลองใหม่ใน 5 วินาที (deps ไม่เปลี่ยน effect จะไม่รันเองถ้าไม่ขยับ tick)
+        sentRef.current = "";
+        window.setTimeout(() => setRetryTick((tick) => tick + 1), 5000);
+      });
+  }, [conversationId, unreadCount, ready, queryClient, retryTick]);
+}
+
 export function useAppBotMode(conversationId: string | undefined) {
   const queryClient = useQueryClient();
 
@@ -201,9 +234,11 @@ export function useAppGuest(active: boolean) {
   const stored = guests.find((guest) => guest.token === currentToken);
 
   const updateGuests = useCallback((update: (list: StoredAppGuest[]) => StoredAppGuest[]) => {
-    const next = update(readGuests());
-    writeGuests(next);
-    setGuests(next);
+    setGuests((previous) => {
+      const next = update(previous);
+      writeGuests(next);
+      return next;
+    });
   }, []);
 
   const info = useQuery({

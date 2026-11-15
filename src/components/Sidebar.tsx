@@ -270,7 +270,8 @@ const SidebarNavigation = () => {
           <SidebarGroupLabel className={groupLabelClass}>{t("group.build")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
-              {/* เมนูแยกเดี่ยว ไม่อยู่ใน dropdown AI Work Flow */}
+              {/* เมนูแยกเดี่ยว ไม่อยู่ใน dropdown AI Work Flow (ปิดไว้ชั่วคราว เปลี่ยน SHOW_AI_HELP_MENU เป็น true เพื่อเปิด) */}
+              {SHOW_AI_HELP_MENU && (
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
@@ -283,6 +284,7 @@ const SidebarNavigation = () => {
                   </NavLink>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              )}
 
               <Collapsible asChild className="group/collapsible">
                 <SidebarMenuItem>
@@ -323,5 +325,8 @@ const SidebarNavigation = () => {
     </SidebarRoot>
   );
 };
+
+/** เมนู "ให้ AI ช่วยคุณ" ปิดไว้ก่อน */
+const SHOW_AI_HELP_MENU = false;
 
 export default SidebarNavigation;

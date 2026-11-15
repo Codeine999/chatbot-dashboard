@@ -65,6 +65,12 @@ export const appChatApi = {
     return res.data;
   },
 
+  /** รีเซ็ต unreadCount ของห้องเป็น 0 (backend ไม่รีเซ็ตให้เอง เรียกซ้ำได้) */
+  markRead: async (conversationId: string): Promise<{ id: string; unreadCount: 0 }> => {
+    const res = await api.post<{ id: string; unreadCount: 0 }>(`${ADMIN_BASE}/${conversationId}/read`);
+    return res.data;
+  },
+
   pauseBot: async (conversationId: string): Promise<{ botMode: "paused" }> => {
     const res = await api.post<{ botMode: "paused" }>(`${ADMIN_BASE}/${conversationId}/pause-bot`);
     return res.data;

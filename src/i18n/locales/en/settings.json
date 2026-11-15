@@ -28,6 +28,15 @@
     "toast": {
       "cleared": "Sessions cleared",
       "failed": "Failed to clear sessions"
+    },
+    "pipeline": {
+      "title": "AI replies",
+      "label": "Turn off AI replies",
+      "description": "Turn on to stop replying to customers (messages are still saved). Turn off to reply as normal.",
+      "paused": "AI replies turned off",
+      "resumed": "AI replies turned on",
+      "failed": "Failed to change AI status",
+      "loadFailed": "Failed to load AI status"
     }
   },
   "aiSetting": {

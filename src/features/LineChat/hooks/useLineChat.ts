@@ -4,12 +4,12 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import i18n from "@/i18n";
 import { getApiErrorMessage } from "@/api/api";
 import { lineChatApi } from "../services/lineChat.service";
-import type { LineChatHistory } from "../types/lineChat.type";
+import type { BotMode, LineChatHistory, LineConversation } from "../types/lineChat.type";
 
 const POLL_INTERVAL_MS = 2000;
 const MESSAGE_PAGE_SIZE = 20;
@@ -119,6 +119,7 @@ export function useSendLineMessage(conversationId?: string) {
       lineChatApi.sendMessage({
         conversationId: conversationId ?? "",
         text,
+        clientRequestId: crypto.randomUUID(),
       }),
     onSuccess: (message) => {
       queryClient.setQueryData(
@@ -139,18 +140,79 @@ export function useSendLineMessage(conversationId?: string) {
   });
 }
 
-export function useResumeBot() {
+const BOT_MODE_TOAST: Record<BotMode, { ok: string; failed: string }> = {
+  auto: { ok: "chat:line.bot.resumed", failed: "chat:line.bot.resumeFailed" },
+  admin: { ok: "chat:line.bot.held", failed: "chat:line.bot.holdFailed" },
+  paused: { ok: "chat:line.bot.paused", failed: "chat:line.bot.pauseFailed" },
+};
+
+/** เปลี่ยนโหมดบอทของห้อง: auto = resume-bot, admin = admin-hold, paused = pause-bot */
+export function useChangeBotMode() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (conversationId: string) => lineChatApi.resumeBot(conversationId),
-    onSuccess: () => {
-      // สถานะห้อง (open) เปลี่ยนที่ backend จึงต้องโหลดรายการห้องใหม่ทันที ไม่รอ poll รอบถัดไป
-      queryClient.invalidateQueries({ queryKey: ["line-conversations"] });
-      toast.success(i18n.t("chat:line.bot.resumed"));
+    mutationFn: async ({ conversationId, mode }: { conversationId: string; mode: BotMode }) => {
+      if (mode === "admin") return lineChatApi.adminHold(conversationId);
+      if (mode === "paused") return lineChatApi.pauseBot(conversationId);
+      // resume-bot ตอบแค่ status ให้ถือว่ากลับเป็น auto
+      const res = await lineChatApi.resumeBot(conversationId);
+      return { status: res.status, botMode: "auto" as const, botMuteUntil: null };
     },
-    onError: (error) => {
-      toast.error(getApiErrorMessage(error, i18n.t("chat:line.bot.resumeFailed")));
+    onSuccess: (result, { conversationId, mode }) => {
+      // แก้ห้องใน cache ทันที ไม่รอ poll รอบถัดไป (getConversations คืน array เสมอ)
+      queryClient.setQueryData(["line-conversations"], (current: unknown) => {
+        const patch = (room: LineConversation) =>
+          room.id === conversationId
+            ? {
+                ...room,
+                botMode: result.botMode,
+                botMuteUntil: result.botMuteUntil,
+                status: result.status ?? room.status,
+              }
+            : room;
+        return Array.isArray(current) ? current.map(patch) : current;
+      });
+      void queryClient.invalidateQueries({ queryKey: ["line-conversations"] });
+      toast.success(i18n.t(BOT_MODE_TOAST[mode].ok));
+    },
+    onError: (error, { mode }) => {
+      toast.error(getApiErrorMessage(error, i18n.t(BOT_MODE_TOAST[mode].failed)));
     },
   });
+}
+
+/**
+ * เคลียร์ unreadCount ของห้องที่แอดมินเปิดอยู่ หลังโหลดข้อความแล้ว
+ * และเคลียร์อีกครั้งเมื่อมีข้อความใหม่เข้ามาขณะเปิดห้องค้างไว้ (ยิงครั้งเดียวต่อค่า unreadCount)
+ */
+export function useMarkLineConversationRead(
+  conversationId: string | undefined,
+  unreadCount: number | undefined,
+  ready: boolean
+) {
+  const queryClient = useQueryClient();
+  const sentRef = useRef("");
+  const [retryTick, setRetryTick] = useState(0);
+
+  useEffect(() => {
+    if (!conversationId) return;
+    // กลับเป็น 0 แล้ว: ถ้ามีข้อความใหม่จนได้ค่าเดิมซ้ำ (เช่น 2 -> 0 -> 2) ต้องยิงใหม่ได้
+    if (!unreadCount) {
+      sentRef.current = "";
+      return;
+    }
+    if (!ready) return;
+    const key = `${conversationId}:${unreadCount}`;
+    if (sentRef.current === key) return;
+    sentRef.current = key;
+
+    lineChatApi
+      .markRead(conversationId)
+      .then(() => queryClient.invalidateQueries({ queryKey: ["line-conversations"] }))
+      .catch(() => {
+        // ลองใหม่ใน 5 วินาที (deps ไม่เปลี่ยน effect จะไม่รันเองถ้าไม่ขยับ tick)
+        sentRef.current = "";
+        window.setTimeout(() => setRetryTick((tick) => tick + 1), 5000);
+      });
+  }, [conversationId, unreadCount, ready, queryClient, retryTick]);
 }

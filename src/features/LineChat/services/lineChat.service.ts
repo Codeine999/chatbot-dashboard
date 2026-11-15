@@ -1,5 +1,6 @@
 import { api } from "@/api/api";
 import type {
+  BotModeResponse,
   LineChatHistory,
   LineConversation,
   ResumeBotResponse,
@@ -61,18 +62,45 @@ export const lineChatApi = {
     return toArray(res.data);
   },
 
+  /** clientRequestId (UUID) กันส่งซ้ำ: ส่ง id เดิมซ้ำ backend ไม่ส่งข้อความซ้ำ */
   sendMessage: async ({
     conversationId,
     text,
+    clientRequestId,
   }: {
     conversationId: string;
     text: string;
+    clientRequestId: string;
   }): Promise<LineChatHistory> => {
     const res = await api.post<LineChatHistory>(
       `/line/conversations/${conversationId}/messages`,
-      { text }
+      { text, clientRequestId }
     );
 
+    return res.data;
+  },
+
+  /** รีเซ็ต unreadCount ของห้องเป็น 0 (backend ไม่รีเซ็ตให้เอง เรียกซ้ำได้) */
+  markRead: async (conversationId: string): Promise<{ id: string; unreadCount: 0 }> => {
+    const res = await api.post<{ id: string; unreadCount: 0 }>(
+      `/line/conversations/${conversationId}/read`
+    );
+    return res.data;
+  },
+
+  /** แอดมินดูแลอยู่: บอทเงียบชั่วคราว (botMuteUntil) แล้วกลับมาตอบเอง */
+  adminHold: async (conversationId: string): Promise<BotModeResponse> => {
+    const res = await api.post<BotModeResponse>(
+      `/line/conversations/${conversationId}/admin-hold`
+    );
+    return res.data;
+  },
+
+  /** พักบอท: หยุดตอบในห้องนี้จนกว่าจะเปิดกลับ หรือถึง botMuteUntil */
+  pauseBot: async (conversationId: string): Promise<BotModeResponse> => {
+    const res = await api.post<BotModeResponse>(
+      `/line/conversations/${conversationId}/pause-bot`
+    );
     return res.data;
   },
 
