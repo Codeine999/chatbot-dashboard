@@ -5,12 +5,12 @@ export type UnansweredQuestion = {
   meta: string;
 };
 
-/** ข้อมูลตัวอย่างเมื่อยังไม่มี API คำถามที่ AI ตอบไม่ได้ */
+/** ข้อมูลตัวอย่างทั้งหมดของการ์ด (ยังไม่มี API) รูปแบบ: ส่งโดย … · คำถาม … ? */
 export const UNANSWERED_QUESTIONS_MOCK: UnansweredQuestion[] = [
-  { id: "mock-1", question: "ขอข้อมูล นวดกดจุด", meta: "Nampun · ส่งต่อแอดมิน 14:55" },
-  { id: "mock-2", question: "ปวดเมื่อยทำยังไง", meta: "Nampun · ส่งต่อแอดมิน 14:51" },
-  { id: "mock-3", question: "นวดออฟฟิศซินโดรมราคาเท่าไหร่", meta: "Somchai · ส่งต่อแอดมิน 14:42" },
-  { id: "mock-4", question: "จองคิววันเสาร์ได้ไหม", meta: "Malee · ส่งต่อแอดมิน 14:30" },
+  { id: "mock-1", question: "คำถาม ... ?", meta: "ส่งโดย ... · ส่งต่อแอดมิน ..:.." },
+  { id: "mock-2", question: "คำถาม ... ?", meta: "ส่งโดย ... · ส่งต่อแอดมิน ..:.." },
+  { id: "mock-3", question: "คำถาม ... ?", meta: "ส่งโดย ... · ส่งต่อแอดมิน ..:.." },
+  { id: "mock-4", question: "คำถาม ... ?", meta: "ส่งโดย ... · ส่งต่อแอดมิน ..:.." },
 ];
 
 /** จำนวนรายการที่แสดงในการ์ดได้ */

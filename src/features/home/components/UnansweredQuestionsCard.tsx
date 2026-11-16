@@ -8,14 +8,10 @@ import {
   type UnansweredQuestion,
 } from "../mock/unansweredQuestions.mock";
 
-type Props = {
-  items?: UnansweredQuestion[];
-};
-
-/** คำถามที่ AI ตอบไม่ได้ กดเพิ่มเป็นความรู้ให้ AI ใช้ตอบได้ในครั้งถัดไป ไม่มีข้อมูลจริงจะใช้ข้อมูลตัวอย่าง */
-const UnansweredQuestionsCard = ({ items }: Props) => {
+/** คำถามที่ AI ตอบไม่ได้ กดเพิ่มเป็นความรู้ให้ AI ใช้ตอบได้ในครั้งถัดไป (ตอนนี้แสดงข้อมูล mock ทั้งหมด) */
+const UnansweredQuestionsCard = () => {
   const { t } = useTranslation("home");
-  const list = (items?.length ? items : UNANSWERED_QUESTIONS_MOCK).slice(0, UNANSWERED_QUESTIONS_LIMIT);
+  const list: UnansweredQuestion[] = UNANSWERED_QUESTIONS_MOCK.slice(0, UNANSWERED_QUESTIONS_LIMIT);
 
   return (
     <section className="min-w-0">
