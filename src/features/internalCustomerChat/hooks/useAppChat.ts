@@ -15,6 +15,7 @@ import type { AppHistoryMessage, FailedAppSend, StoredAppGuest } from "../type";
 
 const POLL_INTERVAL_MS = 2500;
 const PAGE_SIZE = 30;
+const ROOM_PAGE_SIZE = 20;
 const GUEST_KEY = "internal-customer-chat:app-guest";
 const GUEST_DISPLAY_NAME = "Dashboard test";
 
@@ -51,11 +52,23 @@ const writeGuests = (guests: StoredAppGuest[]) => {
 
 /** ห้องแชท App ของบริษัท (waiting_admin ขึ้นก่อน เรียงจาก backend แล้ว) */
 export function useAppConversations(enabled: boolean) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: appChatKeys.conversations,
-    queryFn: appChatApi.getConversations,
     enabled,
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) =>
+      appChatApi.getConversations({ limit: ROOM_PAGE_SIZE, cursor: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+    // poll จะดึงทุกหน้าที่โหลดไว้ใหม่ตามลำดับ รายการจึงไม่ค้างเก่า
     refetchInterval: enabled ? POLL_INTERVAL_MS : false,
+    // ห้องที่ขยับขึ้นมาระหว่างโหลดหน้าถัดไปอาจซ้ำข้ามหน้า จึงตัดซ้ำตาม id
+    select: (data) => {
+      const seen = new Set<string>();
+      const rooms = data.pages
+        .flatMap((page) => page.items)
+        .filter((room) => (seen.has(room.id) ? false : (seen.add(room.id), true)));
+      return { rooms, pageCount: data.pages.length };
+    },
   });
 }
 

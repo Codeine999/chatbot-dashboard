@@ -2,6 +2,7 @@ import axios from "axios";
 import { api } from "@/api/api";
 import type {
   AppConversation,
+  AppConversationPage,
   AppGuestInfo,
   AppGuestSendBody,
   AppGuestSendResult,
@@ -32,9 +33,19 @@ type GetMessagesParams = {
 
 export const appChatApi = {
   // --- แอดมิน: ห้องแชทและประวัติ ---
-  getConversations: async (): Promise<AppConversation[]> => {
-    const res = await api.get<AppConversation[]>(ADMIN_BASE);
-    return res.data;
+  /**
+   * ต้องส่ง limit เสมอ: ถ้าไม่ส่ง query เลย backend จะคืน array เดิมที่ไม่มี botMode และไม่แบ่งหน้า
+   * ถ้าได้ array มาก็ถือเป็นหน้าเดียว (กันกรณี backend รุ่นเก่า)
+   */
+  getConversations: async ({
+    limit = 20,
+    cursor,
+  }: { limit?: number; cursor?: string } = {}): Promise<AppConversationPage> => {
+    const res = await api.get<AppConversationPage | AppConversation[]>(ADMIN_BASE, {
+      params: { limit, cursor },
+    });
+    if (Array.isArray(res.data)) return { items: res.data, nextCursor: null };
+    return { items: res.data.items ?? [], nextCursor: res.data.nextCursor ?? null };
   },
 
   getMessages: async ({

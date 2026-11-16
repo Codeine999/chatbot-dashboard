@@ -60,7 +60,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
   const [pending, setPending] = useState<Pending>();
   const endRef = useRef<HTMLDivElement>(null);
 
-  const room = rooms.data?.find((item) => item.id === roomId);
+  const room = rooms.data?.rooms.find((item) => item.id === roomId);
   useMarkAppConversationRead(roomId, room?.unreadCount, active && messagesQuery.isSuccess);
   const isMine = Boolean(roomId) && roomId === guest.conversationId;
   const canCustomer = !roomId || isMine;
@@ -132,7 +132,10 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
         <aside className="flex min-h-0 flex-col border-b pb-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-5">
           {tabs}
           <AppRoomList
-            rooms={rooms.data}
+            rooms={rooms.data?.rooms}
+            hasMore={Boolean(rooms.hasNextPage)}
+            isLoadingMore={rooms.isFetchingNextPage}
+            onLoadMore={() => void rooms.fetchNextPage()}
             isLoading={rooms.isLoading}
             error={rooms.isError}
             selectedId={roomId}

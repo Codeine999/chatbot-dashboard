@@ -7,6 +7,9 @@ type Props = {
   rooms: AppConversation[] | undefined;
   isLoading: boolean;
   error: boolean;
+  hasMore: boolean;
+  isLoadingMore: boolean;
+  onLoadMore: () => void;
   selectedId: string | undefined;
   /** ห้องของลูกค้าจำลองในแท็บนี้ */
   mineId: string | undefined;
@@ -23,6 +26,9 @@ export function AppRoomList({
   rooms,
   isLoading,
   error,
+  hasMore,
+  isLoadingMore,
+  onLoadMore,
   selectedId,
   mineId,
   newDisabled,
@@ -111,6 +117,18 @@ export function AppRoomList({
               </button>
             );
           })
+        )}
+
+        {hasMore && !isLoading && !error && (
+          <button
+            type="button"
+            disabled={isLoadingMore}
+            onClick={onLoadMore}
+            className="mt-2 flex h-9 w-full cursor-pointer items-center justify-center gap-2 rounded-[10px] border text-[13px] text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoadingMore && <LoaderCircle className="size-3.5 animate-spin" />}
+            {t("appChat.loadMoreRooms")}
+          </button>
         )}
       </div>
     </div>

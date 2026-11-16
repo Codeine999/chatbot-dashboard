@@ -54,6 +54,14 @@ export type AppConversation = {
   unreadCount: number;
   createdAt: string;
   contact: { id: string; displayName: string | null; metadata: unknown };
+  /** backend ส่งมาเฉพาะตอนเรียกแบบแบ่งหน้า (มี limit/cursor) */
+  botMode?: "auto" | "admin" | "paused";
+};
+
+/** ผลของ GET /admin/app-conversations?limit=&cursor= nextCursor ว่าง = หน้าสุดท้าย */
+export type AppConversationPage = {
+  items: AppConversation[];
+  nextCursor: string | null;
 };
 
 /** admin API คืน USER/AI/ADMIN/SYSTEM แต่ guest API คืนตัวพิมพ์เล็ก จึงรับทั้งสองแบบ */

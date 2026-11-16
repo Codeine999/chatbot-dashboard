@@ -267,6 +267,7 @@
     "roleSystem": "System",
     "handoff": "Handed off to admin",
     "sendError": "Could not send the message. Please try again.",
-    "adminSendError": "Could not send the admin message"
+    "adminSendError": "Could not send the admin message",
+    "loadMoreRooms": "Load more rooms"
   }
 }
