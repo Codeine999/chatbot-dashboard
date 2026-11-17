@@ -19,6 +19,8 @@ export type LineMember = {
   statusMessage?: string | null;
   lastActiveAt?: string | null;
   profileSyncedAt?: string | null;
+  /** เกรดลูกค้า เช่น NORMAL / VIP / VVIP */
+  grade?: string | null;
 };
 
 /** ช่องทางที่ห้องแชทมาจาก ไม่ส่งมาให้ถือเป็น line */
@@ -38,6 +40,8 @@ export type LineConversation = {
   /** ISO time ที่บอทจะกลับมาตอบเอง มีค่าเฉพาะตอน botMode = "admin" */
   botMuteUntil: string | null;
   platform?: ConversationPlatform;
+  /** เกรดลูกค้า (ถ้า backend ส่งที่ระดับห้อง) */
+  grade?: string | null;
 };
 
 export type LineChatHistory = {

@@ -123,7 +123,7 @@
     },
     "soon": "เร็ว ๆ นี้",
     "preview": {
-      "image": "[รูปภาพ]",
+      "image": "📷 รูปภาพ",
       "sticker": "[สติกเกอร์]",
       "postback": "[postback]"
     },
@@ -131,7 +131,9 @@
       "imageAlt": "รูปภาพจาก LINE",
       "imageUnavailable": "ไม่สามารถแสดงรูปภาพได้",
       "sticker": "สติกเกอร์ {{packageId}} / {{stickerId}}",
-      "postback": "Postback event"
+      "postback": "Postback event",
+      "imageLoading": "กำลังโหลดรูป…",
+      "imageEnlarge": "กดเพื่อขยายรูป"
     },
     "status": {
       "waiting_admin": "รอแอดมินตอบ",

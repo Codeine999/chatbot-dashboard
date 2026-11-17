@@ -19,9 +19,11 @@ import {
   TikTokSoonIcon,
 } from "./components/ChannelIcons";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import {
   useConversationMessages,
   useConversations,
+  useImageMediaRefresh,
   useMarkLineConversationRead,
   usePollConversationMessages,
   useSendLineMessage,
@@ -105,21 +107,55 @@ const GeminiSparkle = () => (
   </svg>
 );
 
-function MessageContent({ message }: { message: LineChatHistory }) {
+function MessageContent({
+  message,
+  imageLoading,
+  onImageError,
+}: {
+  message: LineChatHistory;
+  imageLoading?: boolean;
+  onImageError?: () => void;
+}) {
   const { t } = useTranslation("chat");
+  const [previewOpen, setPreviewOpen] = useState(false);
   const type = normalizeType(message.messageType);
 
   if (type === "IMAGE") {
     return message.mediaUrl ? (
-      <img
-        src={message.mediaUrl}
-        alt={t("line.message.imageAlt")}
-        className="max-h-72 rounded-xl object-cover"
-      />
+      <>
+        {/* ห้ามแนบ Authorization: signed URL ลงลายเซ็นไว้แล้ว ใช้ <img src> ตรงๆ */}
+        <button
+          type="button"
+          onClick={() => setPreviewOpen(true)}
+          aria-label={t("line.message.imageEnlarge")}
+          className="block cursor-zoom-in rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <img
+            src={message.mediaUrl}
+            alt={t("line.message.imageAlt")}
+            loading="lazy"
+            onError={onImageError}
+            className="max-h-72 rounded-xl object-cover"
+          />
+        </button>
+
+        <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+          <DialogContent className="flex max-h-[92vh] w-auto max-w-[92vw] items-center justify-center p-2 sm:max-w-[92vw]">
+            <DialogTitle className="sr-only">{t("line.message.imageAlt")}</DialogTitle>
+            <DialogDescription className="sr-only">{t("line.message.imageEnlarge")}</DialogDescription>
+            <img
+              src={message.mediaUrl}
+              alt={t("line.message.imageAlt")}
+              onError={onImageError}
+              className="max-h-[calc(92vh-1rem)] max-w-full rounded-md object-contain"
+            />
+          </DialogContent>
+        </Dialog>
+      </>
     ) : (
       <div className="flex items-center gap-2 text-sm">
         <ImageIcon className="h-4 w-4" />
-        {t("line.message.imageUnavailable")}
+        {imageLoading ? t("line.message.imageLoading") : t("line.message.imageUnavailable")}
       </div>
     );
   }
@@ -304,6 +340,7 @@ export const LineChat = () => {
   const conversationsQuery = useConversations();
   // ห่อด้วย useMemo ไม่งั้น `?? []` สร้าง array ใหม่ทุก render แล้ว useMemo ที่อ้างถึงคำนวณซ้ำทุกครั้ง
   const conversations = useMemo(() => conversationsQuery.data ?? [], [conversationsQuery.data]);
+  const { hasNextPage, isFetchingNextPage, fetchNextPage } = conversationsQuery;
 
   const notificationsQuery = useNotifications();
   const markConversationNotificationsAsRead =
@@ -402,7 +439,16 @@ export const LineChat = () => {
   }, [channel, quickFilter, search, sortedConversations]);
 
   const visibleConversations = filteredConversations.slice(0, visibleCount);
-  const hasMoreConversations = visibleCount < filteredConversations.length;
+  // ยังมีห้องที่ซ่อนอยู่ในรายการที่โหลดแล้ว หรือยังมีหน้าถัดไปที่ server
+  const hasMoreConversations = visibleCount < filteredConversations.length || Boolean(hasNextPage);
+
+  // ห้องที่เลือก (เช่น เปิดจากแจ้งเตือน) ยังไม่อยู่ในหน้าที่โหลด: โหลดหน้าถัดไปจนเจอ
+  useEffect(() => {
+    if (!selectedId || !hasNextPage || isFetchingNextPage) return;
+    if (!conversations.some((conversation) => conversation.id === selectedId)) {
+      void fetchNextPage();
+    }
+  }, [selectedId, conversations, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // a narrowed list should start from the top again
   useEffect(() => {
@@ -463,6 +509,12 @@ export const LineChat = () => {
     const pages = messagesQuery.data?.pages ?? [];
     return [...pages].reverse().flat();
   }, [messagesQuery.data]);
+
+  const { isImageLoading, onImageError } = useImageMediaRefresh(
+    messages,
+    () => messagesQuery.refetch(),
+    selectedConversation?.id
+  );
 
   useEffect(() => {
     const container = messageListRef.current;
@@ -768,9 +820,14 @@ export const LineChat = () => {
             {hasMoreConversations && (
               <button
                 type="button"
-                onClick={() =>
-                  setVisibleCount((count) => count + LOAD_MORE_CONVERSATIONS)
-                }
+                disabled={isFetchingNextPage}
+                onClick={() => {
+                  setVisibleCount((count) => count + LOAD_MORE_CONVERSATIONS);
+                  // ใกล้ท้ายรายการที่โหลดแล้ว ดึงหน้าถัดไปจาก server มารอ
+                  if (hasNextPage && visibleCount + LOAD_MORE_CONVERSATIONS >= filteredConversations.length) {
+                    void fetchNextPage();
+                  }
+                }}
                 className="flex h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl text-xs font-medium text-muted-foreground transition hover:bg-accent/60 hover:text-foreground"
               >
                 {isInboxOpen ? t("line.showMore") : ""}
@@ -849,7 +906,11 @@ export const LineChat = () => {
                       <Avatar name={selectedName} src={selectedConversation?.lineMember?.pictureUrl} size="xs" />
                       <div className="flex max-w-[70%] flex-col gap-1">
                         <div className="rounded-[18px_18px_18px_6px] bg-muted px-3.5 py-2.5 text-sm leading-[1.55] text-foreground">
-                          <MessageContent message={message} />
+                          <MessageContent
+                            message={message}
+                            imageLoading={isImageLoading(message.id)}
+                            onImageError={onImageError}
+                          />
                         </div>
                         <span className="pl-1 font-mono text-[11px] text-muted-foreground">
                           {formatTime(message.createdAt)}
@@ -863,7 +924,11 @@ export const LineChat = () => {
                   <div key={message.id} className={`flex justify-end ${gap}`}>
                     <div className="flex max-w-[70%] flex-col items-end gap-1">
                       <div className="rounded-[18px_18px_6px_18px] bg-muted px-3.5 py-2.5 text-sm leading-[1.55] text-foreground">
-                        <MessageContent message={message} />
+                        <MessageContent
+                            message={message}
+                            imageLoading={isImageLoading(message.id)}
+                            onImageError={onImageError}
+                          />
                       </div>
                       <span className="flex items-center gap-1.5 pr-1 text-[11px] text-muted-foreground">
                         {isAi && <GeminiSparkle />}

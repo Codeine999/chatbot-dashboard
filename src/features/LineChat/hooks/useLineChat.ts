@@ -1,24 +1,37 @@
 import {
+  type InfiniteData,
   useInfiniteQuery,
   useMutation,
-  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import i18n from "@/i18n";
 import { getApiErrorMessage } from "@/api/api";
-import { lineChatApi } from "../services/lineChat.service";
+import { lineChatApi, type ConversationPage } from "../services/lineChat.service";
 import type { BotMode, LineChatHistory, LineConversation } from "../types/lineChat.type";
 
 const POLL_INTERVAL_MS = 2000;
 const MESSAGE_PAGE_SIZE = 20;
 
+const CONVERSATION_PAGE_SIZE = 30;
+
+/** รายการห้องแบบแบ่งหน้า (cursor) poll จะดึงทุกหน้าที่โหลดไว้ใหม่ตามลำดับ */
 export function useConversations() {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ["line-conversations"],
-    queryFn: lineChatApi.getConversations,
+    initialPageParam: undefined as string | undefined,
+    queryFn: ({ pageParam }) =>
+      lineChatApi.getConversations({ limit: CONVERSATION_PAGE_SIZE, cursor: pageParam }),
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     refetchInterval: POLL_INTERVAL_MS,
+    // ห้องที่ขยับขึ้นมาระหว่างโหลดหน้าถัดไปอาจซ้ำข้ามหน้า จึงตัดซ้ำตาม id
+    select: (data) => {
+      const seen = new Set<string>();
+      return data.pages
+        .flatMap((page) => page.items)
+        .filter((room) => (seen.has(room.id) ? false : (seen.add(room.id), true)));
+    },
   });
 }
 
@@ -159,8 +172,8 @@ export function useChangeBotMode() {
       return { status: res.status, botMode: "auto" as const, botMuteUntil: null };
     },
     onSuccess: (result, { conversationId, mode }) => {
-      // แก้ห้องใน cache ทันที ไม่รอ poll รอบถัดไป (getConversations คืน array เสมอ)
-      queryClient.setQueryData(["line-conversations"], (current: unknown) => {
+      // แก้ห้องใน cache ทันที ไม่รอ poll รอบถัดไป (โครงสร้างแบบแบ่งหน้า)
+      queryClient.setQueryData(["line-conversations"], (current: InfiniteData<ConversationPage> | undefined) => {
         const patch = (room: LineConversation) =>
           room.id === conversationId
             ? {
@@ -170,7 +183,11 @@ export function useChangeBotMode() {
                 status: result.status ?? room.status,
               }
             : room;
-        return Array.isArray(current) ? current.map(patch) : current;
+        if (!current?.pages) return current;
+        return {
+          ...current,
+          pages: current.pages.map((page) => ({ ...page, items: page.items.map(patch) })),
+        };
       });
       void queryClient.invalidateQueries({ queryKey: ["line-conversations"] });
       toast.success(i18n.t(BOT_MODE_TOAST[mode].ok));
@@ -193,12 +210,14 @@ export function useMarkLineConversationRead(
   const queryClient = useQueryClient();
   const sentRef = useRef("");
   const [retryTick, setRetryTick] = useState(0);
+  const failuresRef = useRef(0);
 
   useEffect(() => {
     if (!conversationId) return;
     // กลับเป็น 0 แล้ว: ถ้ามีข้อความใหม่จนได้ค่าเดิมซ้ำ (เช่น 2 -> 0 -> 2) ต้องยิงใหม่ได้
     if (!unreadCount) {
       sentRef.current = "";
+      failuresRef.current = 0;
       return;
     }
     if (!ready) return;
@@ -209,10 +228,75 @@ export function useMarkLineConversationRead(
     lineChatApi
       .markRead(conversationId)
       .then(() => queryClient.invalidateQueries({ queryKey: ["line-conversations"] }))
+      .then(() => {
+        failuresRef.current = 0;
+      })
       .catch(() => {
-        // ลองใหม่ใน 5 วินาที (deps ไม่เปลี่ยน effect จะไม่รันเองถ้าไม่ขยับ tick)
+        // ลองใหม่ไม่เกิน 3 ครั้ง (เช่น backend ยังไม่มี endpoint /read จะได้ไม่ยิงซ้ำทุก 5 วินาทีตลอดไป)
+        // เลขที่ค้างเป็นแค่ badge ไม่กระทบการใช้งานอื่น
+        failuresRef.current += 1;
+        if (failuresRef.current >= 3) return;
         sentRef.current = "";
         window.setTimeout(() => setRetryTick((tick) => tick + 1), 5000);
       });
   }, [conversationId, unreadCount, ready, queryClient, retryTick]);
+}
+
+const IMAGE_RETRY_MS = 2000;
+const IMAGE_MAX_RETRIES = 5;
+const IMAGE_URL_REFRESH_MIN_MS = 30_000;
+
+/**
+ * รูปที่ลูกค้าส่ง (messageType IMAGE):
+ * - mediaUrl = null คือรูปยังไม่พร้อม โหลดข้อความซ้ำทุก 2 วินาที สูงสุด 5 ครั้ง แล้วถือว่าแสดงรูปไม่ได้
+ * - mediaUrl เป็น signed URL อายุ 15 นาที โหลดรูปไม่ขึ้น (onError) ให้ refetch เพื่อรับ URL ใหม่
+ *   (จำกัดไม่เกินครั้งละ 30 วินาที กันวนซ้ำเมื่อรูปเสียจริง)
+ */
+export function useImageMediaRefresh(
+  messages: LineChatHistory[],
+  refetch: () => unknown,
+  conversationId?: string
+) {
+  const attemptsRef = useRef(new Map<string, number>());
+  const lastUrlRefreshRef = useRef(0);
+  const [tick, setTick] = useState(0);
+
+  // ห้องใหม่เริ่มนับใหม่
+  useEffect(() => {
+    attemptsRef.current = new Map();
+  }, [conversationId]);
+
+  const waitingIds = messages
+    .filter(
+      (message) =>
+        message.messageType.toUpperCase() === "IMAGE" &&
+        !message.mediaUrl &&
+        (attemptsRef.current.get(message.id) ?? 0) < IMAGE_MAX_RETRIES
+    )
+    .map((message) => message.id);
+  const waitingKey = waitingIds.join(",");
+
+  useEffect(() => {
+    if (!waitingKey) return;
+    const timer = window.setTimeout(() => {
+      for (const id of waitingKey.split(",")) {
+        attemptsRef.current.set(id, (attemptsRef.current.get(id) ?? 0) + 1);
+      }
+      setTick((value) => value + 1);
+      void refetch();
+    }, IMAGE_RETRY_MS);
+    return () => window.clearTimeout(timer);
+    // tick: ให้ effect ตั้งเวลาใหม่หลังแต่ละรอบ
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [waitingKey, tick]);
+
+  const onImageError = useCallback(() => {
+    const now = Date.now();
+    if (now - lastUrlRefreshRef.current < IMAGE_URL_REFRESH_MIN_MS) return;
+    lastUrlRefreshRef.current = now;
+    void refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return { isImageLoading: (id: string) => waitingKey.split(",").includes(id), onImageError };
 }

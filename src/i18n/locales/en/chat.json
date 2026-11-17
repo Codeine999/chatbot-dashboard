@@ -124,7 +124,7 @@
     },
     "soon": "Soon",
     "preview": {
-      "image": "[image]",
+      "image": "📷 Image",
       "sticker": "[sticker]",
       "postback": "[postback]"
     },
@@ -132,7 +132,9 @@
       "imageAlt": "LINE image message",
       "imageUnavailable": "Image message unavailable",
       "sticker": "Sticker {{packageId}} / {{stickerId}}",
-      "postback": "Postback event"
+      "postback": "Postback event",
+      "imageLoading": "Loading image…",
+      "imageEnlarge": "Click to enlarge image"
     },
     "status": {
       "waiting_admin": "Waiting for admin",

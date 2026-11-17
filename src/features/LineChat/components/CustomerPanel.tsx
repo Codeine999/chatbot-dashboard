@@ -18,6 +18,12 @@ const PLATFORM_ICONS: Record<ConversationPlatform, React.ElementType> = {
   application: ApplicationIcon,
 };
 
+const GRADE_TH: Record<string, string> = {
+  NORMAL: "ลูกค้าธรรมดา",
+  VIP: "ลูกค้าประจำ",
+  VVIP: "ลูกค้าคนพิเศษ",
+};
+
 const formatDateTime = (date?: string | null) => {
   if (!date) return "-";
   return new Intl.DateTimeFormat(getIntlLocale(), {
@@ -47,7 +53,7 @@ type Props = {
 };
 
 export const CustomerPanel = ({ conversation, messages, onClose }: Props) => {
-  const { t } = useTranslation("chat");
+  const { t, i18n } = useTranslation("chat");
   const [copied, setCopied] = useState(false);
 
   const member = conversation.lineMember;
@@ -55,6 +61,10 @@ export const CustomerPanel = ({ conversation, messages, onClose }: Props) => {
   const platform = conversation.platform ?? "line";
   const PlatformIcon = PLATFORM_ICONS[platform] ?? LineIcon;
   const platformLabel = t(`line.channel.${platform}`, { defaultValue: "LINE" });
+  // grade: ภาษาไทย map NORMAL/VIP/VVIP เป็นคำไทย ภาษาอังกฤษและค่าอื่นแสดง raw
+  const grade = conversation.grade ?? member?.grade ?? null;
+  const gradeLabel =
+    grade && i18n.language?.startsWith("th") ? (GRADE_TH[grade.toUpperCase()] ?? grade) : grade;
   const isWaiting = conversation.status === "waiting_admin";
 
   const counts = messages.reduce(
@@ -120,7 +130,10 @@ export const CustomerPanel = ({ conversation, messages, onClose }: Props) => {
 
       {/* status */}
       <div className="flex flex-col gap-3 border-b px-5 py-4">
-        <SectionTitle>{t("line.panel.status")}</SectionTitle>
+        <div className="flex items-center justify-between gap-2">
+          <SectionTitle>{t("line.panel.status")}</SectionTitle>
+          {gradeLabel && <span className="text-[13px] font-medium text-foreground">{gradeLabel}</span>}
+        </div>
         <Row label={t("line.panel.conversation")}>
           {isWaiting ? (
             <span className="inline-flex items-center gap-1.5 font-medium text-orange-700 dark:text-orange-300">

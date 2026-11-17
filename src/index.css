@@ -173,58 +173,59 @@ html, body {
 }
 
 .dark {
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(26.862% 0.00003 271.152);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  /* indigo-400 */
-  --primary: #5048e4;
-  --primary-foreground: oklch(0.985 0 0);
+  /* โทนมืดแบบอุ่น (ครีม/น้ำตาลเทา) ไม่มีโทนฟ้า
+     bg #262624 / sidebar #1f1e1d / surface #30302e / surface-hover #2d2c2a
+     border #3a3936 / fg #f5f4ef / fg-2 #c2c0b6 / muted #9a978e / primary #ecebe6 / accent #a5b4fc */
+  --foreground: #f5f4ef;
+  --card: #262624;
+  --card-foreground: #f5f4ef;
+  --popover: #30302e;
+  --popover-foreground: #f5f4ef;
+  /* ปุ่มหลัก: พื้นสว่างครีม ตัวหนังสือเข้ม */
+  --primary: #ecebe6;
+  --primary-foreground: #262624;
   --secondary: oklch(68.422% 0.02062 248.22);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --secondary-foreground: #f5f4ef;
+  --muted: #30302e;
+  --muted-foreground: #9a978e;
+  --accent: #30302e;
+  --accent-foreground: #f5f4ef;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(100% 0.00011 271.152 / 0.086);
-  --input: oklch(1 0 0 / 15%);
+  --border: #3a3936;
+  --input: #3a3936;
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(26.862% 0.00003 271.152);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar: #1f1e1d;
+  --sidebar-foreground: #f5f4ef;
+  --sidebar-primary: #a5b4fc;
+  --sidebar-primary-foreground: #1f1e1d;
+  --sidebar-accent: #30302e;
+  --sidebar-accent-foreground: #f5f4ef;
+  --sidebar-border: #3a3936;
   --sidebar-ring: oklch(0.556 0 0);
-  /* เวอร์ชันอ่อนของ #5048e4 ให้อ่านชัดบนพื้นมืด */
-  --icons: #8b84f0;
-  --hover: oklch(31.317% 0.00004 271.152);
-  --icons-hover: oklch(91.908% 0.01456 213.452);
+  /* accent #a5b4fc อ่านชัดบนพื้นมืด */
+  --icons: #a5b4fc;
+  --hover: #2d2c2a;
+  --icons-hover: #30302e;
 
-  --inside: oklch(25.696% 0.00373 286.026);
-  --background: #161617;
+  --inside: #2d2c2a;
+  --background: #262624;
 
-  --add-button: oklch(26.862% 0.00003 271.152);
-  --button-primary: #5048e4;
-  /* โทนมืด: หัวข้อ/ข้อความหลักเป็นขาว ข้อความรองเป็นเทากลาง ไม่มีโทนฟ้า */
-  --normal: oklch(0.985 0 0);
-  --mini: oklch(0.708 0 0);
+  --add-button: #30302e;
+  --button-primary: #ecebe6;
+  /* ข้อความรอง fg-2 / ป้ายและเวลา muted */
+  --normal: #c2c0b6;
+  --mini: #9a978e;
 
-  /* โทนมืดเลือกสเต็ปใหม่ ไม่ใช่การกลับสีจากธีมสว่าง */
-  --token-ai: #7379f2;
-  /* โทนมืดใช้สเต็ปเดียวกับ slot แรกอยู่แล้ว อ่อนกว่านี้จะหลุดช่วง lightness ของธีมมืด */
+  --token-ai: #a5b4fc;
   --chart-accent: var(--token-ai);
   --token-line: #0d9488;
   --token-admin: #ea580c;
-  --chart-surface: oklch(26.862% 0.00003 271.152);
+  --chart-surface: #262624;
 }
 
 @layer base {

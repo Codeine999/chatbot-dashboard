@@ -36,10 +36,31 @@ type GetConversationMessagesParams = {
   limit?: number;
 };
 
+export type ConversationPage = {
+  items: LineConversation[];
+  /** ว่าง = หน้าสุดท้าย */
+  nextCursor: string | null;
+};
+
+const readNextCursor = (payload: unknown): string | null => {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
+  const record = payload as { nextCursor?: string | null; data?: { nextCursor?: string | null } };
+  return record.nextCursor ?? record.data?.nextCursor ?? null;
+};
+
 export const lineChatApi = {
-  getConversations: async (): Promise<LineConversation[]> => {
-    const res = await api.get<ListResponse<LineConversation>>("/line/conversations");
-    return toArray(res.data);
+  /**
+   * ต้องส่ง limit เสมอ: backend คืน { items, nextCursor } เมื่อมี query อย่างน้อยหนึ่งตัว
+   * ถ้าไม่ส่งเลยจะได้ array แบบเดิมที่ไม่แบ่งหน้า (ได้ array ก็ถือเป็นหน้าเดียว)
+   */
+  getConversations: async ({
+    limit = 30,
+    cursor,
+  }: { limit?: number; cursor?: string } = {}): Promise<ConversationPage> => {
+    const res = await api.get<ListResponse<LineConversation>>("/line/conversations", {
+      params: { limit, cursor },
+    });
+    return { items: toArray(res.data), nextCursor: readNextCursor(res.data) };
   },
 
   getConversationMessages: async ({

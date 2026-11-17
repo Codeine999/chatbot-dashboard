@@ -65,7 +65,7 @@ export const AiAnswer = () => {
   const [status, setStatus] = useState("all");
   const [priority, setPriority] = useState("all");
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(8);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [editing, setEditing] = useState<KnowledgeItem | undefined>();
   const [panelOpen, setPanelOpen] = useState(false);
@@ -340,7 +340,7 @@ export const AiAnswer = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {[10, 20, 50].map((size) => (
+                          {[8, 10, 20, 50].map((size) => (
                             <SelectItem key={size} value={String(size)}>
                               {size}
                             </SelectItem>

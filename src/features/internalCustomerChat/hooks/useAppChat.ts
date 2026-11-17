@@ -178,12 +178,14 @@ export function useMarkAppConversationRead(
   const queryClient = useQueryClient();
   const sentRef = useRef("");
   const [retryTick, setRetryTick] = useState(0);
+  const failuresRef = useRef(0);
 
   useEffect(() => {
     if (!conversationId) return;
     // กลับเป็น 0 แล้ว: ถ้ามีข้อความใหม่จนได้ค่าเดิมซ้ำ (เช่น 2 -> 0 -> 2) ต้องยิงใหม่ได้
     if (!unreadCount) {
       sentRef.current = "";
+      failuresRef.current = 0;
       return;
     }
     if (!ready) return;
@@ -194,8 +196,14 @@ export function useMarkAppConversationRead(
     appChatApi
       .markRead(conversationId)
       .then(() => queryClient.invalidateQueries({ queryKey: appChatKeys.conversations }))
+      .then(() => {
+        failuresRef.current = 0;
+      })
       .catch(() => {
-        // ลองใหม่ใน 5 วินาที (deps ไม่เปลี่ยน effect จะไม่รันเองถ้าไม่ขยับ tick)
+        // ลองใหม่ไม่เกิน 3 ครั้ง (เช่น backend ยังไม่มี endpoint /read จะได้ไม่ยิงซ้ำทุก 5 วินาทีตลอดไป)
+        // เลขที่ค้างเป็นแค่ badge ไม่กระทบการใช้งานอื่น
+        failuresRef.current += 1;
+        if (failuresRef.current >= 3) return;
         sentRef.current = "";
         window.setTimeout(() => setRetryTick((tick) => tick + 1), 5000);
       });
