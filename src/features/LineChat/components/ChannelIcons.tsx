@@ -1,14 +1,10 @@
+import lineIconUrl from "@/assets/icon/line-icon.png";
+
 type IconProps = { className?: string };
 
 /** โลโก้ช่องทางแบบย่อ ใช้สีประจำแบรนด์ */
 export const LineIcon = ({ className }: IconProps) => (
-  <svg viewBox="0 0 24 24" className={className} aria-hidden>
-    <circle cx="12" cy="12" r="11" fill="#06C755" />
-    <path
-      d="M12 5.5c-3.9 0-7 2.5-7 5.7 0 2.9 2.5 5.3 5.9 5.8.2 0 .5.1.6.3v.8l1.6-1.4c2.1-.3 3.9-1.8 3.9-3.5 0-3.2-3.2-5.7-7-5.7z"
-      fill="#fff"
-    />
-  </svg>
+  <img src={lineIconUrl} alt="" aria-hidden className={`${className ?? ""} rounded-full object-cover`} />
 );
 
 export const MessengerIcon = ({ className }: IconProps) => (
@@ -42,13 +38,7 @@ export const ApplicationIcon = ({ className }: IconProps) => (
 
 /** ไอคอน LINE แบบสี่เหลี่ยมมน ใช้ในชิปช่องทางของ Inbox */
 export const LineSquareIcon = ({ className }: IconProps) => (
-  <svg viewBox="0 0 24 24" className={className} aria-hidden>
-    <rect width="24" height="24" rx="7" fill="#06C755" />
-    <path
-      d="M12 5.8c-3.7 0-6.5 2.3-6.5 5.3 0 2.7 2.3 4.9 5.5 5.3.2 0 .5.2.5.4v.9l1.5-1.3c2-.3 3.5-1.7 3.5-3.4 0-3-2.8-5.2-6.5-5.2z"
-      fill="#fff"
-    />
-  </svg>
+  <img src={lineIconUrl} alt="" aria-hidden className={`${className ?? ""} rounded-[7px] object-cover`} />
 );
 
 /** Messenger ที่ยังไม่เปิดใช้ — โทนม่วงอ่อนซีด */
