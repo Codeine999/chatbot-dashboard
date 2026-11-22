@@ -129,7 +129,7 @@ export function LinePreviewChat({ active, tabs }: { active: boolean; tabs: React
             }}
           >
             {chat.error && (
-              <div role="alert" className="mx-auto mb-3 flex max-w-[880px] flex-wrap items-center gap-3 text-sm text-destructive">
+              <div role="alert" className="mx-auto mb-3 flex max-w-[1200px] flex-wrap items-center gap-3 text-sm text-destructive">
                 <span>{chat.error}</span>
                 {chat.failedSend && (
                   <Button

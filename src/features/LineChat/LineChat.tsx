@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { SearchIcon, SidebarToggleIcon } from "@/components/navbar/icons";
 import { BotModeSelect } from "./components/BotModeSelect";
 import { CustomerPanel } from "./components/CustomerPanel";
+import { RoomPresenceBar, RowPresence, RowViewers } from "@/features/presence/components/PresenceIndicators";
+import { usePresenceDraft, usePresenceSession, useRoomPresence } from "@/features/presence/hooks/usePresence";
+import { toPresenceChannel } from "@/features/presence/services/presence.client";
 import {
   ApplicationIcon,
   LineIcon,
@@ -37,6 +40,7 @@ import type {
   LineChatHistory,
   LineChatMessageType,
   LineChatSender,
+  LineConversation,
 } from "./types/lineChat.type";
 
 const formatTime = (date?: string | null) => {
@@ -297,6 +301,52 @@ function QuickFilterTabs({
   );
 }
 
+/**
+ * ป้ายสถานะข้างชื่อในแถวรายการ
+ * - waiting: รอแอดมินตอบ (ส้ม)
+ * - new: ห้องใหม่ (ฟ้า) — ต้องมีข้อมูลจาก backend
+ * - ai: ข้อความล่าสุดตอบโดย AI (ม่วง) — ต้องมีข้อมูลจาก backend
+ */
+type RowTag = "waiting" | "new" | "ai";
+
+const ROW_TAG_STYLE: Record<RowTag, { label: string; className: string; dot: string }> = {
+  waiting: {
+    label: "line.status.waiting_admin_short",
+    className: "bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300",
+    dot: "bg-orange-600",
+  },
+  new: {
+    label: "line.tag.new",
+    className: "bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
+    dot: "bg-blue-600",
+  },
+  ai: {
+    label: "line.tag.ai",
+    className: "bg-violet-50 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300",
+    dot: "bg-violet-600",
+  },
+};
+
+function ConversationRowTag({ tag }: { tag: RowTag }) {
+  const { t } = useTranslation("chat");
+  const style = ROW_TAG_STYLE[tag];
+
+  return (
+    <span
+      className={`inline-flex shrink-0 items-center gap-1 rounded-full px-[7px] py-px text-[11px] font-semibold ${style.className}`}
+    >
+      <span className={`size-[5px] rounded-full ${style.dot}`} />
+      {t(style.label)}
+    </span>
+  );
+}
+
+/** ป้ายของแถวจากข้อมูลที่มีจริงตอนนี้ (ตอนนี้มีเฉพาะ waiting จาก status) */
+function rowTagOf(conversation: LineConversation): RowTag | null {
+  if (conversation.status === WAITING_ADMIN) return "waiting";
+  return null;
+}
+
 /** ป้ายสถานะ: waiting_admin เป็นสีส้มพร้อมจุด สถานะอื่นเป็นป้ายเทากลาง ๆ */
 function ConversationStatusBadge({ status }: { status: string }) {
   const { t } = useTranslation("chat");
@@ -497,6 +547,11 @@ export const LineChat = () => {
 
   const messagesQuery = useConversationMessages(selectedConversation?.id);
   const sendMessageMutation = useSendLineMessage(selectedConversation?.id);
+  // presence: แสดงว่าใครกำลังเปิดห้อง/กำลังพิมพ์ (แสดงผลอย่างเดียว ไม่บล็อกการส่ง)
+  usePresenceSession();
+  const presenceChannel = toPresenceChannel(selectedConversation?.platform);
+  useRoomPresence(presenceChannel, selectedConversation?.id);
+  const presenceDraft = usePresenceDraft(presenceChannel, selectedConversation?.id);
   usePollConversationMessages(selectedConversation?.id);
   // endpoint /line/... ใช้ได้เฉพาะห้อง LINE ช่องทางอื่นยังไม่เรียก
   useMarkLineConversationRead(
@@ -555,6 +610,7 @@ export const LineChat = () => {
     const text = reply.trim();
     if (!text || !selectedConversation || sendMessageMutation.isPending) return;
 
+    presenceDraft.stop();
     await sendMessageMutation.mutateAsync(text);
     setReply("");
 
@@ -751,13 +807,19 @@ export const LineChat = () => {
               const hasReadNotification = readNotificationConversationIds.has(
                 conversation.id
               );
-              const isWaitingAdmin = conversation.status === WAITING_ADMIN;
+              const rowTag = rowTagOf(conversation);
+              const platformKey = conversation.platform ?? "line";
+              const PlatformIcon = PLATFORM_ICONS[platformKey] ?? LineIcon;
+              // แชทที่อ่านแล้วและไม่มีป้ายสถานะ: จางเฉพาะข้อความล่าสุด (ยกเว้นแถวที่เลือกอยู่)
+              const fadeMessage =
+                !isActive && !hasReadNotification && conversation.unreadCount === 0 && rowTag === null;
+              const rowOpacity = !isActive && hasReadNotification ? "opacity-70" : "";
               const rowBg = isActive
                 ? "bg-muted"
                 : hasUnreadNotification
                   ? "bg-amber-50 hover:bg-amber-100 dark:bg-amber-500/10 dark:hover:bg-amber-500/15"
                   : hasReadNotification
-                    ? "opacity-70 hover:bg-accent/60"
+                    ? "hover:bg-accent/60"
                     : "hover:bg-accent/60";
 
               return (
@@ -766,7 +828,7 @@ export const LineChat = () => {
                   type="button"
                   aria-current={isActive}
                   onClick={() => handleSelectConversation(conversation.id)}
-                  className={`relative flex w-full cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-colors ${rowBg} ${
+                  className={`relative flex w-full cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-colors ${rowBg} ${rowOpacity} ${
                     isInboxOpen ? "" : "justify-center"
                   }`}
                 >
@@ -785,26 +847,36 @@ export const LineChat = () => {
                   </div>
                   {isInboxOpen && (
                     <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span
-                          className={`truncate text-sm text-foreground ${
-                            conversation.unreadCount > 0 ? "font-semibold" : "font-medium"
-                          }`}
-                        >
-                          {displayName}
-                        </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-1.5">
+                          <span
+                            className={`truncate text-sm text-foreground/80 ${
+                              conversation.unreadCount > 0 ? "font-semibold" : "font-medium"
+                            }`}
+                          >
+                            {displayName}
+                          </span>
+                          {rowTag && <ConversationRowTag tag={rowTag} />}
+                        </div>
                         <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
                           {formatTime(conversation.lastMessageAt)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        {isWaitingAdmin && (
-                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-orange-50 px-[7px] py-px text-[11px] font-semibold text-orange-700 dark:bg-orange-500/15 dark:text-orange-300">
-                            <span className="size-[5px] rounded-full bg-orange-600" />
-                            {t("line.status.waiting_admin_short")}
+                      {/* line 2: ช่องทาง · ข้อความล่าสุด (หรือชื่อคนที่กำลังพิมพ์) */}
+                      <div className="flex min-w-0 items-center gap-1.5 text-[13px]">
+                        <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                          <PlatformIcon className="size-3.5" />
+                          {t(`line.channel.${platformKey}`, { defaultValue: "LINE" })}
+                        </span>
+                        <span className="shrink-0 text-xs text-muted-foreground">·</span>
+                        <RowPresence channel={toPresenceChannel(conversation.platform)} conversationId={conversation.id}>
+                          <span
+                            className={`min-w-0 flex-1 truncate text-[13px] text-normal ${fadeMessage ? "opacity-70" : ""}`}
+                          >
+                            {preview}
                           </span>
-                        )}
-                        <span className="min-w-0 flex-1 truncate text-[13px] text-normal">{preview}</span>
+                        </RowPresence>
+                        <RowViewers channel={toPresenceChannel(conversation.platform)} conversationId={conversation.id} />
                         {conversation.unreadCount > 0 && (
                           <span className="flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-full bg-primary px-[5px] text-[11px] font-semibold text-primary-foreground">
                             {conversation.unreadCount}
@@ -946,10 +1018,15 @@ export const LineChat = () => {
           </div>
 
           <footer className="mx-auto w-full max-w-[880px] shrink-0 px-4 pb-4 sm:px-6 sm:pb-6">
+            <RoomPresenceBar channel={presenceChannel} conversationId={selectedConversation?.id} />
             <div className="flex flex-col gap-1.5 rounded-2xl border bg-background py-2.5 pl-4 pr-3 shadow-[rgba(0,0,0,0.04)_0px_4px_14px]">
               <Textarea
                 value={reply}
-                onChange={(event) => setReply(event.target.value)}
+                onChange={(event) => {
+                  setReply(event.target.value);
+                  presenceDraft.onChange(event.target.value);
+                }}
+                onBlur={() => presenceDraft.stop()}
                 onKeyDown={handleReplyKeyDown}
                 disabled={!selectedConversation || sendMessageMutation.isPending}
                 placeholder={t("line.replyPlaceholder")}

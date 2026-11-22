@@ -128,7 +128,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
         <NoticeBox>{t("appChat.creditNote")}</NoticeBox>
       </div>
 
-      <div className="mt-5 grid h-[min(900px,calc(100svh-18rem))] min-h-[520px] lg:grid-cols-[340px_minmax(0,1fr)]">
+      <div className="mt-5 grid h-[min(1000px,calc(100svh-10rem))] min-h-[640px] lg:grid-cols-[340px_minmax(0,1fr)]">
         <aside className="flex min-h-0 flex-col border-b pb-4 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-5">
           {tabs}
           <AppRoomList
@@ -149,7 +149,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
           />
         </aside>
 
-        <section className="flex min-h-0 flex-col">
+        <section className="flex min-h-0 flex-col overflow-hidden rounded-2xl border bg-background lg:ml-1">
           <header className="flex min-h-16 flex-wrap items-center gap-3 border-b px-6">
             <DashedAvatar>
               <MessageCircle className="size-[18px]" />
@@ -195,6 +195,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
           </header>
 
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 py-5" role="log" aria-live="polite">
+            <div className="mx-auto w-full max-w-[1100px] space-y-4">
             {messagesQuery.hasNextPage && (
               <div className="flex justify-center">
                 <Button
@@ -240,6 +241,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
 
             {guest.isSending && <SendingNote />}
             <div ref={endRef} />
+            </div>
           </div>
 
           <form
@@ -250,7 +252,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
             }}
           >
             {guest.error && (
-              <div role="alert" className="mx-auto mb-3 flex max-w-[880px] flex-wrap items-center gap-3 text-sm text-destructive">
+              <div role="alert" className="mx-auto mb-3 flex max-w-[1200px] flex-wrap items-center gap-3 text-sm text-destructive">
                 <span>{guest.error}</span>
                 {guest.failedSend && (
                   <Button
@@ -301,7 +303,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
                 aria-label={t(mode === "admin" ? "appChat.placeholderAdmin" : "customerTest.placeholder")}
                 placeholder={t(mode === "admin" ? "appChat.placeholderAdmin" : "customerTest.placeholder")}
                 value={draft}
-                rows={2}
+                rows={1}
                 maxLength={mode === "admin" ? 5000 : 2000}
                 disabled={busy}
                 onChange={(event) => setDraft(event.target.value)}
@@ -315,7 +317,7 @@ export function ApplicationChat({ active, tabs }: { active: boolean; tabs: React
               />
               <div className="mt-2 flex items-center justify-between gap-3 px-1">
                 <p className="text-xs text-muted-foreground">{t("customerTest.enterHint")}</p>
-                <SendButton disabled={busy || !draft.trim()} label={t("customerTest.send")} />
+                <SendButton compact disabled={busy || !draft.trim()} label={t("customerTest.send")} />
               </div>
             </div>
           </form>

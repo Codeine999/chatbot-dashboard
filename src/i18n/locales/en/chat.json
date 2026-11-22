@@ -88,6 +88,15 @@
   },
   "defaultName": "Admin",
   "line": {
+    "tag": {
+      "new": "New",
+      "ai": "AI replied"
+    },
+    "presence": {
+      "viewing": "{{names}} viewing",
+      "typing": "{{names}} typing…",
+      "more": "+{{rest}}"
+    },
     "searchPlaceholder": "Search conversations...",
     "settings": "Chat settings",
     "back": "Back to conversations",
@@ -198,8 +207,6 @@
     "customerInfo": "Customer info"
   },
   "customerTest": {
-    "title": "Customer chat test",
-    "subtitle": "Type as a customer and see replies from the same bot that answers on LINE",
     "newChat": "New chat",
     "creditNote": "Every message spends real AI credit, like one from LINE, but nothing is sent to the customer or saved to the LINE chat history",
     "customerView": "Customer view",

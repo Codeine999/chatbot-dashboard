@@ -64,19 +64,30 @@ export function SendingNote() {
 
 /** กล่อง composer: ขอบมน 16 เงาบาง ๆ */
 export const composerBoxClass =
-  "mx-auto w-full max-w-[880px] rounded-2xl border bg-background p-3 shadow-[0_4px_14px_rgba(0,0,0,0.04)]";
+  "mx-auto w-full max-w-[1200px] rounded-2xl border bg-background p-3 shadow-[0_4px_14px_rgba(0,0,0,0.04)]";
 
 export const composerTextareaClass =
   "field-sizing-fixed min-h-0 resize-none border-0 bg-transparent p-1 text-[15px] leading-relaxed shadow-none focus-visible:ring-0 dark:bg-transparent";
 
-export function SendButton({ disabled, label }: { disabled: boolean; label: string }) {
+export function SendButton({
+  disabled,
+  label,
+  compact = false,
+}: {
+  disabled: boolean;
+  label: string;
+  /** ปุ่มขนาดเล็กลงสำหรับกล่องพิมพ์ที่ต้องการความกระชับ */
+  compact?: boolean;
+}) {
   return (
     <button
       type="submit"
       disabled={disabled}
-      className="inline-flex h-[38px] cursor-pointer items-center gap-2 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+      className={`inline-flex cursor-pointer items-center rounded-full bg-primary font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 ${
+        compact ? "h-8 gap-1.5 px-3.5 text-[13px]" : "h-[38px] gap-2 px-5 text-sm"
+      }`}
     >
-      <ArrowUp className="size-4" />
+      <ArrowUp className={compact ? "size-3.5" : "size-4"} />
       {label}
     </button>
   );
