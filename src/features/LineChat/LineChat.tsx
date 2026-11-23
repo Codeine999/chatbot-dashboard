@@ -808,8 +808,6 @@ export const LineChat = () => {
                 conversation.id
               );
               const rowTag = rowTagOf(conversation);
-              const platformKey = conversation.platform ?? "line";
-              const PlatformIcon = PLATFORM_ICONS[platformKey] ?? LineIcon;
               // แชทที่อ่านแล้วและไม่มีป้ายสถานะ: จางเฉพาะข้อความล่าสุด (ยกเว้นแถวที่เลือกอยู่)
               const fadeMessage =
                 !isActive && !hasReadNotification && conversation.unreadCount === 0 && rowTag === null;
@@ -862,13 +860,8 @@ export const LineChat = () => {
                           {formatTime(conversation.lastMessageAt)}
                         </span>
                       </div>
-                      {/* line 2: ช่องทาง · ข้อความล่าสุด (หรือชื่อคนที่กำลังพิมพ์) */}
+                      {/* line 2: ข้อความล่าสุด (หรือชื่อคนที่กำลังพิมพ์) */}
                       <div className="flex min-w-0 items-center gap-1.5 text-[13px]">
-                        <span className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
-                          <PlatformIcon className="size-3.5" />
-                          {t(`line.channel.${platformKey}`, { defaultValue: "LINE" })}
-                        </span>
-                        <span className="shrink-0 text-xs text-muted-foreground">·</span>
                         <RowPresence channel={toPresenceChannel(conversation.platform)} conversationId={conversation.id}>
                           <span
                             className={`min-w-0 flex-1 truncate text-[13px] text-normal ${fadeMessage ? "opacity-70" : ""}`}
