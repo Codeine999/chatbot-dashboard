@@ -134,6 +134,42 @@ export type LinePushMessageUsage = {
   limit: number;
 };
 
+export type UsageReplyChannel = "LINE" | "FACEBOOK" | "APPLICATION";
+
+export type UsageRepliesParams = {
+  channel?: UsageReplyChannel;
+  page: number;
+  limit: number;
+};
+
+type UsageRepliesResponse = {
+  items?: Array<Omit<UsageReplyItem, "chargedCredit"> & { chargedCredit: string | number }>;
+  page: number;
+  limit: number;
+  total: number;
+};
+
+/** one customer reply; credits are what this system charged, not provider tokens */
+export type UsageReplyItem = {
+  id: string;
+  createdAt: string;
+  /** null when the turn left no decision log (older than its retention) */
+  channel: UsageReplyChannel | null;
+  respondedBy: "AI" | "ADMIN";
+  adminUsername: string | null;
+  chargedCredit: number;
+  /** what the reply was: KNOWLEDGE, PRODUCT, GENERAL, ...; null when unknown */
+  answerType: string | null;
+  status: "success" | "failed";
+};
+
+export type UsageRepliesPage = {
+  items: UsageReplyItem[];
+  page: number;
+  limit: number;
+  total: number;
+};
+
 export const usageApi = {
   getLineOaCredits: async (): Promise<CreditUsageItem[]> => {
     const res = await api.post<CreditsResponse>("/credits/line-oa");
@@ -181,6 +217,26 @@ export const usageApi = {
     return {
       used: toNumber(payload.totalUsage ?? payload.used ?? payload.usedCredit),
       limit: toNumber(payload.value ?? payload.limit),
+    };
+  },
+  getUsageReplies: async (params: UsageRepliesParams): Promise<UsageRepliesPage> => {
+    const res = await api.get<UsageRepliesResponse>("/admin/usage/replies", { params });
+    const { items = [], page, limit, total } = res.data;
+
+    return {
+      items: items.map((item) => ({
+        id: item.id,
+        createdAt: item.createdAt,
+        channel: item.channel,
+        respondedBy: item.respondedBy,
+        adminUsername: item.adminUsername,
+        chargedCredit: toNumber(item.chargedCredit),
+        answerType: item.answerType,
+        status: item.status,
+      })),
+      page,
+      limit,
+      total,
     };
   },
 };

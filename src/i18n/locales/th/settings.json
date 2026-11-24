@@ -248,6 +248,99 @@
         "keepsPrevious": "การเชื่อมต่อเดิมยังใช้งานได้ตามปกติ"
       }
     },
-    "pageSubtitle": "เชื่อมต่อ LINE Official Account เพื่อรับข้อความและตอบลูกค้าอัตโนมัติ"
+    "pageSubtitle": "เชื่อมต่อ LINE Official Account เพื่อรับข้อความและตอบลูกค้าอัตโนมัติ",
+    "channels": {
+      "line": "LINE",
+      "facebook": "Facebook"
+    },
+    "facebook": {
+      "title": "Facebook Messenger",
+      "subtitle": "กรอก App secret และ Page access token ของเพจ Facebook ที่ต้องการเชื่อมต่อ",
+      "openConsole": "เปิด Meta for Developers",
+      "page": "เพจ Facebook",
+      "appSecret": "App secret",
+      "appSecretPlaceholder": "วาง App secret",
+      "appSecretHint": "32 ตัวอักษร 0-9 และ a-f อยู่ที่ App settings › Basic ใช้ตรวจว่า webhook มาจาก Meta จริง",
+      "pageAccessToken": "Page access token",
+      "pageAccessTokenPlaceholder": "วาง Page access token",
+      "pageAccessTokenHint": "สร้างที่ Messenger › API setup ของเพจ ต้องมีสิทธิ์ pages_messaging",
+      "encryptedNote": "ข้อมูลถูกเข้ารหัสก่อนบันทึก และจะไม่แสดงอีกหลังบันทึกแล้ว",
+      "lockedNote": "บันทึกและเข้ารหัสแล้ว แสดงเฉพาะ 4 ตัวท้าย กดแก้ไขเพื่อกรอกค่าใหม่",
+      "envNote": "ตอนนี้ระบบใช้ค่าจาก environment ของเซิร์ฟเวอร์ บันทึกที่นี่เพื่อจัดการเพจจากหน้านี้",
+      "submit": "บันทึก",
+      "testing": "กำลังบันทึกและทดสอบ...",
+      "edit": "แก้ไข",
+      "cancel": "ยกเลิก",
+      "reset": "ล้างค่า",
+      "disconnect": "ยกเลิกการเชื่อมต่อ",
+      "disconnectDialog": {
+        "title": "ยกเลิกการเชื่อมต่อเพจ Facebook นี้?",
+        "description": "บอทจะหยุดรับและตอบข้อความ Messenger ประวัติแชทยังอยู่ และเชื่อมต่อใหม่ได้ทุกเมื่อ"
+      },
+      "webhook": {
+        "title": "Webhook",
+        "subtitle": "คัดลอกทั้งสองค่าไปใส่ที่ Meta for Developers › Messenger › Webhooks",
+        "callbackUrl": "Callback URL",
+        "verifyToken": "Verify token",
+        "ready": "ตั้งค่า Webhook แล้ว",
+        "notReady": "ยังไม่ได้ตั้งค่า Webhook",
+        "empty": "บันทึกเพจก่อน แล้วระบบจะสร้างค่านี้ให้",
+        "manualNeeded": "ระบบ subscribe เพจให้รับข้อความอัตโนมัติไม่สำเร็จ ให้ subscribe เองที่ Meta for Developers",
+        "afterCopy": "หลังคัดลอก ให้ตั้งค่าฝั่ง Meta ดังนี้",
+        "steps": {
+          "open": "เปิดแอปที่ Meta for Developers › Messenger › Webhooks แล้วกด Edit callback URL",
+          "paste": "วาง Callback URL และ Verify token ด้านบน แล้วกด Verify and save",
+          "subscribe": "Subscribe เพจกับ field messages และ messaging_postbacks"
+        },
+        "warning": "URL และ token นี้ผูกกับ workspace ของคุณ อย่าแชร์ให้ผู้อื่น"
+      },
+      "validation": {
+        "secretRequired": "กรอก App secret",
+        "secretFormat": "App secret ใช้ได้เฉพาะ 0-9 และ a-f",
+        "secretLength": "App secret ต้องมี 32 ตัวอักษรพอดี",
+        "tokenRequired": "กรอก Page access token",
+        "tokenFormat": "Page access token ต้องไม่มีช่องว่างหรือขึ้นบรรทัดใหม่",
+        "tokenLong": "Page access token ยาวเกินไป"
+      },
+      "errors": {
+        "invalidToken": "Facebook ไม่ยอมรับ Page access token นี้ ตรวจว่าคัดลอกครบ เป็นของเพจ และยังไม่หมดอายุ",
+        "noAccess": "สิทธิ์ของคุณเชื่อมต่อ Facebook ไม่ได้",
+        "conflict": "เพจ Facebook นี้เชื่อมต่อกับบริษัทอื่นอยู่แล้ว",
+        "facebookUnreachable": "เชื่อมต่อ Facebook ไม่ได้ในขณะนี้ กรุณาลองใหม่",
+        "notReady": "ระบบยังไม่พร้อมเก็บข้อมูลแบบเข้ารหัส กรุณาติดต่อผู้ดูแลระบบ",
+        "notPageToken": "นี่ไม่ใช่ Page access token สร้างโทเค็นของเพจ (ไม่ใช่ User token) ที่การตั้งค่า Messenger API",
+        "appSecretMismatch": "App secret นี้ไม่ตรงกับแอปที่ออก Page access token คัดลอกจาก การตั้งค่าแอพ › ข้อมูลพื้นฐาน ของแอปเดียวกัน"
+      },
+      "toast": {
+        "subscribeManual": "บันทึกแล้ว แต่ระบบ subscribe เพจอัตโนมัติไม่สำเร็จ ให้ไป subscribe ที่ Meta for Developers",
+        "disconnected": "ยกเลิกการเชื่อมต่อเพจ Facebook แล้ว"
+      },
+      "noAccess": {
+        "title": "คุณไม่มีสิทธิ์จัดการ Facebook",
+        "description": "เฉพาะ owner, dev และ admin เท่านั้นที่เชื่อมต่อเพจ Facebook ได้"
+      },
+      "status": {
+        "title": "สถานะการเชื่อมต่อ",
+        "idle": {
+          "title": "ยังไม่ได้เชื่อมต่อ Facebook",
+          "description": "กรอกฟอร์มทางซ้ายแล้วกดบันทึก ระบบจะทดสอบการเชื่อมต่อให้ทันที"
+        },
+        "testing": {
+          "title": "กำลังทดสอบการเชื่อมต่อ",
+          "description": "กำลังตรวจ token กับ Facebook และ subscribe เพจ"
+        },
+        "connected": {
+          "title": "เชื่อมต่อสำเร็จ",
+          "description": "ระบบพร้อมรับข้อความลูกค้าผ่าน Messenger",
+          "envDescription": "เชื่อมต่อด้วยค่าจากเซิร์ฟเวอร์ ระบบพร้อมรับข้อความลูกค้าผ่าน Messenger",
+          "verifiedAt": "ตรวจสอบล่าสุด {{date}} {{time}}"
+        },
+        "failed": {
+          "title": "เชื่อมต่อไม่สำเร็จ",
+          "description": "ตรวจ App secret และ Page access token แล้วลองใหม่",
+          "keepsPrevious": "การเชื่อมต่อเดิมยังใช้งานได้"
+        }
+      }
+    }
   }
 }

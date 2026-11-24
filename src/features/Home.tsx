@@ -1,4 +1,5 @@
 import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 
 // import Chatbot from "./home/Chat";
 
@@ -21,13 +22,13 @@ const Home = () => {
 
   return (
     <main className="min-h-svh">
-      <PageContainer className="mx-auto w-full max-w-[1320px] pt-8">
-        <header>
-          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
-          <h1 className="mt-1.5 text-[28px] font-semibold leading-[1.2] tracking-[-0.025em] text-foreground">
-            {t("welcome", { name: user?.firstname || user?.username || "" })}
-          </h1>
-        </header>
+      <PageContainer>
+        <PageHeader
+          eyebrow={t("subtitle")}
+          title={t("welcome", {
+            name: user?.firstname || user?.username || "",
+          })}
+        />
 
         <div className="mt-10 flex flex-col gap-[52px]">
           {/* Overview */}

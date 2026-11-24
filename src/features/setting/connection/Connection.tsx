@@ -1,63 +1,45 @@
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useLineConnection } from "./hooks/useLineConnection";
-import { WebhookCard } from "./components/WebhookCard";
-import { LineCredentialsCard } from "./components/LineCredentialsCard";
-import { ConnectionStatusCard } from "./components/ConnectionStatusCard";
-import { OwnerOnlyNotice } from "./components/OwnerOnlyNotice";
-import { WebhookHealthPanel } from "./components/WebhookHealthPanel";
+import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
+import { UnderlineTabs } from "@/components/common/UnderlineTabs";
+import { LineConnection } from "./LineConnection";
+import { FacebookConnection } from "./facebook/FacebookConnection";
 
+const CHANNELS = ["line", "facebook"] as const;
+type ConnectionChannel = (typeof CHANNELS)[number];
+
+const isChannel = (value: string | null): value is ConnectionChannel =>
+  CHANNELS.some((channel) => channel === value);
+
+/** หน้าเชื่อมต่อช่องทาง ช่องที่เปิดอยู่เก็บใน ?channel= เพื่อแชร์ลิงก์ตรงเข้าแท็บนั้นได้ */
 export const Connection = () => {
   const { t } = useTranslation(["settings", "nav"]);
-  const connection = useLineConnection();
+  const [params, setParams] = useSearchParams();
+  const requested = params.get("channel");
+  const channel: ConnectionChannel = isChannel(requested) ? requested : "line";
 
-  if (connection.isForbidden)
-    return (
-      <div className="mx-auto mt-6 mb-12 max-w-[1080px]">
-        <OwnerOnlyNotice />
-      </div>
-    );
+  const select = (next: ConnectionChannel) =>
+    setParams(next === "line" ? {} : { channel: next }, { replace: true });
 
   return (
-    <div className="mx-auto max-w-[1080px] pt-6 pb-16">
-      <h1 className="text-[28px] font-semibold tracking-[-0.02em] text-foreground">
-        {t("nav:item.settingConnection")}
-      </h1>
-      <p className="mt-1.5 text-sm text-normal">{t("settings:connection.pageSubtitle")}</p>
-
-    <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
-      <div className="flex min-w-0 flex-col">
-        <WebhookCard
-          url={connection.webhookUrl}
-          ready={connection.webhookReady}
-          needsManual={connection.webhookNeedsManual}
-        >
-          {connection.state?.connected && (
-            <WebhookHealthPanel webhookSetAt={connection.state.webhookSetAt} />
-          )}
-        </WebhookCard>
-        <LineCredentialsCard
-          form={connection.form}
-          state={connection.state}
-          locked={connection.locked}
-          canCancel={connection.canCancel}
-          canSubmit={connection.canSubmit}
-          isSaving={connection.isSaving}
-          onSubmit={connection.submit}
-          onEdit={connection.startEdit}
-          onCancel={connection.cancelEdit}
-          onReset={connection.reset}
-        />
-      </div>
-
-      <ConnectionStatusCard
-        status={connection.status}
-        loading={connection.isLoading}
-        state={connection.state}
-        celebrate={connection.justConnected}
-        errorMessage={connection.errorMessage}
-        webhookReady={connection.webhookReady}
+    <PageContainer className="pb-16">
+      <PageHeader
+        title={t("nav:item.settingConnection")}
+        subtitle={t("settings:connection.pageSubtitle")}
       />
-    </div>
-    </div>
+
+      <UnderlineTabs
+        className="mt-6"
+        value={channel}
+        onChange={select}
+        tabs={[
+          { value: "line", label: t("settings:connection.channels.line") },
+          { value: "facebook", label: t("settings:connection.channels.facebook") },
+        ]}
+      />
+
+      {channel === "line" ? <LineConnection /> : <FacebookConnection />}
+    </PageContainer>
   );
 };

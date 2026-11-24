@@ -1,8 +1,18 @@
 import { useState } from "react";
-import { CalendarDays, Coins, Download, Eye, FileText, Plus, Search, TrendingUp } from "lucide-react";
+import {
+  CalendarDays,
+  Coins,
+  Download,
+  Eye,
+  FileText,
+  Plus,
+  Search,
+  TrendingUp,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { InvoiceDetailsDialog } from "./components/InvoiceDetailsDialog";
 import { PaymentMethodBadge } from "./components/PaymentMethodBadge";
 import { StatusBadge } from "./components/StatusBadge";
@@ -27,7 +37,10 @@ const formatCredits = (value: string | undefined, isLoading: boolean) => {
 
   const credits = Number(value);
   return Number.isFinite(credits)
-    ? formatNumber(credits, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    ? formatNumber(credits, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
     : "—";
 };
 
@@ -99,7 +112,9 @@ export const Bill = () => {
   const keyword = search.trim().toLowerCase();
   const visibleInvoices = keyword
     ? invoices.filter((invoice) =>
-        getBillHistoryDescription(invoice.paymentMethod, invoice.status).toLowerCase().includes(keyword)
+        getBillHistoryDescription(invoice.paymentMethod, invoice.status)
+          .toLowerCase()
+          .includes(keyword)
       )
     : invoices;
 
@@ -107,11 +122,8 @@ export const Bill = () => {
   const bodyCell = "border-t border-border/60 py-3.5";
 
   return (
-    <PageContainer className="mx-auto flex w-full max-w-[1320px] flex-col pt-8">
-      <h1 className="text-[28px] font-semibold leading-[1.2] tracking-[-0.025em] text-foreground">
-        {t("title")}
-      </h1>
-      <p className="mt-1.5 text-sm text-normal">{t("subtitle")}</p>
+    <PageContainer className="flex flex-col">
+      <PageHeader title={t("title")} subtitle={t("subtitle")} />
 
       {/* สถิติ 4 ช่องคั่นด้วยเส้นตั้ง ไม่มีกรอบการ์ด */}
       <div className="mt-10 grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] gap-y-7">
@@ -148,13 +160,20 @@ export const Bill = () => {
 
       <div className="mt-14 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-[17px] font-semibold text-foreground">{t("history.heading")}</h2>
-        <Button variant="outline" className="h-9 gap-2 rounded-[10px] px-3 text-[13px] font-medium shadow-none">
+        <Button
+          variant="outline"
+          className="h-9 gap-2 rounded-[10px] px-3 text-[13px] font-medium shadow-none"
+        >
           <Download className="size-3.5" />
           {t("history.export")}
         </Button>
       </div>
 
-      <div role="tablist" aria-label={t("history.heading")} className="mt-2.5 flex gap-6 overflow-x-auto border-b border-border">
+      <div
+        role="tablist"
+        aria-label={t("history.heading")}
+        className="mt-2.5 flex gap-6 overflow-x-auto border-b border-border"
+      >
         <button
           type="button"
           role="tab"
@@ -181,7 +200,11 @@ export const Bill = () => {
 
         <div className="flex items-center gap-2.5 text-[13px]">
           <span className="text-mini">{t("history.statusLabel")}</span>
-          <div role="radiogroup" aria-label={t("history.statusLabel")} className="flex gap-0.5 rounded-[10px] bg-muted p-[3px]">
+          <div
+            role="radiogroup"
+            aria-label={t("history.statusLabel")}
+            className="flex gap-0.5 rounded-[10px] bg-muted p-[3px]"
+          >
             {filterTabs.map((tab) => {
               const isActive = filter === tab.value;
               return (
@@ -213,11 +236,21 @@ export const Bill = () => {
         <table className="w-full min-w-[720px] border-collapse text-sm">
           <thead>
             <tr className="text-left">
-              <th scope="col" className={cn(headCell, "pr-3 font-medium")}>{t("table.invoice")}</th>
-              <th scope="col" className={cn(headCell, "px-3 font-medium")}>{t("table.date")}</th>
-              <th scope="col" className={cn(headCell, "px-3 font-medium")}>{t("table.status")}</th>
-              <th scope="col" className={cn(headCell, "px-3 text-right font-medium")}>{t("table.amount")}</th>
-              <th scope="col" className={cn(headCell, "px-3 font-medium")}>{t("table.paymentMethod")}</th>
+              <th scope="col" className={cn(headCell, "pr-3 font-medium")}>
+                {t("table.invoice")}
+              </th>
+              <th scope="col" className={cn(headCell, "px-3 font-medium")}>
+                {t("table.date")}
+              </th>
+              <th scope="col" className={cn(headCell, "px-3 font-medium")}>
+                {t("table.status")}
+              </th>
+              <th scope="col" className={cn(headCell, "px-3 text-right font-medium")}>
+                {t("table.amount")}
+              </th>
+              <th scope="col" className={cn(headCell, "px-3 font-medium")}>
+                {t("table.paymentMethod")}
+              </th>
               <th scope="col" className={cn(headCell, "pl-3 text-right font-medium")}>
                 <span className="sr-only">{t("table.action")}</span>
               </th>
@@ -226,7 +259,10 @@ export const Bill = () => {
           <tbody>
             {isHistoryLoading && (
               <tr>
-                <td colSpan={6} className="border-t border-border/60 py-11 text-center text-[13px] text-mini">
+                <td
+                  colSpan={6}
+                  className="border-t border-border/60 py-11 text-center text-[13px] text-mini"
+                >
                   {t("history.loading")}
                 </td>
               </tr>
@@ -236,7 +272,12 @@ export const Bill = () => {
               <tr>
                 <td colSpan={6} className="border-t border-border/60 py-11 text-center">
                   <p className="text-sm text-destructive">{t("history.error")}</p>
-                  <Button variant="outline" size="sm" className="mt-3" onClick={() => refetchHistory()}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => refetchHistory()}
+                  >
                     {t("common:actions.retry")}
                   </Button>
                 </td>
@@ -245,7 +286,10 @@ export const Bill = () => {
 
             {!isHistoryLoading && !isHistoryError && visibleInvoices.length === 0 && (
               <tr>
-                <td colSpan={6} className="border-t border-border/60 py-11 text-center text-[13px] text-mini">
+                <td
+                  colSpan={6}
+                  className="border-t border-border/60 py-11 text-center text-[13px] text-mini"
+                >
                   {t("history.empty")}
                 </td>
               </tr>
@@ -281,7 +325,12 @@ export const Bill = () => {
                       >
                         <Eye className="size-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="size-8 text-mini" aria-label={t("invoice.downloadPdf")}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 text-mini"
+                        aria-label={t("invoice.downloadPdf")}
+                      >
                         <Download className="size-4" />
                       </Button>
                     </div>

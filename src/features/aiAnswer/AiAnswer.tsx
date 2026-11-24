@@ -1,15 +1,9 @@
 import { useMemo, useState } from "react";
-import {
-  BookOpen,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  Search,
-  Upload,
-} from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, Plus, Search, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -89,18 +83,15 @@ export const AiAnswer = () => {
 
       if (!keyword) return true;
 
-      return [item.title, item.category, item.intentKey, ...item.keywords].some(
-        (value) => value.toLowerCase().includes(keyword)
+      return [item.title, item.category, item.intentKey, ...item.keywords].some((value) =>
+        value.toLowerCase().includes(keyword)
       );
     });
   }, [items, search, category, status, priority]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const currentPage = Math.min(page, totalPages);
-  const pageItems = filtered.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
+  const pageItems = filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   const openEditor = (item?: KnowledgeItem) => {
     setEditing(item);
@@ -113,23 +104,17 @@ export const AiAnswer = () => {
   };
 
   /** ปุ่ม Add ด้านบนใช้ร่วมกันทั้งสองแท็บ จึงเปิดฟอร์มให้ตรงกับแท็บที่เปิดอยู่ */
-  const handleAdd = () =>
-    tab === "micro" ? openMicroEditor(undefined) : openEditor(undefined);
+  const handleAdd = () => (tab === "micro" ? openMicroEditor(undefined) : openEditor(undefined));
 
   const handlePublish = (draft: KnowledgeDraft) => {
-    saveKnowledge.mutate(
-      editing?.id
-        ? { id: editing.id, original: editing, draft }
-        : { draft },
-      { onSuccess: () => setPanelOpen(false) }
-    );
+    saveKnowledge.mutate(editing?.id ? { id: editing.id, original: editing, draft } : { draft }, {
+      onSuccess: () => setPanelOpen(false),
+    });
   };
 
   const toggleSelect = (id: string) =>
     setSelectedIds((current) =>
-      current.includes(id)
-        ? current.filter((value) => value !== id)
-        : [...current, id]
+      current.includes(id) ? current.filter((value) => value !== id) : [...current, id]
     );
 
   const toggleSelectAll = () =>
@@ -139,32 +124,30 @@ export const AiAnswer = () => {
 
   return (
     <PageContainer className="min-w-0">
-      <div className="flex flex-wrap items-end justify-between gap-4 pt-2">
-        <div className="flex flex-col gap-1.5">
-          <h1 className="text-[28px] font-semibold leading-[1.2] tracking-[-0.025em] text-foreground">
-            {t("title")}
-          </h1>
-          <p className="text-sm text-normal">{t("subtitle")}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            className="h-10 gap-2 rounded-[10px] px-3.5 text-sm font-medium shadow-none"
-            onClick={() => setTab(TABS[2])}
-          >
-            <Upload className="size-4" />
-            {t("bulkImport")}
-          </Button>
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="h-10 gap-2 rounded-[10px] px-3.5 text-sm font-medium shadow-none"
+              onClick={() => setTab(TABS[2])}
+            >
+              <Upload className="size-4" />
+              {t("bulkImport")}
+            </Button>
 
-          <Button
-            className="h-10 gap-2 rounded-[10px] bg-primary pl-3.5 pr-4 text-sm font-medium text-primary-foreground hover:bg-primary/85"
-            onClick={handleAdd}
-          >
-            <Plus className="size-4" />
-            {tab === "micro" ? t("micro.add") : t("add")}
-          </Button>
-        </div>
-      </div>
+            <Button
+              className="h-10 gap-2 rounded-[10px] bg-primary pl-3.5 pr-4 text-sm font-medium text-primary-foreground hover:bg-primary/85"
+              onClick={handleAdd}
+            >
+              <Plus className="size-4" />
+              {tab === "micro" ? t("micro.add") : t("add")}
+            </Button>
+          </div>
+        }
+      />
 
       {(() => {
         const tabsBar = (
@@ -261,10 +244,7 @@ export const AiAnswer = () => {
                     <SelectContent>
                       <SelectItem value="all">{t("filter.allCategories")}</SelectItem>
                       {categoryOptions.map((categoryOption) => (
-                        <SelectItem
-                          key={categoryOption.id}
-                          value={categoryOption.name}
-                        >
+                        <SelectItem key={categoryOption.id} value={categoryOption.name}>
                           {categoryOption.name}
                         </SelectItem>
                       ))}
@@ -395,10 +375,15 @@ export const AiAnswer = () => {
                   onPublish={handlePublish}
                 />
               ) : (
-                <Card variant="flat" className="absolute inset-0 flex items-center justify-center p-10 text-center">
+                <Card
+                  variant="flat"
+                  className="absolute inset-0 flex items-center justify-center p-10 text-center"
+                >
                   <div>
                     <BookOpen className="mx-auto h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
-                    <p className="mt-3 text-sm font-medium text-foreground">{t("emptyPanel.title")}</p>
+                    <p className="mt-3 text-sm font-medium text-foreground">
+                      {t("emptyPanel.title")}
+                    </p>
                     <p className="mt-1 text-[13px] text-muted-foreground">{t("emptyPanel.hint")}</p>
                   </div>
                 </Card>

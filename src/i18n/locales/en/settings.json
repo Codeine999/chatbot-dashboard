@@ -248,6 +248,99 @@
         "keepsPrevious": "Your previous connection still works"
       }
     },
-    "pageSubtitle": "Connect your LINE Official Account to receive messages and reply to customers automatically."
+    "pageSubtitle": "Connect your LINE Official Account to receive messages and reply to customers automatically.",
+    "channels": {
+      "line": "LINE",
+      "facebook": "Facebook"
+    },
+    "facebook": {
+      "title": "Facebook Messenger",
+      "subtitle": "Enter the App secret and Page access token of the Facebook Page you want to connect",
+      "openConsole": "Open Meta for Developers",
+      "page": "Facebook Page",
+      "appSecret": "App secret",
+      "appSecretPlaceholder": "Paste App secret",
+      "appSecretHint": "32 characters, 0-9 and a-f. Found in App settings › Basic. Used to verify that webhooks really come from Meta",
+      "pageAccessToken": "Page access token",
+      "pageAccessTokenPlaceholder": "Paste Page access token",
+      "pageAccessTokenHint": "Generate it in Messenger › API setup for the Page. It needs the pages_messaging permission",
+      "encryptedNote": "Data is encrypted before storage and will not be shown again after saving",
+      "lockedNote": "Saved and encrypted. Only the last 4 characters are shown. Click Edit to enter new values",
+      "envNote": "The system is currently using values from the server environment. Save here to manage the Page from this page",
+      "submit": "Save",
+      "testing": "Saving and testing...",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "reset": "Clear",
+      "disconnect": "Disconnect",
+      "disconnectDialog": {
+        "title": "Disconnect this Facebook Page?",
+        "description": "The bot will stop receiving and replying to Messenger messages. Chat history is kept. You can connect again at any time"
+      },
+      "webhook": {
+        "title": "Webhook",
+        "subtitle": "Copy both values to Meta for Developers › Messenger › Webhooks",
+        "callbackUrl": "Callback URL",
+        "verifyToken": "Verify token",
+        "ready": "Webhook set up",
+        "notReady": "Webhook not set up",
+        "empty": "Save the Page first and this value will be created",
+        "manualNeeded": "Could not subscribe the Page to messages automatically. Subscribe it yourself in Meta for Developers",
+        "afterCopy": "After copying, set up the Meta side as follows",
+        "steps": {
+          "open": "Open your app in Meta for Developers › Messenger › Webhooks and click Edit callback URL",
+          "paste": "Paste the Callback URL and Verify token above, then click Verify and save",
+          "subscribe": "Subscribe the Page to the messages and messaging_postbacks fields"
+        },
+        "warning": "This URL and token are tied to your workspace. Do not share them with others"
+      },
+      "validation": {
+        "secretRequired": "Enter the App secret",
+        "secretFormat": "App secret may only contain 0-9 and a-f",
+        "secretLength": "App secret must be exactly 32 characters",
+        "tokenRequired": "Enter the Page access token",
+        "tokenFormat": "Page access token must not contain spaces or line breaks",
+        "tokenLong": "Page access token is too long"
+      },
+      "errors": {
+        "invalidToken": "Facebook rejected this Page access token. Check that it is complete, belongs to a Page, and has not expired",
+        "noAccess": "Your role cannot connect Facebook",
+        "conflict": "This Facebook Page is already connected to another company",
+        "facebookUnreachable": "Cannot reach Facebook right now. Please try again",
+        "notReady": "The system is not ready to store encrypted data. Please contact your administrator",
+        "notPageToken": "This is not a Page access token. Generate the token for the Page (not a User token) in Messenger API settings",
+        "appSecretMismatch": "This App secret does not belong to the app that issued the Page access token. Copy it from App settings › Basic of the same app"
+      },
+      "toast": {
+        "subscribeManual": "Saved, but the Page could not be subscribed automatically. Subscribe it in Meta for Developers",
+        "disconnected": "Facebook Page disconnected"
+      },
+      "noAccess": {
+        "title": "You cannot manage Facebook",
+        "description": "Only owners, developers and admins can connect a Facebook Page"
+      },
+      "status": {
+        "title": "Connection status",
+        "idle": {
+          "title": "Facebook is not connected",
+          "description": "Fill in the form on the left and save. The system will test the connection right away"
+        },
+        "testing": {
+          "title": "Testing connection",
+          "description": "Checking the token with Facebook and subscribing the Page"
+        },
+        "connected": {
+          "title": "Connected successfully",
+          "description": "The system is ready to receive customer messages via Messenger",
+          "envDescription": "Connected using server values. The system is ready to receive customer messages via Messenger",
+          "verifiedAt": "Last verified {{date}} {{time}}"
+        },
+        "failed": {
+          "title": "Connection failed",
+          "description": "Check the App secret and Page access token, then try again",
+          "keepsPrevious": "Your previous connection still works"
+        }
+      }
+    }
   }
 }

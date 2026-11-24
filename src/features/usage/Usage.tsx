@@ -1,23 +1,23 @@
 import { CheckCircle2, RefreshCw } from "lucide-react";
 import { getApiErrorMessage } from "@/api/api";
 import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { useAdminUsage } from "./hooks/useAdminUsage";
 import { useLinePushMessageUsage } from "./hooks/useLinePushMessageUsage";
 import { useUsageAccounts } from "./hooks/useUsageAccounts";
-import type { UsageAccountItem } from "./services/usage.service";
+import type { UsageAccountItem, UsageReplyChannel } from "./services/usage.service";
 import { useTranslation } from "react-i18next";
 import { formatNumber as formatLocaleNumber, getIntlLocale } from "@/i18n/format";
 import { useState } from "react";
+import { USAGE_REPLIES_PAGE_SIZE, useUsageReplies } from "./hooks/useUsageReplies";
 import {
   TOKEN_CHANNEL_MOCK,
   TOKEN_CHANNELS,
-  TOKEN_LOG_MOCK,
   type TokenChannel,
   type TokenChannelMock,
 } from "./mock/tokenChannel.mock";
 
-const formatNumber = (value: number) =>
-  formatLocaleNumber(value, { maximumFractionDigits: 2 });
+const formatNumber = (value: number) => formatLocaleNumber(value, { maximumFractionDigits: 2 });
 
 const getPercent = (used: number, limit: number) =>
   limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
@@ -25,6 +25,18 @@ const getPercent = (used: number, limit: number) =>
 /** keep small usages visible instead of rounding them down to 0% */
 const formatPercent = (percent: number) =>
   percent > 0 && percent < 1 ? percent.toFixed(2) : Math.round(percent).toString();
+
+const REPLY_CHANNEL: Record<Exclude<TokenChannel, "overall">, UsageReplyChannel> = {
+  line: "LINE",
+  facebook: "FACEBOOK",
+  api: "APPLICATION",
+};
+
+const REPLY_CHANNEL_LABEL: Record<UsageReplyChannel, Exclude<TokenChannel, "overall">> = {
+  LINE: "line",
+  FACEBOOK: "facebook",
+  APPLICATION: "api",
+};
 
 const statusDot: Record<UsageAccountItem["status"], string> = {
   active: "bg-[#16a34a]",
@@ -100,7 +112,11 @@ function ChannelFilterTabs({
 }) {
   const { t } = useTranslation("usage");
   return (
-    <div role="tablist" aria-label={label} className="flex w-fit gap-0.5 rounded-[10px] bg-muted p-[3px]">
+    <div
+      role="tablist"
+      aria-label={label}
+      className="flex w-fit gap-0.5 rounded-[10px] bg-muted p-[3px]"
+    >
       {TOKEN_CHANNELS.map((item) => {
         const isActive = item === value;
         return (
@@ -229,8 +245,22 @@ export const Usage = () => {
           admin: { used: adminUsed, limit: adminLimit },
         }
       : TOKEN_CHANNEL_MOCK[tokenChannel];
-  const visibleLog =
-    tokenChannel === "overall" ? TOKEN_LOG_MOCK : TOKEN_LOG_MOCK.filter((item) => item.channel === tokenChannel);
+  const [logPage, setLogPage] = useState(1);
+  const {
+    data: replyLog,
+    isLoading: isLogLoading,
+    isError: isLogError,
+    error: logError,
+  } = useUsageReplies(
+    tokenChannel === "overall" ? undefined : REPLY_CHANNEL[tokenChannel],
+    logPage
+  );
+  const logItems = replyLog?.items ?? [];
+  const logPages = Math.max(1, Math.ceil((replyLog?.total ?? 0) / USAGE_REPLIES_PAGE_SIZE));
+  const changeChannel = (channel: TokenChannel) => {
+    setTokenChannel(channel);
+    setLogPage(1);
+  };
   const totalPersonTokens = usageAccounts.reduce((sum, item) => sum + item.aiUsed, 0);
 
   const syncing = isAdminUsageLoading || isLinePushLoading;
@@ -242,30 +272,30 @@ export const Usage = () => {
   const noteClass = "mt-6 text-sm text-muted-foreground";
 
   return (
-    <PageContainer className="mx-auto max-w-[1160px] pt-6 pb-16">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-[28px] font-semibold tracking-[-0.02em] text-foreground">{t("title")}</h1>
-          <p className="mt-1.5 text-sm text-normal">{t("subtitle")}</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-[13px] text-muted-foreground">
-            {syncing
-              ? t("sync.syncing")
-              : isAdminUsageError || isLinePushError
-                ? t("sync.fallback")
-                : t("sync.updated")}
-          </span>
-          <button
-            type="button"
-            onClick={refresh}
-            aria-label={t("refresh")}
-            className="flex size-[38px] cursor-pointer items-center justify-center rounded-[10px] border text-normal transition-colors hover:bg-muted"
-          >
-            <RefreshCw className={`size-4 ${syncing ? "animate-spin" : ""}`} />
-          </button>
-        </div>
-      </div>
+    <PageContainer className="pb-16">
+      <PageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        actions={
+          <div className="flex items-center gap-3">
+            <span className="text-[13px] text-muted-foreground">
+              {syncing
+                ? t("sync.syncing")
+                : isAdminUsageError || isLinePushError
+                  ? t("sync.fallback")
+                  : t("sync.updated")}
+            </span>
+            <button
+              type="button"
+              onClick={refresh}
+              aria-label={t("refresh")}
+              className="flex size-[38px] cursor-pointer items-center justify-center rounded-[10px] border text-normal transition-colors hover:bg-muted"
+            >
+              <RefreshCw className={`size-4 ${syncing ? "animate-spin" : ""}`} />
+            </button>
+          </div>
+        }
+      />
 
       <div className="mt-11 flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -275,9 +305,16 @@ export const Usage = () => {
         <div className="flex flex-wrap items-center gap-4">
           <span className="flex items-center gap-2 text-[13px] text-normal">
             <span className="size-2 rounded-full bg-[#16a34a] shadow-[0_0_0_3px_rgba(22,163,74,0.15)]" />
-            {t("token.connected", { active: activeAccounts, total: usageAccounts.length })}
+            {t("token.connected", {
+              active: activeAccounts,
+              total: usageAccounts.length,
+            })}
           </span>
-          <ChannelFilterTabs value={tokenChannel} onChange={setTokenChannel} label={t("token.log.filter")} />
+          <ChannelFilterTabs
+            value={tokenChannel}
+            onChange={changeChannel}
+            label={t("token.log.filter")}
+          />
         </div>
       </div>
 
@@ -309,7 +346,9 @@ export const Usage = () => {
       <div className="mt-12 flex items-baseline justify-between gap-3">
         <h3 className="text-[15px] font-semibold text-foreground">{t("token.perPerson.title")}</h3>
         <span className="text-[13px] text-muted-foreground">
-          {t("token.perPerson.total", { used: formatNumber(totalPersonTokens) })}
+          {t("token.perPerson.total", {
+            used: formatNumber(totalPersonTokens),
+          })}
         </span>
       </div>
 
@@ -342,20 +381,31 @@ export const Usage = () => {
                     className="border-b border-black/5 transition-colors hover:bg-[#fafafa] dark:border-white/5 dark:hover:bg-white/[0.03]"
                   >
                     <td className="py-3 pr-4">
-                      <p className="truncate text-sm font-medium text-foreground">{account.username}</p>
+                      <p className="truncate text-sm font-medium text-foreground">
+                        {account.username}
+                      </p>
                       <p className="truncate text-xs text-muted-foreground">{account.role}</p>
                     </td>
-                    <td className="py-3 pr-4 text-[13px] tabular-nums text-normal">{formatNumber(account.aiUsed)}</td>
-                    <td className="py-3 pr-4 text-[13px] tabular-nums text-normal">{formatNumber(limit)}</td>
+                    <td className="py-3 pr-4 text-[13px] tabular-nums text-normal">
+                      {formatNumber(account.aiUsed)}
+                    </td>
+                    <td className="py-3 pr-4 text-[13px] tabular-nums text-normal">
+                      {formatNumber(limit)}
+                    </td>
                     <td className="py-3 pr-4">
                       <div className="flex items-center gap-3">
                         <div className="h-1 w-32 overflow-hidden rounded-full bg-[#f0f0f0] dark:bg-white/10">
                           <div
                             className="h-full rounded-full bg-[#8b5cf6]"
-                            style={{ width: `${percent}%`, minWidth: percent > 0 ? 3 : 0 }}
+                            style={{
+                              width: `${percent}%`,
+                              minWidth: percent > 0 ? 3 : 0,
+                            }}
                           />
                         </div>
-                        <span className="font-mono text-xs text-muted-foreground">{formatPercent(percent)}%</span>
+                        <span className="font-mono text-xs text-muted-foreground">
+                          {formatPercent(percent)}%
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -366,47 +416,90 @@ export const Usage = () => {
         </div>
       )}
 
-      <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-10">
         <h3 className="text-[15px] font-semibold text-foreground">{t("token.log.title")}</h3>
+        <p className="mt-1 text-[13px] text-muted-foreground">{t("token.log.note")}</p>
       </div>
 
-      <div className="mt-3 overflow-x-auto">
-        <table className="w-full min-w-[640px] border-collapse text-left">
-          <thead>
-            <tr className="border-b text-xs font-medium text-muted-foreground">
-              <th className="py-2.5 pr-4 font-medium">{t("token.log.time")}</th>
-              <th className="py-2.5 pr-4 font-medium">{t("token.log.channel")}</th>
-              <th className="py-2.5 pr-4 font-medium">{t("token.log.respondedBy")}</th>
-              <th className="py-2.5 pr-4 text-right font-medium">{t("token.log.input")}</th>
-              <th className="py-2.5 pr-4 text-right font-medium">{t("token.log.output")}</th>
-              <th className="py-2.5 text-right font-medium">{t("token.log.total")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visibleLog.map((entry) => (
-              <tr
-                key={entry.id}
-                className="border-b border-black/5 transition-colors hover:bg-[#fafafa] dark:border-white/5 dark:hover:bg-white/[0.03]"
-              >
-                <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">{formatLogTime(entry.createdAt)}</td>
-                <td className="py-3 pr-4 text-[13px] text-normal">{t(`token.channels.${entry.channel}`)}</td>
-                <td className="py-3 pr-4 text-[13px] text-normal">
-                  {entry.respondedBy === "AI" ? t("token.log.ai") : entry.respondedBy}
-                </td>
-                <td className="py-3 pr-4 text-right text-[13px] tabular-nums text-normal">
-                  {formatNumber(entry.inputTokens)}
-                </td>
-                <td className="py-3 pr-4 text-right text-[13px] tabular-nums text-normal">
-                  {formatNumber(entry.outputTokens)}
-                </td>
-                <td className="py-3 text-right text-[13px] font-medium tabular-nums text-foreground">
-                  {formatNumber(entry.inputTokens + entry.outputTokens)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {isLogLoading ? (
+        <p className="mt-4 text-sm text-muted-foreground">{t("token.log.loading")}</p>
+      ) : isLogError ? (
+        <p className="mt-4 text-sm text-muted-foreground">
+          {t("token.log.error", { message: getApiErrorMessage(logError) })}
+        </p>
+      ) : logItems.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">{t("token.log.empty")}</p>
+      ) : (
+        <>
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full min-w-[640px] border-collapse text-left">
+              <thead>
+                <tr className="border-b text-xs font-medium text-muted-foreground">
+                  <th className="py-2.5 pr-4 font-medium">{t("token.log.time")}</th>
+                  <th className="py-2.5 pr-4 font-medium">{t("token.log.channel")}</th>
+                  <th className="py-2.5 pr-4 font-medium">{t("token.log.respondedBy")}</th>
+                  <th className="py-2.5 pr-4 font-medium">{t("token.log.answerType")}</th>
+                  <th className="py-2.5 text-right font-medium">{t("token.log.credit")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logItems.map((entry) => (
+                  <tr
+                    key={entry.id}
+                    className="border-b border-black/5 transition-colors hover:bg-[#fafafa] dark:border-white/5 dark:hover:bg-white/[0.03]"
+                  >
+                    <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">
+                      {formatLogTime(entry.createdAt)}
+                    </td>
+                    <td className="py-3 pr-4 text-[13px] text-normal">
+                      {entry.channel
+                        ? t(`token.channels.${REPLY_CHANNEL_LABEL[entry.channel]}`)
+                        : t("token.channels.unknown")}
+                    </td>
+                    <td className="py-3 pr-4 text-[13px] text-normal">
+                      {entry.respondedBy === "AI"
+                        ? t("token.log.ai")
+                        : (entry.adminUsername ?? t("token.log.admin"))}
+                    </td>
+                    <td className="py-3 pr-4 text-[13px] text-normal">
+                      {entry.answerType
+                        ? t(`token.answerTypes.${entry.answerType}`, {
+                            defaultValue: entry.answerType,
+                          })
+                        : "—"}
+                      {entry.status === "failed" && (
+                        <span className="ml-2 text-xs text-[#dc2626]">{t("token.log.failed")}</span>
+                      )}
+                    </td>
+                    <td className="py-3 text-right text-[13px] font-medium tabular-nums text-foreground">
+                      {formatNumber(entry.chargedCredit)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 flex items-center justify-end gap-3 text-[13px] text-muted-foreground">
+            <span>{t("token.log.page", { page: logPage, pages: logPages })}</span>
+            <button
+              type="button"
+              disabled={logPage <= 1}
+              onClick={() => setLogPage((page) => Math.max(1, page - 1))}
+              className="h-8 cursor-pointer rounded-lg border px-3 text-normal transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {t("token.log.prev")}
+            </button>
+            <button
+              type="button"
+              disabled={logPage >= logPages}
+              onClick={() => setLogPage((page) => page + 1)}
+              className="h-8 cursor-pointer rounded-lg border px-3 text-normal transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {t("token.log.next")}
+            </button>
+          </div>
+        </>
+      )}
 
       <div className="mt-16 flex items-baseline gap-3">
         <h2 className="text-lg font-semibold text-foreground">{t("adminTitle")}</h2>
@@ -418,7 +511,9 @@ export const Usage = () => {
       {isAccountsLoading ? (
         <p className={noteClass}>{t("account.loading")}</p>
       ) : isAccountsError ? (
-        <p className={noteClass}>{t("account.error", { message: getApiErrorMessage(accountsError) })}</p>
+        <p className={noteClass}>
+          {t("account.error", { message: getApiErrorMessage(accountsError) })}
+        </p>
       ) : usageAccounts.length === 0 ? (
         <p className={noteClass}>{t("account.empty")}</p>
       ) : (

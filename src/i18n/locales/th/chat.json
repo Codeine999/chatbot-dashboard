@@ -142,7 +142,8 @@
       "sticker": "สติกเกอร์ {{packageId}} / {{stickerId}}",
       "postback": "Postback event",
       "imageLoading": "กำลังโหลดรูป…",
-      "imageEnlarge": "กดเพื่อขยายรูป"
+      "imageEnlarge": "กดเพื่อขยายรูป",
+      "unsupported": "ไฟล์แนบ (ยังไม่รองรับ)"
     },
     "status": {
       "waiting_admin": "รอแอดมินตอบ",
@@ -203,7 +204,9 @@
         "paused": "หยุดชั่วคราว"
       }
     },
-    "customerInfo": "ข้อมูลลูกค้า"
+    "customerInfo": "ข้อมูลลูกค้า",
+    "facebookUser": "ผู้ใช้ Facebook",
+    "adminLabel": "แอดมิน"
   },
   "customerTest": {
     "newChat": "เริ่มแชทใหม่",

@@ -143,7 +143,8 @@
       "sticker": "Sticker {{packageId}} / {{stickerId}}",
       "postback": "Postback event",
       "imageLoading": "Loading image…",
-      "imageEnlarge": "Click to enlarge image"
+      "imageEnlarge": "Click to enlarge image",
+      "unsupported": "Attachment (not supported yet)"
     },
     "status": {
       "waiting_admin": "Waiting for admin",
@@ -204,7 +205,9 @@
         "paused": "Paused"
       }
     },
-    "customerInfo": "Customer info"
+    "customerInfo": "Customer info",
+    "facebookUser": "Facebook user",
+    "adminLabel": "Admin"
   },
   "customerTest": {
     "newChat": "New chat",

@@ -24,6 +24,7 @@ import { Connection } from "./features/setting/connection/Connection";
 import { ClearSession } from "./features/setting/clearSession/ClearSession";
 import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
 import GuestRoute from "@/features/auth/components/GuestRoute";
+import RoleRoute from "@/features/auth/components/RoleRoute";
 
 
 import InternalCustomerChat from "./features/internalCustomerChat/InternalCustomerChat";
@@ -57,7 +58,9 @@ function App() {
 
           <Route path="/usage" element={<Usage />} />
           <Route path="/usage/Graph" element={<UsageGraph />} />
-          <Route path="/bill" element={<Bill />} />
+          <Route element={<RoleRoute roles={["dev"]} />}>
+            <Route path="/bill" element={<Bill />} />
+          </Route>
           <Route path="/admin-list" element={<AdminList />} />
           <Route path="/setting/admin/over-all" element={<OverallSetting />} />
           <Route path="/setting/admin/select-menu" element={<SelectMenu />} />

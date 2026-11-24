@@ -4,7 +4,7 @@ import { getIntlLocale } from "@/i18n/format";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { UserAvatar } from "@/features/user/components/UserVisuals";
 import { useSearchParams } from "react-router-dom";
-import { ArrowUp, ChevronDown, ChevronLeft, Ellipsis, ImageIcon, LayoutGrid, PencilLine, Smile } from "lucide-react";
+import { ArrowUp, ChevronDown, ChevronLeft, Ellipsis, ImageIcon, LayoutGrid, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchIcon, SidebarToggleIcon } from "@/components/navbar/icons";
 import { BotModeSelect } from "./components/BotModeSelect";
@@ -17,7 +17,6 @@ import {
   LineIcon,
   LineSquareIcon,
   MessengerIcon,
-  MessengerSoonIcon,
   TikTokIcon,
   TikTokSoonIcon,
 } from "./components/ChannelIcons";
@@ -209,11 +208,11 @@ function ChannelChips({
   onChange,
 }: {
   value: ChannelId;
-  counts: Record<"all" | "line", number>;
+  counts: Record<"all" | "line" | "messenger", number>;
   onChange: (id: ChannelId) => void;
 }) {
   const { t } = useTranslation("chat");
-  const pill = (id: "all" | "line") => {
+  const pill = (id: "all" | "line" | "messenger") => {
     const isActive = id === value;
 
     return (
@@ -223,16 +222,18 @@ function ChannelChips({
         role="radio"
         aria-checked={isActive}
         onClick={() => onChange(id)}
-        className={`flex h-8 shrink-0 cursor-pointer items-center gap-1.5 rounded-full pl-1 pr-2.5 text-xs font-medium transition-colors ${
+        className={`flex h-7 shrink-0 cursor-pointer items-center gap-1 rounded-full pl-1 pr-2 text-xs font-medium transition-colors ${
           isActive ? "bg-primary text-primary-foreground" : "border bg-background text-foreground hover:bg-accent"
         }`}
       >
         {id === "all" ? (
-          <span className="flex size-[22px] items-center justify-center rounded-full bg-white/20">
-            <LayoutGrid className="size-[11px]" />
+          <span className="flex size-4 items-center justify-center rounded-full bg-white/20">
+            <LayoutGrid className="size-[9px]" />
           </span>
+        ) : id === "messenger" ? (
+          <MessengerIcon className="size-4" />
         ) : (
-          <LineSquareIcon className="size-[22px]" />
+          <LineSquareIcon className="size-4" />
         )}
         {t(`line.channel.${id}`)}
         <span className={isActive ? "text-primary-foreground/70" : "text-muted-foreground"}>{counts[id]}</span>
@@ -241,16 +242,11 @@ function ChannelChips({
   };
 
   return (
-    <div role="radiogroup" className="flex items-center gap-1.5 overflow-x-auto">
+    <div role="radiogroup" className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none]! [&::-webkit-scrollbar]:hidden!">
       {pill("all")}
       {pill("line")}
-      <span
-        title={`${t("line.channel.messenger")} · ${t("line.comingSoon")}`}
-        className="ml-2.5 shrink-0"
-      >
-        <MessengerSoonIcon className="size-5" />
-      </span>
-      <span title={`${t("line.channel.tiktok")} · ${t("line.comingSoon")}`} className="ml-1 shrink-0">
+      {pill("messenger")}
+      <span title={`${t("line.channel.tiktok")} · ${t("line.comingSoon")}`} className="ml-2.5 shrink-0">
         <TikTokSoonIcon className="size-5" />
       </span>
     </div>
@@ -442,23 +438,10 @@ export const LineChat = () => {
     () => ({
       all: conversations.length,
       line: conversations.filter((conversation) => (conversation.platform ?? "line") === "line").length,
+      messenger: conversations.filter((conversation) => conversation.platform === "messenger").length,
     }),
     [conversations]
   );
-
-  // ตัวเลขในแถบ "กำลังดู" นับเฉพาะช่องทางที่เลือก
-  const channelConversations = useMemo(
-    () =>
-      channel === "all"
-        ? conversations
-        : conversations.filter((conversation) => (conversation.platform ?? "line") === channel),
-    [channel, conversations]
-  );
-  const channelWaitingCount = useMemo(
-    () => channelConversations.filter((conversation) => conversation.status === WAITING_ADMIN).length,
-    [channelConversations]
-  );
-  const viewingLabel = channel === "all" ? t("line.allChannels") : t(`line.channel.${channel}`);
 
   const filteredConversations = useMemo(() => {
     const byChannel =
@@ -545,19 +528,19 @@ export const LineChat = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedConversation?.id]);
 
-  const messagesQuery = useConversationMessages(selectedConversation?.id);
-  const sendMessageMutation = useSendLineMessage(selectedConversation?.id);
+  const messagesQuery = useConversationMessages(selectedConversation?.id, selectedConversation?.platform);
+  const sendMessageMutation = useSendLineMessage(selectedConversation?.id, selectedConversation?.platform);
   // presence: แสดงว่าใครกำลังเปิดห้อง/กำลังพิมพ์ (แสดงผลอย่างเดียว ไม่บล็อกการส่ง)
   usePresenceSession();
   const presenceChannel = toPresenceChannel(selectedConversation?.platform);
   useRoomPresence(presenceChannel, selectedConversation?.id);
   const presenceDraft = usePresenceDraft(presenceChannel, selectedConversation?.id);
-  usePollConversationMessages(selectedConversation?.id);
-  // endpoint /line/... ใช้ได้เฉพาะห้อง LINE ช่องทางอื่นยังไม่เรียก
+  usePollConversationMessages(selectedConversation?.id, selectedConversation?.platform);
   useMarkLineConversationRead(
     selectedConversation?.id,
-    (selectedConversation?.platform ?? "line") === "line" ? selectedConversation?.unreadCount : 0,
-    messagesQuery.isSuccess
+    selectedConversation?.unreadCount,
+    messagesQuery.isSuccess,
+    selectedConversation?.platform
   );
 
   const messages = useMemo(() => {
@@ -653,13 +636,17 @@ export const LineChat = () => {
             </div>
             <span className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
               <span>{t(`line.channel.${selectedConversation.platform ?? "line"}`, { defaultValue: "LINE" })}</span>
-              <span>·</span>
-              <span
-                title={selectedConversation.lineMember?.lineUserId}
-                className="max-w-[16ch] truncate font-mono"
-              >
-                {selectedConversation.lineMember?.lineUserId ?? "-"}
-              </span>
+              {selectedConversation.lineMember?.lineUserId && (
+                <>
+                  <span>·</span>
+                  <span
+                    title={selectedConversation.lineMember.lineUserId}
+                    className="max-w-[16ch] truncate font-mono"
+                  >
+                    {selectedConversation.lineMember.lineUserId}
+                  </span>
+                </>
+              )}
               {selectedConversation.lineMember?.lastActiveAt && (
                 <span className="hidden truncate md:inline">
                   · {t("line.lastActive", { time: formatTime(selectedConversation.lineMember.lastActiveAt) })}
@@ -705,8 +692,8 @@ export const LineChat = () => {
         className={`grid h-full w-full grid-cols-1 grid-rows-[minmax(0,1fr)] overflow-hidden bg-background xl:grid-rows-none ${
           isInboxOpen
             ? showInfoPanel
-              ? "xl:grid-cols-[380px_minmax(0,1fr)_320px]"
-              : "xl:grid-cols-[380px_minmax(0,1fr)]"
+              ? "xl:grid-cols-[335px_minmax(0,1fr)_320px]"
+              : "xl:grid-cols-[335px_minmax(0,1fr)]"
             : showInfoPanel
               ? "xl:grid-cols-[76px_minmax(0,1fr)_320px]"
               : "xl:grid-cols-[76px_minmax(0,1fr)]"
@@ -717,45 +704,14 @@ export const LineChat = () => {
             isChatOpenOnMobile ? "hidden" : "flex"
           }`}
         >
-          <div className={`flex shrink-0 items-center gap-3 ${isInboxOpen ? "px-5 pb-3 pt-4" : "justify-center py-4"}`}>
-            {isInboxOpen && (
-              <>
-                <div className="min-w-0 flex-1">
-                  <h1 className="truncate text-base font-semibold leading-tight text-foreground">{t("line.inbox")}</h1>
-                  <p className="truncate text-xs text-muted-foreground">{t("line.inboxSubtitle")}</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  aria-label={t("line.newChat")}
-                  className="size-9 shrink-0 rounded-xl shadow-none"
-                >
-                  <PencilLine className="size-4" />
-                </Button>
-              </>
-            )}
-          </div>
-
           {isInboxOpen && (
             <>
-              <div className="shrink-0 px-5 pb-3">
+              <div className="shrink-0 px-5 pb-3 pt-4">
                 <ChannelChips value={channel} counts={channelCounts} onChange={setChannel} />
               </div>
 
-              <div className="shrink-0 px-5 pb-3">
-                <div className="flex h-9 items-center gap-2 rounded-xl border bg-muted/40 px-3 text-xs">
-                  <span className="text-muted-foreground">{t("line.viewing")}</span>
-                  <span className="size-2 shrink-0 rounded-full bg-primary" />
-                  <span className="truncate font-semibold text-foreground">{viewingLabel}</span>
-                  <span className="ml-auto shrink-0 text-muted-foreground">
-                    {t("line.conversationCount", { count: channelConversations.length })} ·{" "}
-                    {t("line.waitingCount", { count: channelWaitingCount })}
-                  </span>
-                </div>
-              </div>
-
               <div className="flex shrink-0 gap-2 border-t px-5 pb-3 pt-3">
-                <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-xl bg-muted px-3">
+                <div className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-xl bg-muted px-3">
                   <SearchIcon className="size-[15px] shrink-0 text-muted-foreground" />
                   <input
                     value={search}
@@ -770,7 +726,7 @@ export const LineChat = () => {
                   onClick={() => setIsNewestFirst((value) => !value)}
                   title={isNewestFirst ? t("line.newestFirst") : t("line.oldestFirst")}
                   aria-label={isNewestFirst ? t("line.newestFirst") : t("line.oldestFirst")}
-                  className={`flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border transition-colors hover:bg-accent ${
+                  className={`flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border transition-colors hover:bg-accent ${
                     isNewestFirst ? "bg-background text-normal" : "bg-muted text-foreground"
                   }`}
                 >

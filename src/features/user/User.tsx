@@ -3,17 +3,14 @@ import { useTranslation } from "react-i18next";
 import { Download, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageContainer } from "@/components/common/PageContainer";
+import { PageHeader } from "@/components/common/PageHeader";
 import { UserFilters } from "./components/UserFilters";
 import { UserPagination } from "./components/UserPagination";
 import { UserStatsCards } from "./components/UserStatsCards";
 import { UserTabs } from "./components/UserTabs";
 import UserTable from "./components/UserTable";
 import LineUserTable from "./components/LineUserTable";
-import {
-  useLineUsers,
-  useRegisteredUsers,
-  useUserCounts,
-} from "./hooks/useUsers";
+import { useLineUsers, useRegisteredUsers, useUserCounts } from "./hooks/useUsers";
 import { LINE_SORTS, REGISTERED_SORTS } from "./type";
 import type { UserListParams, UserTab } from "./type";
 
@@ -45,10 +42,7 @@ const User = () => {
   const page = activeQuery.data?.page ?? params.page;
   const total = activeQuery.data?.total ?? 0;
 
-  const registeredUsers = useMemo(
-    () => registeredQuery.data?.items ?? [],
-    [registeredQuery.data]
-  );
+  const registeredUsers = useMemo(() => registeredQuery.data?.items ?? [], [registeredQuery.data]);
 
   /** แก้ตัวกรองเมื่อไหร่ ต้องกลับไปหน้าแรกเสมอ ไม่งั้นอาจค้างอยู่หน้าที่ไม่มีข้อมูลแล้ว */
   const patchParams = (patch: Partial<UserListParams>) =>
@@ -70,40 +64,36 @@ const User = () => {
 
   const toggleSelect = (id: string) =>
     setSelectedIds((current) =>
-      current.includes(id)
-        ? current.filter((value) => value !== id)
-        : [...current, id]
+      current.includes(id) ? current.filter((value) => value !== id) : [...current, id]
     );
 
   const toggleSelectAll = () =>
     setSelectedIds((current) =>
-      current.length === registeredUsers.length
-        ? []
-        : registeredUsers.map((user) => user.id)
+      current.length === registeredUsers.length ? [] : registeredUsers.map((user) => user.id)
     );
 
   return (
-    <PageContainer className="mx-auto flex w-full max-w-[1320px] flex-col pt-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <header>
-          <p className="text-sm text-muted-foreground">{t("title")}</p>
-          <h1 className="mt-1.5 text-[30px] font-semibold leading-[1.2] tracking-[-0.025em] text-foreground">
-            {t("subtitle")}
-          </h1>
-        </header>
+    <PageContainer className="flex flex-col">
+      <PageHeader
+        eyebrow={t("title")}
+        title={t("subtitle")}
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="h-10 gap-2 rounded-[10px] px-3.5 text-sm font-medium shadow-none"
+            >
+              <Download className="size-[15px]" />
+              {t("common:actions.export")}
+            </Button>
 
-        <div className="flex gap-2">
-          <Button variant="outline" className="h-10 gap-2 rounded-[10px] px-3.5 text-sm font-medium shadow-none">
-            <Download className="size-[15px]" />
-            {t("common:actions.export")}
-          </Button>
-
-          <Button className="h-10 gap-2 rounded-[10px] bg-primary pl-3.5 pr-4 text-sm font-medium text-primary-foreground shadow-none hover:bg-primary/85">
-            <Plus className="size-[15px]" />
-            {t("add")}
-          </Button>
-        </div>
-      </div>
+            <Button className="h-10 gap-2 rounded-[10px] bg-primary pl-3.5 pr-4 text-sm font-medium text-primary-foreground shadow-none hover:bg-primary/85">
+              <Plus className="size-[15px]" />
+              {t("add")}
+            </Button>
+          </div>
+        }
+      />
 
       <UserStatsCards
         counts={counts}

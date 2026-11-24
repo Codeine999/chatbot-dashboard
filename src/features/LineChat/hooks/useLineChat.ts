@@ -4,25 +4,35 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import i18n from "@/i18n";
 import { getApiErrorMessage } from "@/api/api";
-import { lineChatApi, type ConversationPage } from "../services/lineChat.service";
-import type { BotMode, LineChatHistory, LineConversation } from "../types/lineChat.type";
+import { inboxApi } from "../services/inboxApi";
+import type { ConversationPage } from "../services/lineChat.service";
+import type {
+  BotMode,
+  ConversationPlatform,
+  LineChatHistory,
+  LineConversation,
+} from "../types/lineChat.type";
 
 const POLL_INTERVAL_MS = 2000;
 const MESSAGE_PAGE_SIZE = 20;
 
 const CONVERSATION_PAGE_SIZE = 30;
 
-/** รายการห้องแบบแบ่งหน้า (cursor) poll จะดึงทุกหน้าที่โหลดไว้ใหม่ตามลำดับ */
-export function useConversations() {
+/** cache ของรายการห้องแยกตามช่องทาง (LINE ใช้ key เดิม) */
+export const conversationsKey = (platform: ConversationPlatform | undefined) =>
+  platform === "messenger" ? (["facebook-conversations"] as const) : (["line-conversations"] as const);
+
+/** รายการห้องของช่องทางเดียวแบบแบ่งหน้า (cursor) poll จะดึงทุกหน้าที่โหลดไว้ใหม่ตามลำดับ */
+function useChannelConversations(platform: "line" | "messenger") {
   return useInfiniteQuery({
-    queryKey: ["line-conversations"],
+    queryKey: conversationsKey(platform),
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }) =>
-      lineChatApi.getConversations({ limit: CONVERSATION_PAGE_SIZE, cursor: pageParam }),
+      inboxApi(platform).getConversations({ limit: CONVERSATION_PAGE_SIZE, cursor: pageParam }),
     getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     refetchInterval: POLL_INTERVAL_MS,
     // ห้องที่ขยับขึ้นมาระหว่างโหลดหน้าถัดไปอาจซ้ำข้ามหน้า จึงตัดซ้ำตาม id
@@ -35,13 +45,45 @@ export function useConversations() {
   });
 }
 
-export function useConversationMessages(conversationId?: string) {
+const EMPTY_ROOMS: LineConversation[] = [];
+
+/**
+ * รายการห้องรวมทุกช่องทาง (LINE + Facebook) หน้าแชทกรองตามช่องทางเอง
+ * ช่องทางหนึ่งโหลดไม่สำเร็จไม่ทำให้อีกช่องทางหาย: ถือว่า error เมื่อล้มทั้งคู่เท่านั้น
+ */
+export function useConversations() {
+  const line = useChannelConversations("line");
+  const facebook = useChannelConversations("messenger");
+  const lineRooms = line.data ?? EMPTY_ROOMS;
+  const facebookRooms = facebook.data ?? EMPTY_ROOMS;
+
+  const data = useMemo(() => [...lineRooms, ...facebookRooms], [lineRooms, facebookRooms]);
+
+  return {
+    data,
+    isLoading: line.isLoading || facebook.isLoading,
+    isError: line.isError && facebook.isError,
+    hasNextPage: Boolean(line.hasNextPage || facebook.hasNextPage),
+    isFetchingNextPage: line.isFetchingNextPage || facebook.isFetchingNextPage,
+    fetchNextPage: async () => {
+      await Promise.all([
+        line.hasNextPage ? line.fetchNextPage() : undefined,
+        facebook.hasNextPage ? facebook.fetchNextPage() : undefined,
+      ]);
+    },
+  };
+}
+
+export function useConversationMessages(
+  conversationId?: string,
+  platform?: ConversationPlatform
+) {
   return useInfiniteQuery({
     queryKey: ["line-conversation-messages", conversationId],
     enabled: Boolean(conversationId),
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }) =>
-      lineChatApi.getConversationMessages({
+      inboxApi(platform).getConversationMessages({
         conversationId: conversationId ?? "",
         before: pageParam,
         limit: MESSAGE_PAGE_SIZE,
@@ -53,7 +95,10 @@ export function useConversationMessages(conversationId?: string) {
   });
 }
 
-export function usePollConversationMessages(conversationId?: string) {
+export function usePollConversationMessages(
+  conversationId?: string,
+  platform?: ConversationPlatform
+) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -81,7 +126,7 @@ export function usePollConversationMessages(conversationId?: string) {
 
       if (!latestMessage) return;
 
-      const newMessages = await lineChatApi.getConversationMessages({
+      const newMessages = await inboxApi(platform).getConversationMessages({
         conversationId,
         after: latestMessage.createdAt,
         limit: 100,
@@ -109,7 +154,7 @@ export function usePollConversationMessages(conversationId?: string) {
         };
       });
 
-      queryClient.invalidateQueries({ queryKey: ["line-conversations"] });
+      queryClient.invalidateQueries({ queryKey: conversationsKey(platform) });
     };
 
     const intervalId = window.setInterval(() => {
@@ -121,15 +166,15 @@ export function usePollConversationMessages(conversationId?: string) {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [conversationId, queryClient]);
+  }, [conversationId, platform, queryClient]);
 }
 
-export function useSendLineMessage(conversationId?: string) {
+export function useSendLineMessage(conversationId?: string, platform?: ConversationPlatform) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (text: string) =>
-      lineChatApi.sendMessage({
+      inboxApi(platform).sendMessage({
         conversationId: conversationId ?? "",
         text,
         clientRequestId: crypto.randomUUID(),
@@ -148,7 +193,7 @@ export function useSendLineMessage(conversationId?: string) {
           };
         }
       );
-      queryClient.invalidateQueries({ queryKey: ["line-conversations"] });
+      queryClient.invalidateQueries({ queryKey: conversationsKey(platform) });
     },
   });
 }
@@ -164,16 +209,25 @@ export function useChangeBotMode() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ conversationId, mode }: { conversationId: string; mode: BotMode }) => {
-      if (mode === "admin") return lineChatApi.adminHold(conversationId);
-      if (mode === "paused") return lineChatApi.pauseBot(conversationId);
+    mutationFn: async ({
+      conversationId,
+      mode,
+      platform,
+    }: {
+      conversationId: string;
+      mode: BotMode;
+      platform?: ConversationPlatform;
+    }) => {
+      const api = inboxApi(platform);
+      if (mode === "admin") return api.adminHold(conversationId);
+      if (mode === "paused") return api.pauseBot(conversationId);
       // resume-bot ตอบแค่ status ให้ถือว่ากลับเป็น auto
-      const res = await lineChatApi.resumeBot(conversationId);
+      const res = await api.resumeBot(conversationId);
       return { status: res.status, botMode: "auto" as const, botMuteUntil: null };
     },
-    onSuccess: (result, { conversationId, mode }) => {
+    onSuccess: (result, { conversationId, mode, platform }) => {
       // แก้ห้องใน cache ทันที ไม่รอ poll รอบถัดไป (โครงสร้างแบบแบ่งหน้า)
-      queryClient.setQueryData(["line-conversations"], (current: InfiniteData<ConversationPage> | undefined) => {
+      queryClient.setQueryData(conversationsKey(platform), (current: InfiniteData<ConversationPage> | undefined) => {
         const patch = (room: LineConversation) =>
           room.id === conversationId
             ? {
@@ -189,7 +243,7 @@ export function useChangeBotMode() {
           pages: current.pages.map((page) => ({ ...page, items: page.items.map(patch) })),
         };
       });
-      void queryClient.invalidateQueries({ queryKey: ["line-conversations"] });
+      void queryClient.invalidateQueries({ queryKey: conversationsKey(platform) });
       toast.success(i18n.t(BOT_MODE_TOAST[mode].ok));
     },
     onError: (error, { mode }) => {
@@ -205,7 +259,8 @@ export function useChangeBotMode() {
 export function useMarkLineConversationRead(
   conversationId: string | undefined,
   unreadCount: number | undefined,
-  ready: boolean
+  ready: boolean,
+  platform?: ConversationPlatform
 ) {
   const queryClient = useQueryClient();
   const sentRef = useRef("");
@@ -225,9 +280,9 @@ export function useMarkLineConversationRead(
     if (sentRef.current === key) return;
     sentRef.current = key;
 
-    lineChatApi
+    inboxApi(platform)
       .markRead(conversationId)
-      .then(() => queryClient.invalidateQueries({ queryKey: ["line-conversations"] }))
+      .then(() => queryClient.invalidateQueries({ queryKey: conversationsKey(platform) }))
       .then(() => {
         failuresRef.current = 0;
       })
@@ -239,7 +294,7 @@ export function useMarkLineConversationRead(
         sentRef.current = "";
         window.setTimeout(() => setRetryTick((tick) => tick + 1), 5000);
       });
-  }, [conversationId, unreadCount, ready, queryClient, retryTick]);
+  }, [conversationId, unreadCount, ready, platform, queryClient, retryTick]);
 }
 
 const IMAGE_RETRY_MS = 2000;

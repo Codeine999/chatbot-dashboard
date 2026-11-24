@@ -96,7 +96,11 @@ export const BotModeSelect = ({ conversation }: Props) => {
             <DropdownMenuItem
               key={item.id}
               disabled={disabled}
-              onSelect={() => changeMode.mutate({ conversationId: conversation.id, mode: item.id })}
+              onSelect={() => changeMode.mutate({
+                conversationId: conversation.id,
+                mode: item.id,
+                platform: conversation.platform,
+              })}
               className="cursor-pointer items-start gap-3 py-2.5"
             >
               <Icon className="mt-0.5 size-4 shrink-0 text-mini" />

@@ -65,7 +65,7 @@ export const navGroups: NavGroup[] = [
           { titleKey: "item.usageGraph", url: "/usage/Graph" },
         ],
       },
-      { titleKey: "item.bill", url: "/bill", icon: Receipt },
+      { titleKey: "item.bill", url: "/bill", icon: Receipt, roles: ["dev"] },
       {
         titleKey: "item.adminList",
         url: "/admin-list",
