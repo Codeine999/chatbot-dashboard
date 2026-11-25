@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { MotionConfig } from "framer-motion";
 import { Toaster } from "sonner";
 import "./index.css";
 import "./i18n";
@@ -15,7 +16,9 @@ root.render(
   <BrowserRouter>
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <App />
+      <MotionConfig reducedMotion="user">
+        <App />
+      </MotionConfig>
       <Toaster richColors position="top-right" />
     </ThemeProvider>
     <ReactQueryDevtools initialIsOpen={false} />

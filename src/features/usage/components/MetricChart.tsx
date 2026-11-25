@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Bar,
   BarChart,
@@ -14,6 +15,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { MOTION_DURATION, MOTION_EASE } from "@/lib/motion";
 import { buildChartConfig, type MetricDef } from "../lib/metrics";
 import { useTranslation } from "react-i18next";
 import type { AnalyticsPoint } from "../type/analytics.type";
@@ -162,11 +164,123 @@ const ChartScroller = ({
   );
 };
 
+type AnimatedBarShapeProps = {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  fill?: string;
+  index?: number;
+  topRadius: number;
+  seriesIndex: number;
+  barSequence: {
+    orderMap: Map<string, number>;
+    total: number;
+  };
+  prefersReduced: boolean;
+};
+
+const buildRoundedTopBarPath = (
+  x: number,
+  bottomY: number,
+  width: number,
+  barHeight: number,
+  topRadius: number
+) => {
+  const h = Math.max(barHeight, 0);
+  const topY = bottomY - h;
+  const r = Math.min(topRadius, width / 2, h);
+
+  return [
+    `M ${x},${bottomY}`,
+    `L ${x},${topY + r}`,
+    `Q ${x},${topY} ${x + r},${topY}`,
+    `L ${x + width - r},${topY}`,
+    `Q ${x + width},${topY} ${x + width},${topY + r}`,
+    `L ${x + width},${bottomY}`,
+    "Z",
+  ].join(" ");
+};
+
+/**
+ * แท่งกราฟที่ค่อย ๆ ยืดขึ้นจากเส้นฐานทีละแท่งเรียงจากซ้ายไปขวาด้วย Framer Motion
+ * ใช้ path morphing ยึดฐานล่างไว้ที่ bottomY เสมอ ทำให้มุมมนคงรูปและยืดจากล่างขึ้นบนจริงในทุกเบราว์เซอร์
+ */
+const AnimatedBarShape = ({
+  x,
+  y,
+  width,
+  height,
+  fill,
+  index = 0,
+  topRadius,
+  seriesIndex,
+  barSequence,
+  prefersReduced,
+}: AnimatedBarShapeProps) => {
+  if (
+    x === undefined ||
+    y === undefined ||
+    width === undefined ||
+    height === undefined ||
+    width <= 0 ||
+    height <= 0
+  ) {
+    return null;
+  }
+
+  const bottomY = y + height;
+  const baselinePath = buildRoundedTopBarPath(x, bottomY, width, 0, topRadius);
+  const fullPath = buildRoundedTopBarPath(x, bottomY, width, height, topRadius);
+
+  const seq = barSequence.orderMap.get(`${index}:${seriesIndex}`) ?? 0;
+  const stepDelay =
+    barSequence.total > 1 ? Math.min(0.14, 1.8 / barSequence.total) : 0;
+  const delay = 0.15 + seq * stepDelay;
+
+  return (
+    <motion.path
+      d={fullPath}
+      fill={fill}
+      initial={prefersReduced ? false : { d: baselinePath, opacity: 0 }}
+      animate={{ d: fullPath, opacity: 1 }}
+      transition={{
+        d: {
+          duration: 0.48,
+          delay,
+          ease: MOTION_EASE.out,
+        },
+        opacity: {
+          duration: 0.12,
+          delay,
+          ease: "easeOut",
+        },
+      }}
+    />
+  );
+};
+
 export const MetricChart = ({ metric, points, showLegend = true }: Props) => {
   const { t } = useTranslation("usage");
+  const prefersReduced = Boolean(useReducedMotion());
   const config = buildChartConfig(metric, t);
   const hasBreakdown = metric.series.length > 1;
   const isLine = metric.form === "line";
+
+  // จัดลำดับแท่งที่มีค่า > 0 เรียงจากซ้ายไปขวาทีละแท่ง (ตามวัน -> ตาม series)
+  const barSequence = useMemo(() => {
+    const orderMap = new Map<string, number>();
+    let seq = 0;
+    points.forEach((point, pointIndex) => {
+      metric.series.forEach((series, seriesIndex) => {
+        if (Number(point[series.key]) > 0) {
+          orderMap.set(`${pointIndex}:${seriesIndex}`, seq);
+          seq += 1;
+        }
+      });
+    });
+    return { orderMap, total: seq };
+  }, [points, metric.series]);
 
   // recharts อ่านชนิดของ children ตรง ๆ ถ้าห่อด้วย fragment มันจะมองไม่เห็นแกนกับ legend
   // ส่ง array แทน เพราะ React.Children.toArray แผ่ array ออกให้
@@ -255,7 +369,9 @@ export const MetricChart = ({ metric, points, showLegend = true }: Props) => {
               stroke={`var(--color-${series.key})`}
               strokeWidth={2}
               dot={false}
-              isAnimationActive={false}
+              isAnimationActive={!prefersReduced}
+              animationDuration={Math.round(MOTION_DURATION.chart * 1000)}
+              animationEasing="ease-out"
               activeDot={{
                 r: 4,
                 strokeWidth: 2,
@@ -288,35 +404,58 @@ export const MetricChart = ({ metric, points, showLegend = true }: Props) => {
           >
             {axes}
 
-            {metric.series.map((series) => (
-              <Bar
-                key={series.key}
-                dataKey={series.key}
-                fill={`var(--color-${series.key})`}
-                radius={
-                  hasBreakdown
-                    ? [GROUPED_BAR.radius, GROUPED_BAR.radius, 0, 0]
-                    : [SINGLE_BAR.radius, SINGLE_BAR.radius, 0, 0]
-                }
-                maxBarSize={
-                  hasBreakdown ? GROUPED_BAR.maxBarSize : SINGLE_BAR.maxBarSize
-                }
-                isAnimationActive={false}
-              >
-                {/* ติดตัวเลขเฉพาะกราฟ series เดียว
-                    ถ้าแยกประเภทจะได้ตัวเลขสามชุดต่อหนึ่งช่วง รกจนไม่มีใครอ่าน
-                    tooltip กับตารางข้อมูลบอกได้ครบกว่าอยู่แล้ว */}
-                {!hasBreakdown && points.length <= DIRECT_LABEL_MAX && (
-                  <LabelList
-                    dataKey="total"
-                    position="top"
-                    offset={8}
-                    className="fill-normal text-[11px] font-semibold"
-                    formatter={metric.formatAxis}
-                  />
-                )}
-              </Bar>
-            ))}
+            {metric.series.map((series, seriesIndex) => {
+              const topRadius = hasBreakdown
+                ? GROUPED_BAR.radius
+                : SINGLE_BAR.radius;
+
+              return (
+                <Bar
+                  key={series.key}
+                  dataKey={series.key}
+                  fill={`var(--color-${series.key})`}
+                  radius={[topRadius, topRadius, 0, 0]}
+                  maxBarSize={
+                    hasBreakdown
+                      ? GROUPED_BAR.maxBarSize
+                      : SINGLE_BAR.maxBarSize
+                  }
+                  isAnimationActive={false}
+                  shape={(barProps: unknown) => {
+                    const shapeProps = barProps as {
+                      x?: number;
+                      y?: number;
+                      width?: number;
+                      height?: number;
+                      fill?: string;
+                      index?: number;
+                    };
+                    return (
+                      <AnimatedBarShape
+                        {...shapeProps}
+                        topRadius={topRadius}
+                        seriesIndex={seriesIndex}
+                        barSequence={barSequence}
+                        prefersReduced={prefersReduced}
+                      />
+                    );
+                  }}
+                >
+                  {/* ติดตัวเลขเฉพาะกราฟ series เดียว
+                      ถ้าแยกประเภทจะได้ตัวเลขสามชุดต่อหนึ่งช่วง รกจนไม่มีใครอ่าน
+                      tooltip กับตารางข้อมูลบอกได้ครบกว่าอยู่แล้ว */}
+                  {!hasBreakdown && points.length <= DIRECT_LABEL_MAX && (
+                    <LabelList
+                      dataKey="total"
+                      position="top"
+                      offset={8}
+                      className="fill-normal text-[11px] font-semibold"
+                      formatter={metric.formatAxis}
+                    />
+                  )}
+                </Bar>
+              );
+            })}
           </BarChart>
         </ChartContainer>
       </ChartScroller>

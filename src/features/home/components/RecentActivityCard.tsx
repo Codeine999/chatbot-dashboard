@@ -1,5 +1,6 @@
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { StaggerGroup, StaggerItem } from "@/components/motion";
 import {
   CircleCheck,
   LayoutGrid,
@@ -13,9 +14,11 @@ import { useTranslation } from "react-i18next";
 const toneClass: Record<ActivityTone, string> = {
   green: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
   indigo: "bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400",
-  purple: "bg-orange-50 text-orange-500 dark:bg-orange-500/10 dark:text-orange-400",
+  purple:
+    "bg-orange-50 text-orange-500 dark:bg-orange-500/10 dark:text-orange-400",
   blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
-  orange: "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
+  orange:
+    "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
 };
 
 const iconByType = {
@@ -77,23 +80,34 @@ const RecentActivityCard = () => {
   return (
     <Card variant="flat" className="flex flex-col">
       <div className="flex items-center justify-between">
-        <CardTitle className="text-lg font-semibold text-foreground">{t("activity.title")}</CardTitle>
+        <CardTitle className="text-lg font-semibold text-foreground">
+          {t("activity.title")}
+        </CardTitle>
         <Button
           variant="link"
-          className="h-auto p-0 text-sm font-medium text-foreground underline underline-offset-[3px]"
+          className="h-auto p-0 text-sm font-medium text-foreground underline underline-offset-[3px] transition-opacity hover:opacity-75"
         >
           {t("activity.viewAll")}
         </Button>
       </div>
 
-      <div className="mt-2 flex-1">
+      <StaggerGroup
+        inView
+        stagger={0.065}
+        delayChildren={0.1}
+        className="mt-2 flex-1"
+      >
         {activities.map((activity) => {
           const Icon = iconByType[activity.type];
 
           return (
-            <div key={activity.id} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-3 transition-colors hover:bg-accent/50">
+            <StaggerItem
+              key={activity.id}
+              y={12}
+              className="group -mx-2 flex items-center gap-3 rounded-xl px-2 py-3 transition-colors duration-250 hover:bg-accent/50"
+            >
               <div
-                className={`flex size-[34px] shrink-0 items-center justify-center rounded-full ${
+                className={`flex size-[34px] shrink-0 items-center justify-center rounded-full transition-transform duration-300 ease-out group-hover:scale-105 ${
                   toneClass[activity.tone]
                 }`}
               >
@@ -104,14 +118,18 @@ const RecentActivityCard = () => {
                 <p className="truncate text-sm font-medium text-foreground">
                   {activity.title}
                 </p>
-                <p className="truncate text-[13px] text-normal">{activity.description}</p>
+                <p className="truncate text-[13px] text-normal">
+                  {activity.description}
+                </p>
               </div>
 
-              <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{activity.time}</span>
-            </div>
+              <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground transition-colors duration-250 group-hover:text-foreground">
+                {activity.time}
+              </span>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerGroup>
     </Card>
   );
 };

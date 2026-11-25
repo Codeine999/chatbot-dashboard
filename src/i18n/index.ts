@@ -20,6 +20,7 @@ import enKnowledge from "./locales/en/knowledge.json";
 import enNav from "./locales/en/nav.json";
 import enOrder from "./locales/en/order.json";
 import enProduct from "./locales/en/product.json";
+import enReport from "./locales/en/report.json";
 import enRichMenu from "./locales/en/richMenu.json";
 import enSettings from "./locales/en/settings.json";
 import enUsage from "./locales/en/usage.json";
@@ -36,6 +37,7 @@ import thKnowledge from "./locales/th/knowledge.json";
 import thNav from "./locales/th/nav.json";
 import thOrder from "./locales/th/order.json";
 import thProduct from "./locales/th/product.json";
+import thReport from "./locales/th/report.json";
 import thRichMenu from "./locales/th/richMenu.json";
 import thSettings from "./locales/th/settings.json";
 import thUsage from "./locales/th/usage.json";
@@ -57,6 +59,7 @@ export const resources = {
     nav: enNav,
     order: enOrder,
     product: enProduct,
+    report: enReport,
     richMenu: enRichMenu,
     settings: enSettings,
     usage: enUsage,
@@ -74,6 +77,7 @@ export const resources = {
     nav: thNav,
     order: thOrder,
     product: thProduct,
+    report: thReport,
     richMenu: thRichMenu,
     settings: thSettings,
     usage: thUsage,
@@ -89,7 +93,7 @@ i18n
     fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: [...SUPPORTED_LANGUAGES],
     defaultNS: DEFAULT_NAMESPACE,
-    ns: ["adminTool", "admins", "auth", "bill", "chat", "common", "home", "knowledge", "nav", "order", "product", "richMenu", "settings", "usage", "users"],
+    ns: ["adminTool", "admins", "auth", "bill", "chat", "common", "home", "knowledge", "nav", "order", "product", "report", "richMenu", "settings", "usage", "users"],
 
     // "en-US" ที่ browser ส่งมาต้องถูกยุบเหลือ "en" ไม่งั้นหา resource ไม่เจอ
     load: "languageOnly",

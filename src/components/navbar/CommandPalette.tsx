@@ -37,20 +37,22 @@ export const CommandPalette = () => {
         <CommandEmpty>{t("navbar.noResults")}</CommandEmpty>
         {navGroups.map((group) => (
           <CommandGroup key={group.labelKey} heading={t(group.labelKey)}>
-            {group.items.flatMap((item) =>
-              (item.children ?? [{ ...item, children: undefined }])
-                .filter((entry) => !("roles" in entry) || !entry.roles || (role && entry.roles.includes(role)))
-                .map((entry) => (
-                  <CommandItem
-                    key={entry.url}
-                    value={`${t(entry.titleKey)} ${entry.url}`}
-                    onSelect={() => go(entry.url)}
-                  >
-                    <item.icon />
-                    {t(entry.titleKey)}
-                  </CommandItem>
-                )),
-            )}
+            {group.items
+              .filter((item) => !item.roles || (role && item.roles.includes(role)))
+              .flatMap((item) =>
+                (item.children ?? [{ ...item, children: undefined }])
+                  .filter((entry) => !("roles" in entry) || !entry.roles || (role && entry.roles.includes(role)))
+                  .map((entry) => (
+                    <CommandItem
+                      key={entry.url}
+                      value={`${t(entry.titleKey)} ${entry.url}`}
+                      onSelect={() => go(entry.url)}
+                    >
+                      <item.icon />
+                      {t(entry.titleKey)}
+                    </CommandItem>
+                  )),
+              )}
           </CommandGroup>
         ))}
       </CommandList>

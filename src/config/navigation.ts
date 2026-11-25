@@ -6,6 +6,7 @@ import {
   UsersRound,
   MessagesSquare,
   ChartPie,
+  BarChart3,
   MessageCircle,
   Receipt,
   LayoutGrid,
@@ -38,7 +39,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { titleKey: "item.home", url: "/", icon: Home },
       { titleKey: "item.richMenu", url: "/rich-menu/setting", icon: LayoutGrid },
-      { titleKey: "item.product", url: "/product", icon: Inbox },
+      { titleKey: "item.product", url: "/product", icon: Inbox, roles: ["dev"] },
       // { titleKey: "item.order", url: "/order", icon: Calendar },
       { titleKey: "item.users", url: "/users", icon: UsersRound },
     ],
@@ -61,8 +62,17 @@ export const navGroups: NavGroup[] = [
         url: "/usage",
         icon: ChartPie,
         children: [
-          { titleKey: "item.usageOverall", url: "/usage" },
+          { titleKey: "item.usageOverall", url: "/usage", roles: ["dev"] },
           { titleKey: "item.usageGraph", url: "/usage/Graph" },
+        ],
+      },
+      {
+        titleKey: "item.analytics",
+        url: "/report/analytics",
+        icon: BarChart3,
+        roles: ["dev"],
+        children: [
+          { titleKey: "item.analyticsChat", url: "/report/analytics/chat", roles: ["dev"] },
         ],
       },
       { titleKey: "item.bill", url: "/bill", icon: Receipt, roles: ["dev"] },

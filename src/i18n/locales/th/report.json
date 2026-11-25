@@ -1,0 +1,61 @@
+{
+  "analytics": {
+    "chat": {
+      "eyebrow": "รายงาน · การวิเคราะห์",
+      "title": "วิเคราะห์การสนทนา",
+      "subtitle": "ติดตามปริมาณข้อความ ประสิทธิภาพการตอบของ AI และสัดส่วนแต่ละช่องทาง",
+      "refresh": "รีเฟรชข้อมูล",
+      "kpi": {
+        "totalMessages": "ข้อความทั้งหมด (30 วัน)",
+        "totalMessagesDesc": "รวมข้อความลูกค้า AI และแอดมิน",
+        "aiResolution": "อัตราการตอบโดย AI",
+        "aiResolutionDesc": "ตอบสำเร็จโดยไม่ต้องส่งต่อ",
+        "adminHandoff": "ส่งต่อแอดมิน",
+        "adminHandoffDesc": "บทสนทนาที่แอดมินรับช่วงต่อ",
+        "avgResponse": "เวลาตอบเฉลี่ย",
+        "avgResponseUnit": "วินาที",
+        "avgResponseDesc": "ความเร็วเฉลี่ยในการตอบกลับ"
+      },
+      "channels": {
+        "title": "สัดส่วนตามช่องทาง",
+        "subtitle": "เปรียบเทียบปริมาณการตอบกลับแยกตามช่องทางที่เชื่อมต่อ",
+        "turns": "ครั้ง",
+        "items": {
+          "line": "LINE Official Account",
+          "facebook": "Facebook Messenger",
+          "api": "API / Web Widget"
+        }
+      },
+      "topics": {
+        "title": "หมวดหมู่คำตอบของ AI",
+        "subtitle": "จำแนกตามประเภทความรู้ที่ระบบใช้ตอบลูกค้า",
+        "items": {
+          "knowledge": "คลังความรู้ (Knowledge Base)",
+          "product": "ข้อมูลสินค้าและราคา",
+          "general": "คำถามทั่วไปและทักทาย",
+          "handoff": "ส่งต่อให้แอดมินดูแล"
+        }
+      },
+      "recent": {
+        "title": "รายการตอบกลับล่าสุด",
+        "subtitle": "บันทึกการตอบกลับล่าสุดจากทั้ง AI และแอดมิน",
+        "filterAll": "ทั้งหมด",
+        "filterLine": "LINE",
+        "filterFacebook": "Facebook",
+        "filterApi": "API",
+        "colTime": "เวลา",
+        "colChannel": "ช่องทาง",
+        "colResponder": "ผู้ตอบ",
+        "colType": "ประเภทคำตอบ",
+        "colStatus": "สถานะ",
+        "ai": "AI อัตโนมัติ",
+        "admin": "แอดมิน",
+        "unknown": "ไม่ระบุ",
+        "statusSuccess": "สำเร็จ",
+        "statusFailed": "ล้มเหลว",
+        "empty": "ยังไม่มีประวัติการตอบกลับในช่วงเวลานี้",
+        "sampleBadge": "ข้อมูลตัวอย่าง"
+      }
+    }
+  }
+}

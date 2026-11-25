@@ -1,0 +1,61 @@
+{
+  "analytics": {
+    "chat": {
+      "eyebrow": "Report · Analytics",
+      "title": "Chat Analytics",
+      "subtitle": "Monitor conversation volume, AI resolution efficiency, and channel distribution",
+      "refresh": "Refresh data",
+      "kpi": {
+        "totalMessages": "Total messages (30d)",
+        "totalMessagesDesc": "Combined user, AI, and admin turns",
+        "aiResolution": "AI resolution rate",
+        "aiResolutionDesc": "Resolved automatically without handoff",
+        "adminHandoff": "Admin handoff",
+        "adminHandoffDesc": "Conversations escalated to human agents",
+        "avgResponse": "Avg. response time",
+        "avgResponseUnit": "sec",
+        "avgResponseDesc": "Mean first-reply latency"
+      },
+      "channels": {
+        "title": "Channel distribution",
+        "subtitle": "Reply volume breakdown across connected messaging channels",
+        "turns": "turns",
+        "items": {
+          "line": "LINE Official Account",
+          "facebook": "Facebook Messenger",
+          "api": "API / Web Widget"
+        }
+      },
+      "topics": {
+        "title": "AI answer categories",
+        "subtitle": "Distribution by knowledge source used to answer customers",
+        "items": {
+          "knowledge": "Knowledge Base",
+          "product": "Products & Pricing",
+          "general": "General & Greetings",
+          "handoff": "Escalated to Admin"
+        }
+      },
+      "recent": {
+        "title": "Recent reply activity",
+        "subtitle": "Latest conversation turns handled by AI and admins",
+        "filterAll": "All",
+        "filterLine": "LINE",
+        "filterFacebook": "Facebook",
+        "filterApi": "API",
+        "colTime": "Time",
+        "colChannel": "Channel",
+        "colResponder": "Responder",
+        "colType": "Category",
+        "colStatus": "Status",
+        "ai": "AI Bot",
+        "admin": "Admin",
+        "unknown": "Unknown",
+        "statusSuccess": "Success",
+        "statusFailed": "Failed",
+        "empty": "No reply activity recorded for this filter yet",
+        "sampleBadge": "Sample data"
+      }
+    }
+  }
+}

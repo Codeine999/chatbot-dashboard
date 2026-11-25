@@ -1,5 +1,6 @@
 import { PageContainer } from "@/components/common/PageContainer";
 import { PageHeader } from "@/components/common/PageHeader";
+import { FadeIn } from "@/components/motion";
 
 // import Chatbot from "./home/Chat";
 
@@ -23,21 +24,27 @@ const Home = () => {
   return (
     <main className="min-h-svh">
       <PageContainer>
-        <PageHeader
-          eyebrow={t("subtitle")}
-          title={t("welcome", {
-            name: user?.firstname || user?.username || "",
-          })}
-        />
+        <FadeIn as="header" y={12} duration={0.55}>
+          <PageHeader
+            eyebrow={t("subtitle")}
+            title={t("welcome", {
+              name: user?.firstname || user?.username || "",
+            })}
+          />
+        </FadeIn>
 
         <div className="mt-10 flex flex-col gap-[52px]">
           {/* Overview */}
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-y-7">
-            <OverviewCard />
-          </div>
+          <OverviewCard />
 
           {/* Account overview (ซ้าย) | Chart (ขวา) คั่นด้วยเส้นตั้ง */}
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-0">
+          <FadeIn
+            as="section"
+            delay={0.2}
+            y={16}
+            duration={0.6}
+            className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-0"
+          >
             <div className="min-w-0 lg:pr-8">
               <AccountOverviewCard />
             </div>
@@ -47,17 +54,24 @@ const Home = () => {
             </div>
             {/* <MoneyCard /> */}
             {/* <Order /> */}
-          </div>
+          </FadeIn>
 
           {/* Chatbot and Recent activity */}
-          <div className="grid items-start gap-12 lg:grid-cols-2">
+          <FadeIn
+            as="section"
+            inView
+            delay={0.08}
+            y={16}
+            duration={0.6}
+            className="grid items-start gap-12 lg:grid-cols-2"
+          >
             {/* <Chatbot /> */}
             <div className="-mt-2">
               <UnansweredQuestionsCard />
             </div>
             <RecentActivityCard />
             {/* <ViewCard /> */}
-          </div>
+          </FadeIn>
         </div>
       </PageContainer>
     </main>

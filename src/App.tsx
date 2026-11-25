@@ -12,6 +12,7 @@ import Chatbot from "./features/chatbot/Chatbot";
 import { AiAnswer } from "./features/aiAnswer/AiAnswer";
 import { Usage } from "./features/usage/Usage";
 import { UsageGraph } from "./features/usage/UsageGraph";
+import ChatAnalyticsPage from "./features/report/analytics";
 import { LineChat } from "./features/LineChat/LineChat";
 import { RichMenuSetting } from "./features/richMenu/RichMenuSetting";
 import { OwnerRegister } from "./features/auth/register/OwnerRegister";
@@ -40,10 +41,6 @@ function App() {
 
           <Route path="/rich-menu/setting" element={<RichMenuSetting />} />
 
-          <Route path="/product" element={<ProductList />} />
-          <Route path="/product/add" element={<ProductFormPage />} />
-          <Route path="/product/:id/edit" element={<ProductFormPage />} />
-
           <Route path="/order" element={<Order />} />
           <Route path="/order/confirm/:id" element={<OrderConfirm />} />
 
@@ -56,9 +53,14 @@ function App() {
           <Route path="/ai-chat" element={<Chatbot />} />
           <Route path="/ai/internal-customer-chat" element={<InternalCustomerChat />} />
 
-          <Route path="/usage" element={<Usage />} />
           <Route path="/usage/Graph" element={<UsageGraph />} />
           <Route element={<RoleRoute roles={["dev"]} />}>
+            <Route path="/product" element={<ProductList />} />
+            <Route path="/product/add" element={<ProductFormPage />} />
+            <Route path="/product/:id/edit" element={<ProductFormPage />} />
+            <Route path="/usage" element={<Usage />} />
+            <Route path="/report/analytics" element={<Navigate to="/report/analytics/chat" replace />} />
+            <Route path="/report/analytics/chat" element={<ChatAnalyticsPage />} />
             <Route path="/bill" element={<Bill />} />
           </Route>
           <Route path="/admin-list" element={<AdminList />} />

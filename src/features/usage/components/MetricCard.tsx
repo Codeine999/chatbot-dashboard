@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FlaskConical, TrendingDown, TrendingUp, TriangleAlert } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AnimatedNumber } from "@/components/motion";
+import { MOTION_DURATION, MOTION_EASE } from "@/lib/motion";
 import { useAnalytics } from "../hooks/useAnalytics";
 import { bucketDelta } from "../lib/format";
 import { GRANULARITY_OPTIONS, GRANULARITY_UNIT_KEY, METRICS } from "../lib/metrics";
@@ -86,6 +89,7 @@ const HANDOFF_STATS = { aiPercent: 87, adminPercent: 13, avgResponseSec: 2.4 };
 /** แถบสรุปการตอบของ AI เทียบกับแอดมิน ต่อจากกราฟปริมาณแชท */
 function ChatHandoffStats() {
   const { t } = useTranslation("usage");
+  const prefersReduced = useReducedMotion();
   const { aiPercent, adminPercent, avgResponseSec } = HANDOFF_STATS;
 
   return (
@@ -93,20 +97,41 @@ function ChatHandoffStats() {
       <div>
         <p className="text-xs text-mini">{t("handoff.aiHandled")}</p>
         <div className="mt-1 flex items-center gap-2">
-          <p className="text-base font-semibold tabular-nums text-normal">{aiPercent}%</p>
+          <p className="text-base font-semibold tabular-nums text-normal">
+            <AnimatedNumber value={aiPercent} format={(v) => `${Math.round(v)}%`} />
+          </p>
           <div className="h-1 w-16 overflow-hidden rounded-full bg-muted">
-            <div className="h-full rounded-full bg-primary" style={{ width: `${aiPercent}%` }} />
+            <motion.div
+              className="h-full rounded-full bg-primary"
+              style={{ width: `${aiPercent}%`, originX: 0 }}
+              initial={prefersReduced ? false : { scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{
+                duration: MOTION_DURATION.chart,
+                delay: 0.22,
+                ease: MOTION_EASE.out,
+              }}
+            />
           </div>
         </div>
       </div>
       <div>
         <p className="text-xs text-mini">{t("handoff.toAdmin")}</p>
-        <p className="mt-1 text-base font-semibold tabular-nums text-normal">{adminPercent}%</p>
+        <p className="mt-1 text-base font-semibold tabular-nums text-normal">
+          <AnimatedNumber value={adminPercent} format={(v) => `${Math.round(v)}%`} />
+        </p>
       </div>
       <div>
         <p className="text-xs text-mini">{t("handoff.avgResponse")}</p>
         <p className="mt-1 text-base font-semibold tabular-nums text-normal">
-          {avgResponseSec.toFixed(1)} <span className="text-xs font-medium text-mini">{t("handoff.seconds")}</span>
+          <AnimatedNumber
+            value={avgResponseSec}
+            decimals={1}
+            format={(v) => v.toFixed(1)}
+          />{" "}
+          <span className="text-xs font-medium text-mini">
+            {t("handoff.seconds")}
+          </span>
         </p>
       </div>
     </div>
@@ -121,6 +146,7 @@ function DeltaBadge({
   granularity: Granularity;
 }) {
   const { t } = useTranslation("usage");
+  const prefersReduced = useReducedMotion();
   const delta = bucketDelta(points);
   if (!delta) return null;
 
@@ -128,25 +154,39 @@ function DeltaBadge({
   const Icon = isUp ? TrendingUp : TrendingDown;
 
   return (
-    <span className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-normal ring-1 ring-inset ring-black/[0.04] dark:ring-white/[0.06]">
-      <Icon
-        className={`size-3.5 ${isUp ? "text-emerald-600 dark:text-emerald-400" : "text-orange-600 dark:text-orange-400"}`}
-        strokeWidth={2.4}
-      />
-      {isUp ? "+" : ""}
-      {delta.percent.toFixed(1)}%
-      <span className="font-medium text-mini">
-        {t("chart.vsPrev", { unit: t(GRANULARITY_UNIT_KEY[granularity]) })}
-      </span>
-    </span>
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.span
+        key={`${granularity}-${delta.percent.toFixed(1)}`}
+        initial={prefersReduced ? false : { opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={prefersReduced ? undefined : { opacity: 0, y: -4 }}
+        transition={{ duration: MOTION_DURATION.fast, ease: MOTION_EASE.out }}
+        className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-normal ring-1 ring-inset ring-black/[0.04] dark:ring-white/[0.06]"
+      >
+        <Icon
+          className={`size-3.5 ${isUp ? "text-emerald-600 dark:text-emerald-400" : "text-orange-600 dark:text-orange-400"}`}
+          strokeWidth={2.4}
+        />
+        {isUp ? "+" : ""}
+        {delta.percent.toFixed(1)}%
+        <span className="font-medium text-mini">
+          {t("chart.vsPrev", { unit: t(GRANULARITY_UNIT_KEY[granularity]) })}
+        </span>
+      </motion.span>
+    </AnimatePresence>
   );
 }
 
 /**
  * กราฟหนึ่งใบต่อหนึ่ง endpoint สลับช่วงเวลาได้ในตัวเองด้วย dropdown มุมขวาบน
  */
-export const MetricCard = ({ metric: metricId, defaultGranularity = "day", variant = "card" }: Props) => {
+export const MetricCard = ({
+  metric: metricId,
+  defaultGranularity = "day",
+  variant = "card",
+}: Props) => {
   const { t } = useTranslation("usage");
+  const prefersReduced = useReducedMotion();
   const [granularity, setGranularity] = useState<Granularity>(defaultGranularity);
 
   const metric = METRICS[metricId];
@@ -154,13 +194,17 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day", varia
 
   const points = data?.points ?? [];
   const windowKey =
-    GRANULARITY_OPTIONS.find((option) => option.value === granularity)?.windowKey ?? "";
+    GRANULARITY_OPTIONS.find((option) => option.value === granularity)
+      ?.windowKey ?? "";
   const window = windowKey ? t(windowKey) : "";
   const Icon = metric.icon;
   const flat = variant === "flat";
 
   return (
-    <Card variant={flat ? "flat" : "default"} className={flat ? "flex flex-col gap-5" : "flex flex-col gap-5 p-5 sm:p-6"}>
+    <Card
+      variant={flat ? "flat" : "default"}
+      className={flat ? "flex flex-col gap-5" : "flex flex-col gap-5 p-5 sm:p-6"}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           {!flat && (
@@ -170,12 +214,24 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day", varia
           )}
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
-              <p className={flat ? "text-lg font-semibold text-foreground" : "text-sm font-semibold tracking-tight text-normal"}>
+              <p
+                className={
+                  flat
+                    ? "text-lg font-semibold text-foreground"
+                    : "text-sm font-semibold tracking-tight text-normal"
+                }
+              >
                 {t(metric.titleKey)}
               </p>
               {flat && data && <SourceBadge data={data} />}
             </div>
-            <p className={flat ? "mt-1 text-[13px] text-muted-foreground" : "mt-1.5 text-xs text-mini"}>
+            <p
+              className={
+                flat
+                  ? "mt-1 text-[13px] text-muted-foreground"
+                  : "mt-1.5 text-xs text-mini"
+              }
+            >
               {t(metric.descriptionKey)} · {window}
             </p>
           </div>
@@ -183,7 +239,11 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day", varia
 
         <div className="flex items-center gap-2">
           {!flat && data && <SourceBadge data={data} />}
-          <GranularitySelect value={granularity} onChange={setGranularity} variant={flat ? "tabs" : "select"} />
+          <GranularitySelect
+            value={granularity}
+            onChange={setGranularity}
+            variant={flat ? "tabs" : "select"}
+          />
         </div>
       </div>
 
@@ -192,12 +252,27 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day", varia
           <Skeleton className="h-9 w-40" />
         ) : (
           <>
-            <p className={flat ? "text-4xl font-semibold tracking-[-0.03em] text-foreground tabular-nums" : "text-3xl font-semibold tracking-[-0.04em] text-normal tabular-nums"}>
-              {metric.formatValue(data?.headline ?? 0)}
+            <p
+              className={
+                flat
+                  ? "text-4xl font-semibold tracking-[-0.03em] text-foreground tabular-nums"
+                  : "text-3xl font-semibold tracking-[-0.04em] text-normal tabular-nums"
+              }
+            >
+              <AnimatedNumber
+                value={data?.headline ?? 0}
+                format={metric.formatValue}
+                duration={0.75}
+              />
             </p>
-            <p className="pb-1.5 text-xs font-medium text-mini">{t(metric.unitKey)}</p>
+            <p className="pb-1.5 text-xs font-medium text-mini">
+              {t(metric.unitKey)}
+            </p>
             {flat && metric.series.length > 1 && (
-              <ChartLegendRow metric={metric} className="ml-auto justify-end pb-1.5" />
+              <ChartLegendRow
+                metric={metric}
+                className="ml-auto justify-end pb-1.5"
+              />
             )}
             {metric.showDelta !== false && (
               <div className={flat ? "pb-1" : "ml-auto pb-1"}>
@@ -211,9 +286,14 @@ export const MetricCard = ({ metric: metricId, defaultGranularity = "day", varia
       {isPending ? (
         <Skeleton className="h-[190px] w-full rounded-xl" />
       ) : (
-        <div className={isFetching ? "opacity-60 transition-opacity" : "transition-opacity"}>
+        <motion.div
+          key={granularity}
+          initial={prefersReduced ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: isFetching ? 0.6 : 1, y: 0 }}
+          transition={{ duration: MOTION_DURATION.base, ease: MOTION_EASE.out }}
+        >
           <MetricChart metric={metric} points={points} showLegend={!flat} />
-        </div>
+        </motion.div>
       )}
 
       {metricId === "chat" && !isPending && <ChatHandoffStats />}
