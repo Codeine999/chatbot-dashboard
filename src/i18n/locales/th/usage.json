@@ -14,7 +14,8 @@
       "overall": "ภาพรวม",
       "line": "Line",
       "facebook": "Facebook",
-      "api": "Api"
+      "api": "Api",
+      "unknown": "ไม่ทราบ"
     },
     "channelTabs": "ช่องทางโทเคน",
     "perPerson": {
@@ -31,9 +32,18 @@
       "channel": "ช่องทาง",
       "respondedBy": "ผู้ตอบ",
       "ai": "AI",
-      "input": "โทเคนรับเข้า",
-      "output": "โทเคนที่ตอบ",
-      "total": "รวม"
+      "credit": "เครดิตที่หัก",
+      "admin": "ผู้ดูแล",
+      "unknown": "ไม่ทราบ",
+      "loading": "กำลังโหลดบันทึกการตอบ…",
+      "error": "โหลดบันทึกการตอบไม่สำเร็จ: {{message}}",
+      "empty": "ไม่มีการตอบใน 30 วันที่ผ่านมา",
+      "failed": "ล้มเหลว",
+      "page": "หน้า {{page}} จาก {{pages}}",
+      "prev": "ก่อนหน้า",
+      "next": "ถัดไป",
+      "note": "เครดิตที่ระบบหักต่อการตอบแต่ละครั้ง ย้อนหลัง 30 วัน",
+      "answerType": "ประเภทคำตอบ"
     },
     "aiChat": "โทเคนแชท AI",
     "aiChatDesc": "บทสนทนาและคำตอบที่ AI สร้าง",
@@ -43,7 +53,20 @@
     "adminDesc": "เครดิตที่เครื่องมือผู้ดูแลใช้ไป",
     "remainingOf": "เหลือจาก {{limit}}",
     "used": "ใช้ไป {{used}}",
-    "withinAllowance": "อยู่ในโควตารายเดือน"
+    "withinAllowance": "อยู่ในโควตารายเดือน",
+    "answerTypes": {
+      "KNOWLEDGE": "คำถามที่พบบ่อย",
+      "MICRO_KNOWLEDGE": "คำตอบสั้น",
+      "MIXED_KNOWLEDGE": "คำถามที่พบบ่อย (ผสม)",
+      "PRODUCT": "สินค้า",
+      "GENERAL": "ทั่วไป",
+      "IMAGE": "รูปภาพ",
+      "RULE": "กฎ",
+      "MENU": "เมนู",
+      "REGISTRATION": "สมัครสมาชิก",
+      "HANDOFF": "ส่งต่อแอดมิน",
+      "SYSTEM": "ระบบ"
+    }
   },
   "account": {
     "loading": "กำลังโหลดข้อมูลบัญชี...",
